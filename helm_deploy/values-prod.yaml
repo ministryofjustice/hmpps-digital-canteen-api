@@ -3,7 +3,7 @@
 
 generic-service:
   ingress:
-    host: digital-canteen-api.prison.service.justice.gov.uk
+    host: digital-canteen.prison.service.justice.gov.uk
 
   env:
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
