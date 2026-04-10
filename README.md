@@ -2,7 +2,7 @@
 
 [![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/hmpps-digital-canteen-api/badge?style=flat)](https://github-community.service.justice.gov.uk/repository-standards/hmpps-digital-canteen-api)
 [![Docker Repository on ghcr](https://img.shields.io/badge/ghcr.io-repository-2496ED.svg?logo=docker)](https://ghcr.io/ministryofjustice/hmpps-digital-canteen-api)
-[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://digital-canteen-api-dev.hmpps.service.justice.gov.uk/swagger-ui/index.html)
+[![API docs](https://img.shields.io/badge/API_docs_-view-85EA2D.svg?logo=swagger)](https://digital-canteen-dev.prison.service.justice.gov.uk/swagger-ui/index.html)
 
 Template github repo used for new Kotlin based projects.
 
