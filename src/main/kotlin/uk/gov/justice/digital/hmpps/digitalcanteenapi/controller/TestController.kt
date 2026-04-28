@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/api")
 class TestController {
 
+  @Suppress("FunctionOnlyReturningConstant")
   @PreAuthorize("permitAll()")
   @GetMapping("/test")
   fun testEndpoint(): String = "test"
