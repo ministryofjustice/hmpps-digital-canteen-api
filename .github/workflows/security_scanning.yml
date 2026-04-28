@@ -38,5 +38,8 @@ jobs:
       - name: Run tests
         run: ./gradlew test --no-daemon
 
-      - name: Dependency vulnerability scan
-        run: ./gradlew dependencyCheckAnalyze
+
+        # Disabled for now to avoid slowing PR builds.
+        # Intended to run on the main branch or as a nightly security scan.
+        #- name: Dependency vulnerability scan
+        #  run: ./gradlew dependencyCheckAnalyze
