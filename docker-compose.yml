@@ -27,5 +27,19 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
 
+  hmpps-digital-canteen-api-db:
+    image: postgres:17
+    networks:
+      - hmpps
+    container_name: hmpps-digital-canteen-api-db
+    restart: unless-stopped
+    ports:
+      - "9432:5432"
+    environment:
+      - POSTGRES_PASSWORD=hmpps-digital-canteen-data
+      - POSTGRES_USER=hmpps-digital-canteen-data
+      - POSTGRES_DB=hmpps-digital-canteen-data
+      - TZ="Europe/London"
+
 networks:
   hmpps:
