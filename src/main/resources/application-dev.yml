@@ -1,2 +1,7 @@
-hmpps-auth:
-  url: "http://localhost:8090/auth"
+api:
+  hmpps-auth:
+    base-url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    timeout-ms: 20s
+  health-and-medication:
+    base-url: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
+    timeout-ms: 20s
