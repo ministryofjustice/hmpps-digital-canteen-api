@@ -4,13 +4,15 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.HealthAndMedicationClient
 
 @RestController
 @RequestMapping("/api")
-class TestController {
+class TestController(
+  private val healthAndMedicationClient: HealthAndMedicationClient,
+) {
 
-  @Suppress("FunctionOnlyReturningConstant")
   @PreAuthorize("permitAll()")
   @GetMapping("/test")
-  fun testEndpoint(): String = "test"
+  fun testEndpoint() = healthAndMedicationClient.getPrisoner("A5441EC")
 }
