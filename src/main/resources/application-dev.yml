@@ -5,3 +5,19 @@ api:
   health-and-medication:
     base-url: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
     timeout-ms: 20s
+  prisoner-search:
+    base-url: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    timeout-ms: 20s
+  prisoner-adjudications:
+    base-url: "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk"
+    timeout-ms: 20s
+  prisoner-incentives:
+    base-url: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
+    timeout-ms: 20s
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    version: 5.32.1

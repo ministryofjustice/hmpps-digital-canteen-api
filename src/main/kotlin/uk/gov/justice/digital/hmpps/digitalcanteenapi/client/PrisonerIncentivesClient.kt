@@ -5,17 +5,17 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.HealthAndMedicationDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerIncentivesDto
 
 @Component
-class HealthAndMedicationClient(
-  @Qualifier("healthAndMedicationWebClient") private val healthAndMedicationWebClient: WebClient,
+class PrisonerIncentivesClient(
+  @Qualifier("prisonerIncentivesWebClient") private val prisonerIncentivesWebClient: WebClient,
 ) {
 
-  fun getPrisoner(prisonerNumber: String): Mono<HealthAndMedicationDto> =
-    healthAndMedicationWebClient
+  fun getPrisoner(prisonerNumber: String): Mono<PrisonerIncentivesDto> =
+    prisonerIncentivesWebClient
       .get()
-      .uri("/prisoners/{prisonerNumber}", prisonerNumber)
+      .uri("/incentive-reviews/prisoner/{prisonerNumber}", prisonerNumber)
       .retrieve()
       .bodyToMono()
 }
