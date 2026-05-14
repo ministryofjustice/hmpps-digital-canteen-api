@@ -70,12 +70,12 @@ springdoc:
     version: 5.32.1
 
 hmpps-auth:
-  url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+  url: ${HMPPS_AUTH_URL}
 
 openfoodfacts:
   api:
-    url: "https://world.openfoodfacts.org"
+    url: ${OPEN_FOOD_FACTS_API_URL}
 
 openproductsfacts:
   api:
-    url: "https://world.openproductsfacts.org"
+    url: ${OPEN_PRODUCTS_FACTS_API_URL}

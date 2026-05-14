@@ -71,7 +71,7 @@ class ProductEnrichmentInfoIntegrationTest : IntegrationTestBase() {
         "status": 1,
         "status_verbose": "product found"
       }
-      """.trimIndent()
+  """.trimIndent()
 
   @Test
   fun `can get product from open products facts when not in food facts`() {
@@ -180,5 +180,5 @@ class ProductEnrichmentInfoIntegrationTest : IntegrationTestBase() {
         "status": 1,
         "status_verbose": "product found"
       }
-      """.trimIndent()
+  """.trimIndent()
 }

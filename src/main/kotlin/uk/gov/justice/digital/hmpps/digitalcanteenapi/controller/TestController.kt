@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 
 @RestController
 @RequestMapping("/api")
-class TestController(private val productEnrichmentDetailsService: ProductEnrichmentInfoService) {
+class TestController(private val productEnrichmentInfoService: ProductEnrichmentInfoService) {
 
   @Suppress("FunctionOnlyReturningConstant")
   @PreAuthorize("permitAll()")
@@ -22,5 +22,5 @@ class TestController(private val productEnrichmentDetailsService: ProductEnrichm
   @GetMapping("/product/{ean}")
   fun getProduct(
     @PathVariable ean: String,
-  ): Mono<ProductDetailsResponse> = productEnrichmentDetailsService.getProductEnrichmentDetails(ean)
+  ): Mono<ProductDetailsResponse> = productEnrichmentInfoService.getProductEnrichmentDetails(ean)
 }
