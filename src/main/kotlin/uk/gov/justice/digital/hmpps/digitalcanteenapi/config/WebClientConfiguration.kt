@@ -30,11 +30,11 @@ class WebClientConfiguration(
 ) {
   @Bean
   @Suppress("MaxLineLength")
-  fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient =
-    builder.healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
+  fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient = builder
+    .healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
 
   @Bean
-  fun healthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) =
+  fun prisonerHealthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) =
     builder.authorisedWebClient(authorizedClientManager, "hmpps-digital-canteen-api",
       healthAndMedicationBaseUri, healthAndMedicationTimeout)
 

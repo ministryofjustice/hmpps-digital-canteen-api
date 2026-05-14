@@ -10,7 +10,7 @@ data class PrisonerIncentivesDto(
   val iepTime: String,
   val iepDetails: List<IepDetail>,
   val nextReviewDate: String?,
-  val daysSinceReview: Int?
+  val daysSinceReview: Int?,
 )
 
 data class IepDetail(
@@ -26,5 +26,5 @@ data class IepDetail(
   val userId: String,
   val reviewType: String,
   val auditModuleName: String?,
-  val isRealReview: Boolean
+  val isRealReview: Boolean,
 )

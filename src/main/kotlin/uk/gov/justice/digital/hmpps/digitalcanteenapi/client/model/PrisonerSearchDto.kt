@@ -10,5 +10,5 @@ data class PrisonerSearchDto(
   val bookingId: String? = null,
   val dateOfBirth: LocalDate? = null,
   val youthOffender: Boolean? = null,
-  val gender: String? = null
+  val gender: String? = null,
 )

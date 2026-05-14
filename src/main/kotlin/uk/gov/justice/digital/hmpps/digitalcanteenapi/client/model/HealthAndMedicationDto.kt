@@ -1,7 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model
 
 data class HealthAndMedicationDto(
-  val dietAndAllergy: DietAndAllergy
+  val dietAndAllergy: DietAndAllergy,
 )
 
 data class DietAndAllergy(
@@ -10,30 +10,30 @@ data class DietAndAllergy(
   val personalisedDietaryRequirements: DietaryRequirementList?,
   val cateringInstructions: CateringInstructions?,
   val topLevelLocation: String?,
-  val lastAdmissionDate: String?
+  val lastAdmissionDate: String?,
 )
 
 data class DietaryRequirementList(
   val value: List<DietaryRequirementItem>,
   val lastModifiedAt: String,
   val lastModifiedBy: String,
-  val lastModifiedPrisonId: String
+  val lastModifiedPrisonId: String,
 )
 
 data class DietaryRequirementItem(
   val value: DietaryRequirementValue,
-  val comment: String?
+  val comment: String?,
 )
 
 data class DietaryRequirementValue(
   val id: String,
   val code: String,
-  val description: String
+  val description: String,
 )
 
 data class CateringInstructions(
   val value: String?,
   val lastModifiedAt: String,
   val lastModifiedBy: String,
-  val lastModifiedPrisonId: String
+  val lastModifiedPrisonId: String,
 )

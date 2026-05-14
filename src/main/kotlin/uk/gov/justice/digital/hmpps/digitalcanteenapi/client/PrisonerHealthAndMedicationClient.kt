@@ -8,15 +8,13 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.HealthAndMedicationDto
 
 @Component
-class HealthAndMedicationClient(
-  @Qualifier("healthAndMedicationWebClient") private val healthAndMedicationWebClient: WebClient,
+class PrisonerHealthAndMedicationClient(
+  @Qualifier("prisonerHealthAndMedicationWebClient") private val prisonerHealthAndMedicationWebClient: WebClient,
 ) {
 
-  fun getPrisoner(prisonerNumber: String): Mono<HealthAndMedicationDto> =
-    healthAndMedicationWebClient
-      .get()
-      .uri("/prisoners/{prisonerNumber}", prisonerNumber)
-      .retrieve()
-      .bodyToMono()
+  fun getPrisoner(prisonerNumber: String): Mono<HealthAndMedicationDto> = prisonerHealthAndMedicationWebClient
+    .get()
+    .uri("/prisoners/{prisonerNumber}", prisonerNumber)
+    .retrieve()
+    .bodyToMono()
 }
-
