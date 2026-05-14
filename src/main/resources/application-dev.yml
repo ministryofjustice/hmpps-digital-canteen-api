@@ -14,10 +14,3 @@ api:
   prisoner-incentives:
     base-url: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
     timeout-ms: 20s
-
-springdoc:
-  api-docs:
-    enabled: true
-  swagger-ui:
-    enabled: true
-    version: 5.32.1

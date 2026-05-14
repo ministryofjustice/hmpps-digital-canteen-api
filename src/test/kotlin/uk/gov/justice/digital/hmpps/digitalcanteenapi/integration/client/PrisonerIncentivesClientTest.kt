@@ -26,15 +26,27 @@ class PrisonerIncentivesClientTest {
 
     val result = client.getPrisoner(PRISONER_NUMBER).block()
 
-    assertThat(result).isNotNull
-    assertThat(result!!.id).isEqualTo(12345L)
-    assertThat(result.iepCode).isEqualTo("STD")
-    assertThat(result.iepLevel).isEqualTo("standard")
-    assertThat(result.prisonerNumber).isEqualTo(PRISONER_NUMBER)
-    assertThat(result.bookingId).isEqualTo(12345L)
-    assertThat(result.iepDate).isEqualTo("aDate")
-    assertThat(result.iepTime).isEqualTo("aTime")
-    assertThat(result.iepDetails[0].id).isEqualTo(12345L)
+    with(result!!) {
+      assertThat(id).isEqualTo(12345L)
+      assertThat(iepCode).isEqualTo("STD")
+      assertThat(iepLevel).isEqualTo("Standard")
+      assertThat(prisonerNumber).isEqualTo(PRISONER_NUMBER)
+      assertThat(bookingId).isEqualTo(123456L)
+      assertThat(iepDate).isEqualTo("2025-01-15")
+      assertThat(iepTime).isEqualTo("14:30:00")
+      assertThat(nextReviewDate).isEqualTo("2025-07-15")
+      assertThat(daysSinceReview).isEqualTo(30)
+    }
+    assertThat(result.iepDetails).hasSize(1)
+    with(result.iepDetails[0]) {
+      assertThat(id).isEqualTo(12345L)
+      assertThat(iepLevel).isEqualTo("Standard")
+      assertThat(iepCode).isEqualTo("STD")
+      assertThat(comments).isEqualTo("something")
+      assertThat(isRealReview).isTrue()
+      assertThat(reviewType).isEqualTo("REVIEW")
+      assertThat(agencyId).isEqualTo("test")
+    }
   }
 
   companion object {

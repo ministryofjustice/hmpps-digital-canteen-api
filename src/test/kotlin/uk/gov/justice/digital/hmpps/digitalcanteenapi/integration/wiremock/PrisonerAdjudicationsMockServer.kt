@@ -5,11 +5,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerAdjudicationsDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.Punishment
 import java.time.LocalDate
-import kotlin.String
 
 const val OFFENDER_BOOKING_ID = "A1234BC"
 
@@ -39,12 +36,12 @@ class PrisonerAdjudicationsMockServer : WireMockServer(WIREMOCK_PORT) {
                   lastDay = LocalDate.parse("2025-01-31"),
                   amount = 0.1,
                   stoppagePercentage = 0,
-                  activatedFrom = "today"
-                )
-              )
+                  activatedFrom = "today",
+                ),
+              ),
             ),
           )
           .withStatus(200),
-      )
+      ),
   )
 }

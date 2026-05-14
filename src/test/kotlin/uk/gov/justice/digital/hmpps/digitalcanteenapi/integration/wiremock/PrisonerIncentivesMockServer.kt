@@ -7,11 +7,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.IepDetail
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerIncentivesDto
-import kotlin.String
 
 class PrisonerIncentivesMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8081
+    private const val WIREMOCK_PORT = 8083
   }
 
   private val mapper: JsonMapper = JsonMapper.builder().build()
@@ -26,32 +25,34 @@ class PrisonerIncentivesMockServer : WireMockServer(WIREMOCK_PORT) {
               PrisonerIncentivesDto(
                 id = 12345L,
                 iepCode = "STD",
-                iepLevel = "standard",
+                iepLevel = "Standard",
                 prisonerNumber = prisonerNumber,
-                bookingId = 12345L,
-                iepDate = "aDate",
-                iepTime = "atime",
-                iepDetails = listOf(IepDetail(
-                  id = 12345L,
-                  iepLevel = "test",
-                  iepCode = "test",
-                  comments = "test",
-                  prisonerNumber = prisonerNumber,
-                  bookingId = 12345L,
-                  iepDate = "test",
-                  iepTime = "test",
-                  agencyId = "test",
-                  userId = "test",
-                  reviewType = "test",
-                  auditModuleName = "test",
-                  isRealReview = false,
-                )),
-                nextReviewDate = "sometime",
-                daysSinceReview = 2,
+                bookingId = 123456L,
+                iepDate = "2025-01-15",
+                iepTime = "14:30:00",
+                iepDetails = listOf(
+                  IepDetail(
+                    id = 12345L,
+                    iepLevel = "Standard",
+                    iepCode = "STD",
+                    comments = "something",
+                    prisonerNumber = prisonerNumber,
+                    bookingId = 123456L,
+                    iepDate = "2025-01-15",
+                    iepTime = "14:30:00",
+                    agencyId = "test",
+                    userId = "STAFF_USER",
+                    reviewType = "REVIEW",
+                    auditModuleName = "test",
+                    isRealReview = true,
+                  ),
+                ),
+                nextReviewDate = "2025-07-15",
+                daysSinceReview = 30,
               ),
             ),
           )
           .withStatus(200),
-      )
+      ),
   )
 }

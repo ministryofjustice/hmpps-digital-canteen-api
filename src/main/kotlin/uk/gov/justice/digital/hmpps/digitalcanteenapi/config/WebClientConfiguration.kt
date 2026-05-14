@@ -30,26 +30,37 @@ class WebClientConfiguration(
 ) {
   @Bean
   @Suppress("MaxLineLength")
-  fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient = builder
-    .healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
+  fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient = builder.healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
 
   @Bean
-  fun prisonerHealthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) =
-    builder.authorisedWebClient(authorizedClientManager, "hmpps-digital-canteen-api",
-      healthAndMedicationBaseUri, healthAndMedicationTimeout)
+  fun prisonerHealthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    healthAndMedicationBaseUri,
+    healthAndMedicationTimeout,
+  )
 
   @Bean
-  fun prisonerSearchWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) =
-    builder.authorisedWebClient(authorizedClientManager, "hmpps-digital-canteen-api",
-      prisonerSearchBaseUri, prisonerSearchTimeout)
+  fun prisonerSearchWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonerSearchBaseUri,
+    prisonerSearchTimeout,
+  )
 
   @Bean
-  fun prisonerAdjudicationsWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) =
-    builder.authorisedWebClient(authorizedClientManager, "hmpps-digital-canteen-api",
-      prisonerAdjudicationsBaseUri, prisonerAdjudicationsTimeout)
+  fun prisonerAdjudicationsWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonerAdjudicationsBaseUri,
+    prisonerAdjudicationsTimeout,
+  )
 
   @Bean
-  fun prisonerIncentivesWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) =
-    builder.authorisedWebClient(authorizedClientManager, "hmpps-digital-canteen-api",
-      prisonerIncentivessBaseUri, prisonerIncentivessTimeout)
+  fun prisonerIncentivesWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonerIncentivessBaseUri,
+    prisonerIncentivessTimeout,
+  )
 }

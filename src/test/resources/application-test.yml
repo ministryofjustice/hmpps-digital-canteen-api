@@ -5,8 +5,17 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
-hmpps-auth:
-  url: "http://localhost:8090/auth"
+api:
+  hmpps-auth:
+    base-url: http://localhost:8090/auth
+  health-and-medication:
+    base-url: http://localhost:8092
+  prisoner-search:
+    base-url: http://localhost:8094
+  prisoner-adjudications:
+    base-url: http://localhost:8091
+  prisoner-incentives:
+    base-url: http://localhost:8093
 
 springdoc:
   api-docs:

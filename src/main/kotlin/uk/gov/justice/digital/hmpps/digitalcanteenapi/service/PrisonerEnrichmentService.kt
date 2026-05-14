@@ -2,12 +2,14 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
 import org.springframework.stereotype.Component
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerHealthAndMedicationClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerAdjudicationsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerHealthAndMedicationClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerIncentivesClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerSearchClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.*
-import java.util.Optional
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerIncentivesDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearchDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.Punishment
+import java.util.*
 
 @Component
 class PrisonerEnrichmentService(
@@ -18,7 +20,6 @@ class PrisonerEnrichmentService(
 ) {
 
   fun getEnrichedPrisoner(prisonerNumber: String): Mono<EnrichedPrisonerDto> {
-
     val prisonerMono =
       prisonerSearchClient.getPrisoner(prisonerNumber).cache()
 
@@ -56,7 +57,7 @@ class PrisonerEnrichmentService(
           cateringInstructions = dietAndAllergy?.cateringInstructions?.value,
           incentives = tuple.t3.orElse(null),
           hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
-          activeAdjudications = activeAdjudications?.takeIf { it.isNotEmpty() }
+          activeAdjudications = activeAdjudications?.takeIf { it.isNotEmpty() },
         )
       }
   }
@@ -72,4 +73,3 @@ class PrisonerEnrichmentService(
     val activeAdjudications: List<Punishment>?,
   )
 }
-

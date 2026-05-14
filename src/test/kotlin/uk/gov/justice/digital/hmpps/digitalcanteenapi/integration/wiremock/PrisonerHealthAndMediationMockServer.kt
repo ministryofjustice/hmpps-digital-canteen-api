@@ -11,11 +11,10 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietaryRequir
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietaryRequirementList
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietaryRequirementValue
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.HealthAndMedicationDto
-import kotlin.String
 
 class PrisonerHealthAndMediationMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8081
+    private const val WIREMOCK_PORT = 8082
   }
 
   private val mapper: JsonMapper = JsonMapper.builder().build()
@@ -35,14 +34,14 @@ class PrisonerHealthAndMediationMockServer : WireMockServer(WIREMOCK_PORT) {
                         value = DietaryRequirementValue(
                           id = "FOOD_ALLERGY_NUTS",
                           code = "NUTS",
-                          description = "Nut allergy"
+                          description = "Nut allergy",
                         ),
-                        comment = "Severe reaction to peanuts"
+                        comment = "Severe reaction to peanuts",
                       ),
                     ),
                     lastModifiedAt = "2025-01-15T10:30:00",
                     lastModifiedBy = "STAFF_USER",
-                    lastModifiedPrisonId = "MDI"
+                    lastModifiedPrisonId = "MDI",
                   ),
                   medicalDietaryRequirements = DietaryRequirementList(
                     value = listOf(
@@ -50,14 +49,14 @@ class PrisonerHealthAndMediationMockServer : WireMockServer(WIREMOCK_PORT) {
                         value = DietaryRequirementValue(
                           id = "DIET_GLUTEN_FREE",
                           code = "GLUTEN_FREE",
-                          description = "Gluten free diet"
+                          description = "Gluten free diet",
                         ),
-                        comment = "Celiac disease"
-                      )
+                        comment = "Celiac disease",
+                      ),
                     ),
                     lastModifiedAt = "2025-01-10T14:20:00",
                     lastModifiedBy = "MEDICAL_STAFF",
-                    lastModifiedPrisonId = "MDI"
+                    lastModifiedPrisonId = "MDI",
                   ),
                   personalisedDietaryRequirements = DietaryRequirementList(
                     value = listOf(
@@ -65,28 +64,28 @@ class PrisonerHealthAndMediationMockServer : WireMockServer(WIREMOCK_PORT) {
                         value = DietaryRequirementValue(
                           id = "DIET_HALAL",
                           code = "HALAL",
-                          description = "Halal diet"
+                          description = "Halal diet",
                         ),
-                        comment = "Religious requirement"
-                      )
+                        comment = "Religious requirement",
+                      ),
                     ),
                     lastModifiedAt = "2025-01-05T09:15:00",
                     lastModifiedBy = "Test",
-                    lastModifiedPrisonId = "MDI"
+                    lastModifiedPrisonId = "MDI",
                   ),
                   cateringInstructions = CateringInstructions(
                     value = "Cake",
                     lastModifiedAt = "2025-01-05T09:15:00",
                     lastModifiedBy = "Test",
-                    lastModifiedPrisonId = "MDI"
+                    lastModifiedPrisonId = "MDI",
                   ),
                   topLevelLocation = "Somewhere",
-                  lastAdmissionDate = "2024-12-01"
-                )
-              )
+                  lastAdmissionDate = "2024-12-01",
+                ),
+              ),
             ),
           )
           .withStatus(200),
-      )
+      ),
   )
 }

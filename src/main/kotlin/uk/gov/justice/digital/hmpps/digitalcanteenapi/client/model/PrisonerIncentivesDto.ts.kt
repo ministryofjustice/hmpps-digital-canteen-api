@@ -1,5 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 data class PrisonerIncentivesDto(
   val id: Long,
   val iepCode: String,
@@ -26,5 +28,6 @@ data class IepDetail(
   val userId: String,
   val reviewType: String,
   val auditModuleName: String?,
+  @JsonProperty("isRealReview")
   val isRealReview: Boolean,
 )

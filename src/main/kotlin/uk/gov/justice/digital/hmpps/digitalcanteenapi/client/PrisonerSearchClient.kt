@@ -12,11 +12,9 @@ class PrisonerSearchClient(
   @Qualifier("prisonerSearchWebClient") private val prisonerSearchClient: WebClient,
 ) {
 
-  fun getPrisoner(prisonerNumber: String): Mono<PrisonerSearchDto> =
-    prisonerSearchClient
-      .get()
-      .uri("/prisoner/{prisonerNumber}", prisonerNumber)
-      .retrieve()
-      .bodyToMono()
+  fun getPrisoner(prisonerNumber: String): Mono<PrisonerSearchDto> = prisonerSearchClient
+    .get()
+    .uri("/prisoner/{prisonerNumber}", prisonerNumber)
+    .retrieve()
+    .bodyToMono()
 }
-

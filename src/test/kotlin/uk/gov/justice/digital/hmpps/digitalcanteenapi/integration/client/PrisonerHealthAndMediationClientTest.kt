@@ -43,7 +43,6 @@ class PrisonerHealthAndMediationClientTest {
 
       assertThat(cateringInstructions?.value)
         .isEqualTo("Cake")
-
     }
   }
 

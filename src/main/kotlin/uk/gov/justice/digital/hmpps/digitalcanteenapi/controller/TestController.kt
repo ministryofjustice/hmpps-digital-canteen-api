@@ -10,11 +10,10 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonerEnrichment
 @RestController
 @RequestMapping("/api")
 class TestController(
-  private val prisonerEnrichmentService: PrisonerEnrichmentService
-  ) {
+  private val prisonerEnrichmentService: PrisonerEnrichmentService,
+) {
 
   @PreAuthorize("permitAll()")
   @GetMapping("/prisoner-enrichment/{prisonerNumber}")
-  fun testEndpoint6(@PathVariable prisonerNumber: String) =
-    prisonerEnrichmentService.getEnrichedPrisoner(prisonerNumber)
+  fun testEndpoint6(@PathVariable prisonerNumber: String) = prisonerEnrichmentService.getEnrichedPrisoner(prisonerNumber)
 }

@@ -7,11 +7,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearchDto
 import java.time.LocalDate
-import kotlin.String
 
 class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8081
+    private const val WIREMOCK_PORT = 8084
   }
 
   private val mapper: JsonMapper = JsonMapper.builder().build()
@@ -36,6 +35,6 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
             ),
           )
           .withStatus(200),
-      )
+      ),
   )
 }
