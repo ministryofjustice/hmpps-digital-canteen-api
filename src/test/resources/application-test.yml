@@ -8,6 +8,14 @@ management.endpoint:
 hmpps-auth:
   url: "http://localhost:8090/auth"
 
+openfoodfacts:
+  api:
+    url: "http://localhost:8091"
+
+openproductsfacts:
+  api:
+    url: "http://localhost:8092"
+
 springdoc:
   api-docs:
     enabled: true

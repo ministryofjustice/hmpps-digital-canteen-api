@@ -68,3 +68,14 @@ springdoc:
   swagger-ui:
     enabled: false
     version: 5.32.1
+
+hmpps-auth:
+  url: ${HMPPS_AUTH_URL}
+
+openfoodfacts:
+  api:
+    url: ${OPEN_FOOD_FACTS_API_URL}
+
+openproductsfacts:
+  api:
+    url: ${OPEN_PRODUCTS_FACTS_API_URL}
