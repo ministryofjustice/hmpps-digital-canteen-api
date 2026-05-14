@@ -68,3 +68,14 @@ springdoc:
   swagger-ui:
     enabled: false
     version: 5.32.1
+
+hmpps-auth:
+  url: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+
+openfoodfacts:
+  api:
+    url: "https://world.openfoodfacts.org"
+
+openproductsfacts:
+  api:
+    url: "https://world.openproductsfacts.org"
