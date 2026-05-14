@@ -13,9 +13,23 @@ class ProductEnrichmentInfoService(
 ) {
   private val log = LoggerFactory.getLogger(ProductEnrichmentInfoService::class.java)
 
+  companion object {
+    private const val MIN_TAG_LENGTH = 3
+  }
+
   fun getProductEnrichmentDetails(ean: String): Mono<ProductDetailsResponse> {
-    return getProductEnrichmentDetailsFromClient(openFoodFactsWebClient, ean, "OpenFoodFacts")     // First try OpenFoodFacts
-      .switchIfEmpty(getProductEnrichmentDetailsFromClient(openProductsFactsWebClient, ean, "OpenProductsFacts"))  // Then try OpenProductsFacts
+    return getProductEnrichmentDetailsFromClient(
+      openFoodFactsWebClient,
+      ean,
+      "OpenFoodFacts",
+    ) // First try OpenFoodFacts
+      .switchIfEmpty(
+        getProductEnrichmentDetailsFromClient(
+          openProductsFactsWebClient,
+          ean,
+          "OpenProductsFacts",
+        ),
+      ) // Then try OpenProductsFacts
   }
 
   private fun getProductEnrichmentDetailsFromClient(
@@ -51,13 +65,13 @@ class ProductEnrichmentInfoService(
 
     fun List<String>?.cleanTags() = this
       ?.map { it.trim() }
-      ?.filter { it.startsWith("en:") && it.length > 3 }
+      ?.filter { it.startsWith("en:") && it.length > MIN_TAG_LENGTH }
       ?.map { it.removePrefix("en:") }
 
     fun String?.cleanAllergens() = this
       ?.split(",")
       ?.map { it.trim() }
-      ?.filter { it.startsWith("en:") && it.length > 3 }
+      ?.filter { it.startsWith("en:") && it.length > MIN_TAG_LENGTH }
       ?.joinToString(",") { it.removePrefix("en:") }
 
     return response.copy(
