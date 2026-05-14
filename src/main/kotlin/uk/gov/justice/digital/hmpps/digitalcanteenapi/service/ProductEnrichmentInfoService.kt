@@ -25,7 +25,9 @@ class ProductEnrichmentInfoService(
     private const val MIN_TAG_LENGTH = 3
   }
 
-  fun getProductEnrichmentDetails(ean: String): Mono<ProductDetailsResponse> = openFoodFactsClient.getProductDetails(ean)
+  fun getProductEnrichmentDetails(
+    ean: String,
+  ): Mono<ProductDetailsResponse> = openFoodFactsClient.getProductDetails(ean)
     .map { cleanResponse(it) }
     .switchIfEmpty(
       openProductsFactsClient.getProductDetails(ean)

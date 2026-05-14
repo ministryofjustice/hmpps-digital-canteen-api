@@ -41,7 +41,17 @@ abstract class ProductEnrichmentInfoClient(
 }
 
 @Component
-class OpenFoodFactsClient(openFoodFactsWebClient: WebClient) : ProductEnrichmentInfoClient(openFoodFactsWebClient, "OpenFoodFacts")
+class OpenFoodFactsClient(
+  openFoodFactsWebClient: WebClient,
+) : ProductEnrichmentInfoClient(
+  openFoodFactsWebClient,
+  "OpenFoodFacts",
+)
 
 @Component
-class OpenProductsFactsClient(openProductsFactsWebClient: WebClient) : ProductEnrichmentInfoClient(openProductsFactsWebClient, "OpenProductsFacts")
+class OpenProductsFactsClient(
+  openProductsFactsWebClient: WebClient,
+) : ProductEnrichmentInfoClient(
+  openProductsFactsWebClient,
+  "OpenProductsFacts",
+)
