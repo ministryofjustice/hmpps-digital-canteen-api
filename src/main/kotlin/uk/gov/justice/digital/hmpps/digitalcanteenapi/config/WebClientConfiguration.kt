@@ -22,17 +22,13 @@ class WebClientConfiguration(
   // HMPPS Auth health ping is required if your service calls HMPPS Auth to get a token to call other services
   @Bean
   @Suppress("MaxLineLength")
-  fun hmppsAuthHealthWebClient(): WebClient =
-    builder.healthWebClient(hmppsAuthBaseUri, healthTimeout)
-
+  fun hmppsAuthHealthWebClient(): WebClient = builder.healthWebClient(hmppsAuthBaseUri, healthTimeout)
 
   @Bean
-  fun openFoodFactsWebClient(): WebClient =
-    builder.baseUrl(openFoodFactsApiUrl).build()
+  fun openFoodFactsWebClient(): WebClient = builder.baseUrl(openFoodFactsApiUrl).build()
 
   @Bean
-  fun openProductsFactsWebClient(): WebClient =
-    builder.baseUrl(openProductsFactsApiUrl).build()
+  fun openProductsFactsWebClient(): WebClient = builder.baseUrl(openProductsFactsApiUrl).build()
 
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -41,11 +37,14 @@ class WebClientConfiguration(
       authorizeHttpRequests {
         authorize("/api/product/**", permitAll)
         authorize("/health/**", permitAll)
+        authorize("/info", permitAll)
+        authorize("/v3/api-docs/**", permitAll)
+        authorize("/swagger-ui/**", permitAll)
+        authorize("/swagger-ui.html", permitAll)
         authorize(anyRequest, authenticated)
       }
       oauth2ResourceServer { jwt { } }
     }
     return http.build()
   }
-
 }

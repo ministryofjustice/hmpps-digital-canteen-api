@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.dto.ProductDetailsResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 
 @RestController
 @RequestMapping("/api")
@@ -20,6 +20,7 @@ class TestController(private val productEnrichmentDetailsService: ProductEnrichm
 
   @PreAuthorize("permitAll()")
   @GetMapping("/product/{ean}")
-  fun getProduct(@PathVariable ean: String): Mono<ProductDetailsResponse>
-  = productEnrichmentDetailsService.getProductEnrichmentDetails(ean)
+  fun getProduct(
+    @PathVariable ean: String,
+  ): Mono<ProductDetailsResponse> = productEnrichmentDetailsService.getProductEnrichmentDetails(ean)
 }

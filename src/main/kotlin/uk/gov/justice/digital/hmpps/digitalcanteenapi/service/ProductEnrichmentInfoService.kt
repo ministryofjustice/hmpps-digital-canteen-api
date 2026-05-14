@@ -35,9 +35,8 @@ class ProductEnrichmentInfoService(
   private fun getProductEnrichmentDetailsFromClient(
     client: WebClient,
     ean: String,
-    clientName: String
+    clientName: String,
   ): Mono<ProductDetailsResponse> {
-
     return client.get()
       .uri("/api/v0/product/{ean}.json", ean)
       .retrieve()
@@ -47,7 +46,9 @@ class ProductEnrichmentInfoService(
         if (response.status == 0) {
           log.info(
             "Product not found (status 0) from {} for ean {}. status_verbose={}",
-            clientName, ean, response.statusVerbose
+            clientName,
+            ean,
+            response.statusVerbose,
           )
           return@flatMap Mono.empty()
         }
