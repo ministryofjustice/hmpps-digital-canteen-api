@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.dto
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty

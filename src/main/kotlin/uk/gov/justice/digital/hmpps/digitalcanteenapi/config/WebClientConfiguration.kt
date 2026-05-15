@@ -74,10 +74,10 @@ class WebClientConfiguration(
   )
 
   @Bean
-  fun openFoodFactsWebClient(): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
+  fun openFoodFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
 
   @Bean
-  fun openProductsFactsWebClient(): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
+  fun openProductsFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
 
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

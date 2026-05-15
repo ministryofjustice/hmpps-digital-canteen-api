@@ -3,9 +3,9 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.OpenFoodFactsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.OpenProductsFactsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.dto.ProductDetailsResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.OpenFoodFactsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.OpenProductsFactsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
 
 /**
  * Service responsible for fetching and processing product enrichment information.
