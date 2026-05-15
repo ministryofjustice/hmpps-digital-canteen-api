@@ -5,8 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearchDto
-import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture
 
 class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -22,16 +21,7 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
           .withHeader("Content-Type", "application/json")
           .withBody(
             mapper.writeValueAsString(
-              PrisonerSearchDto(
-                prisonerNumber = prisonerNumber,
-                prisonId = "MDI",
-                prisonName = "Moorland (HMP & YOI)",
-                bookNumber = "12345",
-                bookingId = "12345",
-                dateOfBirth = LocalDate.of(1990, 1, 15),
-                youthOffender = false,
-                gender = "Female",
-              ),
+              PrisonerEnrichmentTestFixture.prisonerSearchDto(),
             ),
           )
           .withStatus(200),

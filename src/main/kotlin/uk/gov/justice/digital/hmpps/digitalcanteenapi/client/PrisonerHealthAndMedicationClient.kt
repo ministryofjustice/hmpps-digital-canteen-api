@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.HealthAndMedicationDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerHealthAndMedicationDto
 
 @Component
 class PrisonerHealthAndMedicationClient(
   @Qualifier("prisonerHealthAndMedicationWebClient") private val prisonerHealthAndMedicationWebClient: WebClient,
 ) {
 
-  fun getPrisoner(prisonerNumber: String): Mono<HealthAndMedicationDto> = prisonerHealthAndMedicationWebClient
+  fun getPrisoner(prisonerNumber: String): Mono<PrisonerHealthAndMedicationDto> = prisonerHealthAndMedicationWebClient
     .get()
     .uri("/prisoners/{prisonerNumber}", prisonerNumber)
     .retrieve()

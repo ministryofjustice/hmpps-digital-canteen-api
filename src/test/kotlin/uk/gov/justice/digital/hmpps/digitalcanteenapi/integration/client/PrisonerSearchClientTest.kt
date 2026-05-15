@@ -30,7 +30,7 @@ class PrisonerSearchClientTest {
     assertThat(result).isNotNull
     assertThat(result!!.prisonerNumber).isEqualTo(PRISONER_NUMBER)
     assertThat(result.bookNumber).isEqualTo("12345")
-    assertThat(result.bookingId).isEqualTo("12345")
+    assertThat(result.bookingId).isEqualTo("A1234BC")
     assertThat(result.dateOfBirth).isEqualTo(LocalDate.of(1990, 1, 15))
     assertThat(result.youthOffender).isEqualTo(false)
     assertThat(result.gender).isEqualTo("Female")

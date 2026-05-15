@@ -5,8 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.Punishment
-import java.time.LocalDate
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture
 
 const val OFFENDER_BOOKING_ID = "A1234BC"
 
@@ -24,21 +23,7 @@ class PrisonerAdjudicationsMockServer : WireMockServer(WIREMOCK_PORT) {
           .withHeader("Content-Type", "application/json")
           .withBody(
             mapper.writeValueAsString(
-              listOf(
-                Punishment(
-                  chargeNumber = "12345",
-                  punishmentType = "PRIVILEGE",
-                  privilegeType = "CANTEEN",
-                  otherPrivilegeType = "none",
-                  duration = 5,
-                  measurement = "DAYS",
-                  startDate = LocalDate.parse("2025-01-01"),
-                  lastDay = LocalDate.parse("2025-01-31"),
-                  amount = 0.1,
-                  stoppagePercentage = 0,
-                  activatedFrom = "today",
-                ),
-              ),
+              PrisonerEnrichmentTestFixture.activePunishments(),
             ),
           )
           .withStatus(200),

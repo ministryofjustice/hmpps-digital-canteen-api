@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model
 
-data class HealthAndMedicationDto(
+data class PrisonerHealthAndMedicationDto(
   val dietAndAllergy: DietAndAllergy,
 )
 

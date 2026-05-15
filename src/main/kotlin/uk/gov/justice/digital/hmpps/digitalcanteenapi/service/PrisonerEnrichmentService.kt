@@ -11,6 +11,17 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearc
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.Punishment
 import java.util.*
 
+/**
+ * Service responsible for enriching prisoner data with additional information from multiple sources.
+ *
+ * Aggregates data from various HMPPS APIs,
+ * including health and medication information, incentives, and adjudications.
+ *
+ * @property prisonerHealthAndMedicationClient Client for retrieving prisoner health and medication data
+ * @property prisonerSearchClient Client for retrieving basic prisoner information
+ * @property prisonerAdjudicationsClient Client for retrieving prisoner adjudication data
+ * @property prisonerIncentivesClient Client for retrieving prisoner incentive information
+ */
 @Component
 class PrisonerEnrichmentService(
   private val prisonerHealthAndMedicationClient: PrisonerHealthAndMedicationClient,
@@ -19,6 +30,10 @@ class PrisonerEnrichmentService(
   private val prisonerIncentivesClient: PrisonerIncentivesClient,
 ) {
 
+  /**
+   * @param prisonerNumber The unique identifier for the prisoner
+   * @return A Mono emitting an [EnrichedPrisonerDto] containing aggregated prisoner data
+   */
   fun getEnrichedPrisoner(prisonerNumber: String): Mono<EnrichedPrisonerDto> {
     val prisonerMono =
       prisonerSearchClient.getPrisoner(prisonerNumber).cache()
