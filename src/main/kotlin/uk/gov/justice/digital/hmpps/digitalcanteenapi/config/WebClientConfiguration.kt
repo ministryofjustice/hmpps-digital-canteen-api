@@ -3,7 +3,10 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.security.config.annotation.web.builders.HttpSecurity
+import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
+import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 import uk.gov.justice.hmpps.kotlin.auth.healthWebClient
@@ -25,6 +28,9 @@ class WebClientConfiguration(
 
   @param:Value("\${api.prisoner-incentives.base-url}") val prisonerIncentivessBaseUri: String,
   @param:Value("\${api.prisoner-incentives.timeout-ms:20s}") val prisonerIncentivessTimeout: Duration,
+
+  @param:Value("\${openfoodfacts.api.url}") val openFoodFactsApiUrl: String,
+  @param:Value("\${openproductsfacts.api.url}") val openProductsFactsApiUrl: String,
 
   private val builder: WebClient.Builder,
 ) {
@@ -63,4 +69,28 @@ class WebClientConfiguration(
     prisonerIncentivessBaseUri,
     prisonerIncentivessTimeout,
   )
+
+  @Bean
+  fun openFoodFactsWebClient(): WebClient = builder.baseUrl(openFoodFactsApiUrl).build()
+
+  @Bean
+  fun openProductsFactsWebClient(): WebClient = builder.baseUrl(openProductsFactsApiUrl).build()
+
+  @Bean
+  fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
+    http {
+      csrf { disable() }
+      authorizeHttpRequests {
+        authorize("/api/product/**", permitAll)
+        authorize("/health/**", permitAll)
+        authorize("/info", permitAll)
+        authorize("/v3/api-docs/**", permitAll)
+        authorize("/swagger-ui/**", permitAll)
+        authorize("/swagger-ui.html", permitAll)
+        authorize(anyRequest, authenticated)
+      }
+      oauth2ResourceServer { jwt { } }
+    }
+    return http.build()
+  }
 }

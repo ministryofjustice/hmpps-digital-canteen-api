@@ -17,6 +17,14 @@ api:
   prisoner-incentives:
     base-url: http://localhost:8093
 
+openfoodfacts:
+  api:
+    url: "http://localhost:8091"
+
+openproductsfacts:
+  api:
+    url: "http://localhost:8092"
+
 springdoc:
   api-docs:
     enabled: true

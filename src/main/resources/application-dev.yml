@@ -14,3 +14,9 @@ api:
   prisoner-incentives:
     base-url: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
     timeout-ms: 20s
+  openfoodfacts:
+    api:
+      url: "https://world.openfoodfacts.org"
+  openproductsfacts:
+    api:
+      url: "https://world.openproductsfacts.org"
