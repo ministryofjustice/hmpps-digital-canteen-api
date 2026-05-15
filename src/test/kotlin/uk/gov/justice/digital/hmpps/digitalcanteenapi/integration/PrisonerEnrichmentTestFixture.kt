@@ -27,7 +27,7 @@ object PrisonerEnrichmentTestFixture {
     gender = "Female",
   )
 
-  fun healthAndMedicationDto(prisonerNumber: String = PRISONER_NUMBER) = PrisonerHealthAndMedicationDto(
+  fun healthAndMedicationDto() = PrisonerHealthAndMedicationDto(
     dietAndAllergy = DietAndAllergy(
       foodAllergies = DietaryRequirementList(
         value = listOf(

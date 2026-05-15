@@ -42,6 +42,7 @@ class WebClientConfiguration(
   fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient = builder.healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
 
   @Bean
+  @Suppress("MaxLineLength")
   fun prisonerHealthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
     authorizedClientManager,
     "hmpps-digital-canteen-api",
@@ -50,6 +51,7 @@ class WebClientConfiguration(
   )
 
   @Bean
+  @Suppress("MaxLineLength")
   fun prisonerSearchWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
     authorizedClientManager,
     "hmpps-digital-canteen-api",
@@ -58,6 +60,7 @@ class WebClientConfiguration(
   )
 
   @Bean
+  @Suppress("MaxLineLength")
   fun prisonerAdjudicationsWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
     authorizedClientManager,
     "hmpps-digital-canteen-api",
@@ -66,6 +69,7 @@ class WebClientConfiguration(
   )
 
   @Bean
+  @Suppress("MaxLineLength")
   fun prisonerIncentivesWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
     authorizedClientManager,
     "hmpps-digital-canteen-api",
@@ -77,6 +81,7 @@ class WebClientConfiguration(
   fun openFoodFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
 
   @Bean
+  @Suppress("MaxLineLength")
   fun openProductsFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
 
   @Bean
