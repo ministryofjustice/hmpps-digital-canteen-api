@@ -11,10 +11,10 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.whenever
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerAdjudicationsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerHealthAndMedicationClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerIncentivesClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerSearchClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerAdjudicationsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerHealthAndMedicationClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerIncentivesClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture.BOOKING_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture.PRISONER_NUMBER

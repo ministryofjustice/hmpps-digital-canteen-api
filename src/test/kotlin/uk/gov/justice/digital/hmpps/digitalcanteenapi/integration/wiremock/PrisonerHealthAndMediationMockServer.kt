@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture
 
 class PrisonerHealthAndMediationMockServer : WireMockServer(WIREMOCK_PORT) {

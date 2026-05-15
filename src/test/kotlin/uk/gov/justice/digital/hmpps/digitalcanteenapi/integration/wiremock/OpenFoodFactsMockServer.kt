@@ -15,10 +15,10 @@ class OpenFoodFactsApiExtension :
   BeforeEachCallback {
   companion object {
     @JvmField
-    val openFoodFactsApi = OpenFoodFactsMockServer(8091)
+    val openFoodFactsApi = OpenFoodFactsMockServer(8095)
 
     @JvmField
-    val openProductsFactsApi = OpenFoodFactsMockServer(8092)
+    val openProductsFactsApi = OpenFoodFactsMockServer(8096)
   }
 
   override fun beforeAll(context: ExtensionContext) {

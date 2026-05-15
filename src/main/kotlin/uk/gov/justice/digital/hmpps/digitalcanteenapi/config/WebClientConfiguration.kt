@@ -26,11 +26,14 @@ class WebClientConfiguration(
   @param:Value("\${api.prisoner-adjudications.base-url}") val prisonerAdjudicationsBaseUri: String,
   @param:Value("\${api.prisoner-adjudications.timeout-ms:20s}") val prisonerAdjudicationsTimeout: Duration,
 
-  @param:Value("\${api.prisoner-incentives.base-url}") val prisonerIncentivessBaseUri: String,
-  @param:Value("\${api.prisoner-incentives.timeout-ms:20s}") val prisonerIncentivessTimeout: Duration,
+  @param:Value("\${api.prisoner-incentives.base-url}") val prisonerIncentivesBaseUri: String,
+  @param:Value("\${api.prisoner-incentives.timeout-ms:20s}") val prisonerIncentivesTimeout: Duration,
 
-  @param:Value("\${openfoodfacts.api.url}") val openFoodFactsApiUrl: String,
-  @param:Value("\${openproductsfacts.api.url}") val openProductsFactsApiUrl: String,
+  @param:Value("\${api.open-food-facts.base-url}") val openFoodFactsBaseUri: String,
+  @param:Value("\${api.open-food-facts.timeout-ms:20s}") val openFoodFactsTimeout: Duration,
+
+  @param:Value("\${api.open-products-facts.base-url}") val openProductsFactsBaseUri: String,
+  @param:Value("\${api.open-products-facts.timeout-ms:20s}") val openProductsFactsTimeout: Duration,
 
   private val builder: WebClient.Builder,
 ) {
@@ -66,15 +69,15 @@ class WebClientConfiguration(
   fun prisonerIncentivesWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
     authorizedClientManager,
     "hmpps-digital-canteen-api",
-    prisonerIncentivessBaseUri,
-    prisonerIncentivessTimeout,
+    prisonerIncentivesBaseUri,
+    prisonerIncentivesTimeout,
   )
 
   @Bean
-  fun openFoodFactsWebClient(): WebClient = builder.baseUrl(openFoodFactsApiUrl).build()
+  fun openFoodFactsWebClient(): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
 
   @Bean
-  fun openProductsFactsWebClient(): WebClient = builder.baseUrl(openProductsFactsApiUrl).build()
+  fun openProductsFactsWebClient(): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
 
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

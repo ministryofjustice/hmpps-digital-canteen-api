@@ -6,8 +6,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerAdjudicationsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.OFFENDER_BOOKING_ID
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerAdjudicationsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.OFFENDER_BOOKING_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonerAdjudicationsMockServer
 import java.time.LocalDate
 

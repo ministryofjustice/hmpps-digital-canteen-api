@@ -5,9 +5,8 @@ import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.OFFENDER_BOOKING_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture
-
-const val OFFENDER_BOOKING_ID = "A1234BC"
 
 class PrisonerAdjudicationsMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {

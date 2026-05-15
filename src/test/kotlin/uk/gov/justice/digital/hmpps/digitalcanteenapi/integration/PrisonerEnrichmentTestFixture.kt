@@ -1,15 +1,15 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.CateringInstructions
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietAndAllergy
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietaryRequirementItem
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietaryRequirementList
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.DietaryRequirementValue
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.IepDetail
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerHealthAndMedicationDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerIncentivesDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearchDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.Punishment
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.CateringInstructions
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.DietAndAllergy
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.DietaryRequirementItem
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.DietaryRequirementList
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.DietaryRequirementValue
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.IepDetail
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.PrisonerHealthAndMedicationDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.PrisonerIncentivesDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.PrisonerSearchDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.Punishment
 import java.time.LocalDate
 
 object PrisonerEnrichmentTestFixture {

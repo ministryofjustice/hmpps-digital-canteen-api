@@ -1,14 +1,14 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerAdjudicationsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerHealthAndMedicationClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerIncentivesClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.PrisonerSearchClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerIncentivesDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.PrisonerSearchDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.model.Punishment
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerAdjudicationsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerHealthAndMedicationClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerIncentivesClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerSearchClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.PrisonerIncentivesDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.PrisonerSearchDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto.Punishment
 import java.util.*
 
 /**
@@ -22,7 +22,7 @@ import java.util.*
  * @property prisonerAdjudicationsClient Client for retrieving prisoner adjudication data
  * @property prisonerIncentivesClient Client for retrieving prisoner incentive information
  */
-@Component
+@Service
 class PrisonerEnrichmentService(
   private val prisonerHealthAndMedicationClient: PrisonerHealthAndMedicationClient,
   private val prisonerSearchClient: PrisonerSearchClient,
