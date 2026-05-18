@@ -2,14 +2,18 @@
 # Per environment values which override defaults in hmpps-digital-canteen-api/values.yaml
 
 generic-service:
-  replicaCount: 2
+  replicaCount: 1
 
   ingress:
     host: digital-canteen-dev.prison.service.justice.gov.uk
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
-    HMPPS_AUTH_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    API_HMPPS_AUTH_BASE_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
+    API_HEALTH_AND_MEDICATION_BASE_URL: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
+    API_PRISONER_SEARCH_BASE_URL: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    API_PRISONER_ADJUDICATIONS_BASE_URL: "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk"
+    API_PRISONER_INCENTIVES_BASE_URL: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
     OPEN_FOOD_FACTS_API_URL: "https://world.openfoodfacts.org"
     OPEN_PRODUCTS_FACTS_API_URL: "https://world.openproductsfacts.org"
     SPRINGDOC_API-DOCS_ENABLED: "true"

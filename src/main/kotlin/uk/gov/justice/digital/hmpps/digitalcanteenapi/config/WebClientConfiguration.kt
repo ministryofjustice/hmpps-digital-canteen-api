@@ -5,30 +5,84 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.invoke
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 import uk.gov.justice.hmpps.kotlin.auth.healthWebClient
 import java.time.Duration
 
 @Configuration
 class WebClientConfiguration(
-  @param:Value("\${hmpps-auth.url}") val hmppsAuthBaseUri: String,
-  @param:Value("\${openfoodfacts.api.url}") val openFoodFactsApiUrl: String,
-  @param:Value("\${openproductsfacts.api.url}") val openProductsFactsApiUrl: String,
-  @param:Value("\${api.health-timeout:2s}") val healthTimeout: Duration,
-  @param:Value("\${api.timeout:20s}") val timeout: Duration,
+  @param:Value("\${api.hmpps-auth.base-url}") private val hmppsAuthBaseUri: String,
+  @param:Value("\${api.hmpps-auth.timeout-ms:20s}") private val hmppsAuthHealthTimeout: Duration,
+
+  @param:Value("\${api.health-and-medication.base-url}") val healthAndMedicationBaseUri: String,
+  @param:Value("\${api.health-and-medication.timeout-ms:20s}") val healthAndMedicationTimeout: Duration,
+
+  @param:Value("\${api.prisoner-search.base-url}") val prisonerSearchBaseUri: String,
+  @param:Value("\${api.prisoner-search.timeout-ms:20s}") val prisonerSearchTimeout: Duration,
+
+  @param:Value("\${api.prisoner-adjudications.base-url}") val prisonerAdjudicationsBaseUri: String,
+  @param:Value("\${api.prisoner-adjudications.timeout-ms:20s}") val prisonerAdjudicationsTimeout: Duration,
+
+  @param:Value("\${api.prisoner-incentives.base-url}") val prisonerIncentivesBaseUri: String,
+  @param:Value("\${api.prisoner-incentives.timeout-ms:20s}") val prisonerIncentivesTimeout: Duration,
+
+  @param:Value("\${api.open-food-facts.base-url}") val openFoodFactsBaseUri: String,
+  @param:Value("\${api.open-food-facts.timeout-ms:20s}") val openFoodFactsTimeout: Duration,
+
+  @param:Value("\${api.open-products-facts.base-url}") val openProductsFactsBaseUri: String,
+  @param:Value("\${api.open-products-facts.timeout-ms:20s}") val openProductsFactsTimeout: Duration,
+
   private val builder: WebClient.Builder,
 ) {
-  // HMPPS Auth health ping is required if your service calls HMPPS Auth to get a token to call other services
   @Bean
   @Suppress("MaxLineLength")
-  fun hmppsAuthHealthWebClient(): WebClient = builder.healthWebClient(hmppsAuthBaseUri, healthTimeout)
+  fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient = builder.healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
 
   @Bean
-  fun openFoodFactsWebClient(): WebClient = builder.baseUrl(openFoodFactsApiUrl).build()
+  @Suppress("MaxLineLength")
+  fun prisonerHealthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    healthAndMedicationBaseUri,
+    healthAndMedicationTimeout,
+  )
 
   @Bean
-  fun openProductsFactsWebClient(): WebClient = builder.baseUrl(openProductsFactsApiUrl).build()
+  @Suppress("MaxLineLength")
+  fun prisonerSearchWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonerSearchBaseUri,
+    prisonerSearchTimeout,
+  )
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun prisonerAdjudicationsWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonerAdjudicationsBaseUri,
+    prisonerAdjudicationsTimeout,
+  )
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun prisonerIncentivesWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonerIncentivesBaseUri,
+    prisonerIncentivesTimeout,
+  )
+
+  @Bean
+  fun openFoodFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun openProductsFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
 
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {

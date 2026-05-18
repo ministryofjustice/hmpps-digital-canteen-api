@@ -5,16 +5,21 @@ management.endpoint:
   health.cache.time-to-live: 0
   info.cache.time-to-live: 0
 
-hmpps-auth:
-  url: "http://localhost:8090/auth"
-
-openfoodfacts:
-  api:
-    url: "http://localhost:8091"
-
-openproductsfacts:
-  api:
-    url: "http://localhost:8092"
+api:
+  hmpps-auth:
+    base-url: http://localhost:8090/auth
+  prisoner-adjudications:
+    base-url: http://localhost:8091
+  health-and-medication:
+    base-url: http://localhost:8092
+  prisoner-incentives:
+    base-url: http://localhost:8093
+  prisoner-search:
+    base-url: http://localhost:8094
+  open-food-facts:
+    base-url: http://localhost:8095
+  open-products-facts:
+    base-url: http://localhost:8096
 
 springdoc:
   api-docs:
