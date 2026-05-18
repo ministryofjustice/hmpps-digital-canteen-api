@@ -14,8 +14,8 @@ generic-service:
     API_PRISONER_SEARCH_BASE_URL: "https://prisoner-search-dev.prison.service.justice.gov.uk"
     API_PRISONER_ADJUDICATIONS_BASE_URL: "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk"
     API_PRISONER_INCENTIVES_BASE_URL: "https://incentives-api-dev.hmpps.service.justice.gov.uk"
-    OPEN_FOOD_FACTS_API_URL: "https://world.openfoodfacts.org"
-    OPEN_PRODUCTS_FACTS_API_URL: "https://world.openproductsfacts.org"
+    API_OPEN_FOOD_FACTS_API_URL: "https://world.openfoodfacts.org"
+    API_OPEN_PRODUCTS_FACTS_API_URL: "https://world.openproductsfacts.org"
     SPRINGDOC_API-DOCS_ENABLED: "true"
     SPRINGDOC_SWAGGER-UI_ENABLED: "true"
 
