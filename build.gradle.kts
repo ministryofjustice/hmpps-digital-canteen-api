@@ -15,6 +15,9 @@ dependencies {
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.3")
   implementation("io.gorules:zen-engine-kotlin:0.4.7")
   implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+  implementation("com.deliveredtechnologies:rulebook-core:0.12")
+  implementation("com.deliveredtechnologies:rulebook-spring:0.12")
+
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.2.0")
   testImplementation("org.springframework.boot:spring-boot-starter-webflux-test")
