@@ -12,6 +12,7 @@ import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 import uk.gov.justice.hmpps.kotlin.auth.healthWebClient
 import java.time.Duration
 
+
 @Configuration
 class WebClientConfiguration(
   @param:Value("\${api.hmpps-auth.base-url}") private val hmppsAuthBaseUri: String,
@@ -51,13 +52,28 @@ class WebClientConfiguration(
   )
 
   @Bean
-  @Suppress("MaxLineLength")
-  fun prisonerSearchWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
-    authorizedClientManager,
-    "hmpps-digital-canteen-api",
-    prisonerSearchBaseUri,
-    prisonerSearchTimeout,
-  )
+  fun prisonerSearchWebClient(
+    builder: WebClient.Builder,
+    authorizedClientManager: OAuth2AuthorizedClientManager
+  ): WebClient {
+
+    val loggingManager = OAuth2AuthorizedClientManager { clientRequest ->
+      val client = authorizedClientManager.authorize(clientRequest)
+
+      val token = client?.accessToken?.tokenValue
+      println("ACCESS TOKEN: $token")   // <-- log here
+
+      client
+    }
+
+    return builder.authorisedWebClient(
+      loggingManager,
+      "hmpps-digital-canteen-api",
+      prisonerSearchBaseUri,
+      prisonerSearchTimeout,
+    )
+  }
+
 
   @Bean
   @Suppress("MaxLineLength")
@@ -83,6 +99,10 @@ class WebClientConfiguration(
   @Bean
   @Suppress("MaxLineLength")
   fun openProductsFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
+
+
+  @Bean
+  fun opaWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl("http://localhost:8181").build()
 
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
