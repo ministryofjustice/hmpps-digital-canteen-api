@@ -1,7 +1,8 @@
 plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "10.4.0"
-  kotlin("plugin.spring") version "2.3.21"
-  id("dev.detekt") version "2.0.0-alpha.3"
+  kotlin("plugin.spring") version "2.4.0"
+  // id("dev.detekt") version "2.0.0-alpha.3 not compatible with kotlin("plugin.spring") version "2.4.0"
+  //id("dev.detekt") version "2.0.0-alpha.3"
 }
 
 dependencies {
