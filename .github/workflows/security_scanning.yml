@@ -1,6 +1,11 @@
 name: Security Scanning
 on: pull_request
 
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -32,9 +37,8 @@ jobs:
       - name: Run ktlint
         run: ./gradlew ktlintCheck
 
-# waiting for new version
-#      - name: Run detekt
-#        run: ./gradlew detekt
+      - name: Run detekt
+        run: ./gradlew detekt
 
       - name: Run tests
         run: ./gradlew test --no-daemon
