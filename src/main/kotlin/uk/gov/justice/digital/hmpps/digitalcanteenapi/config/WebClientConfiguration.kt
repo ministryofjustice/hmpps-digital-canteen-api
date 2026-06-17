@@ -35,6 +35,10 @@ class WebClientConfiguration(
   @param:Value("\${api.open-products-facts.base-url}") val openProductsFactsBaseUri: String,
   @param:Value("\${api.open-products-facts.timeout-ms:20s}") val openProductsFactsTimeout: Duration,
 
+  @param:Value("\${api.medusa.base-url}") val medusaBaseUri: String,
+  @param:Value("\${api.medusa.publishable-key}") val medusaPublishableKey: String,
+  @param:Value("\${api.medusa.timeout-ms:20s}") val medusaTimeout: Duration,
+
   private val builder: WebClient.Builder,
 ) {
   @Bean
@@ -75,6 +79,27 @@ class WebClientConfiguration(
     "hmpps-digital-canteen-api",
     prisonerIncentivesBaseUri,
     prisonerIncentivesTimeout,
+  )
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun medusaStoreWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    medusaBaseUri,
+    medusaTimeout,
+  ).mutate()
+    .defaultHeader("x-publishable-api-key", medusaPublishableKey)
+    .build()
+
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun medusaAdminWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    medusaBaseUri,
+    medusaTimeout,
   )
 
   @Bean

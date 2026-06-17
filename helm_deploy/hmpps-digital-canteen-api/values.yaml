@@ -53,6 +53,12 @@ generic-service:
     hmpps-digital-canteen-api-client-creds:
       CLIENT_ID: 'API_CLIENT_ID'
       CLIENT_SECRET: 'API_CLIENT_SECRET'
+    medusa-secrets:
+      JWT_SECRET: "jwt-secret"
+      COOKIE_SECRET: "cookie-secret"
+      ADMIN_EMAIL: "admin-email"
+      ADMIN_PASSWORD: "admin-password"
+      API_MEDUSA_PUBLISHABLE_KEY: "publishable-api-key"
 
   allowlist:
     groups:
