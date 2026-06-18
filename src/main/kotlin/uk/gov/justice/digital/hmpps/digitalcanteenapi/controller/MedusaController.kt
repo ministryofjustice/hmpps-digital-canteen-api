@@ -10,23 +10,19 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Me
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaService
 
 @RestController
+// to be replaced with new role once created
+@PreAuthorize("hasRole('ROLE_PRISONER_SEARCH')")
 @RequestMapping("/api")
 class MedusaController(
-  private val medusaService: MedusaService
+  private val medusaService: MedusaService,
 ) {
 
-  @PreAuthorize("permitAll()")
   @GetMapping("/test-request-to-api", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun testEndpoint(): Map<String, String> {
-    return mapOf("message" to "successful from API")
-  }
+  fun testEndpoint(): Map<String, String> = mapOf("message" to "successful from API")
 
-  @PreAuthorize("permitAll()")
   @GetMapping("/test-request-from-api-store", produces = [MediaType.APPLICATION_JSON_VALUE])
   fun testMedusaEndpointStore(): Mono<MedusaDto> = medusaService.testMedusaEndpointStore()
 
-  @PreAuthorize("permitAll()")
   @GetMapping("/test-request-from-api-admin", produces = [MediaType.APPLICATION_JSON_VALUE])
   fun testMedusaEndpointAdmin(): Mono<MedusaDto> = medusaService.testMedusaEndpointAdmin()
 }
-

@@ -6,7 +6,6 @@ import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaDto
 
-
 @Component
 class MedusaStoreClient(
   @Qualifier("medusaStoreWebClient") private val medusaResponse: WebClient,
@@ -17,5 +16,4 @@ class MedusaStoreClient(
     .uri("/store/test-request-from-api")
     .retrieve()
     .bodyToMono(MedusaDto::class.java)
-
 }

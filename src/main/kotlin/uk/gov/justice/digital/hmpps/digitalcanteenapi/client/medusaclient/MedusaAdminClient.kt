@@ -14,8 +14,6 @@ class MedusaAdminClient(
   @param:Value("\${admin-password}") private val adminPassword: String,
 ) {
 
-  // "/admin" endpoints require a bearer token, rather than x-publishable-api-key
-  // create token and assign to custom header, which is validated on medusa side
   private fun getAdminToken(): Mono<String> = webClient
     .post()
     .uri("/auth/user/emailpass")
@@ -29,7 +27,7 @@ class MedusaAdminClient(
       webClient
         .get()
         .uri("/admin/test-request-from-api")
-        .header("Medusa-Authorization", "Bearer $token")
+        .header("Authorization", "Bearer $token")
         .retrieve()
         .bodyToMono(MedusaDto::class.java)
     }

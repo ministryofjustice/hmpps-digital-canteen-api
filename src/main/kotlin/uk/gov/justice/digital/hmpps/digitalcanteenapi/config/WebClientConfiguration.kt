@@ -3,10 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.config
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.security.config.annotation.web.builders.HttpSecurity
-import org.springframework.security.config.annotation.web.invoke
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
-import org.springframework.security.web.SecurityFilterChain
 import org.springframework.web.reactive.function.client.WebClient
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 import uk.gov.justice.hmpps.kotlin.auth.healthWebClient
@@ -83,24 +80,11 @@ class WebClientConfiguration(
 
   @Bean
   @Suppress("MaxLineLength")
-  fun medusaStoreWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
-    authorizedClientManager,
-    "hmpps-digital-canteen-api",
-    medusaBaseUri,
-    medusaTimeout,
-  ).mutate()
-    .defaultHeader("x-publishable-api-key", medusaPublishableKey)
-    .build()
-
+  fun medusaStoreWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(medusaBaseUri).build()
 
   @Bean
   @Suppress("MaxLineLength")
-  fun medusaAdminWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
-    authorizedClientManager,
-    "hmpps-digital-canteen-api",
-    medusaBaseUri,
-    medusaTimeout,
-  )
+  fun medusaAdminWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(medusaBaseUri).build()
 
   @Bean
   fun openFoodFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
@@ -108,22 +92,4 @@ class WebClientConfiguration(
   @Bean
   @Suppress("MaxLineLength")
   fun openProductsFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
-
-  @Bean
-  fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
-    http {
-      csrf { disable() }
-      authorizeHttpRequests {
-        authorize("/api/product/**", permitAll)
-        authorize("/health/**", permitAll)
-        authorize("/info", permitAll)
-        authorize("/v3/api-docs/**", permitAll)
-        authorize("/swagger-ui/**", permitAll)
-        authorize("/swagger-ui.html", permitAll)
-        authorize(anyRequest, authenticated)
-      }
-      oauth2ResourceServer { jwt { } }
-    }
-    return http.build()
-  }
 }
