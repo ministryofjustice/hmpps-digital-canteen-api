@@ -1,6 +1,8 @@
 name: Cleanup PR images
 
 on:
+  pull_request:
+    types: [ closed ]
   schedule:
     - cron: '0 8 1 * *'
   workflow_dispatch:
@@ -9,14 +11,27 @@ permissions:
   packages: write
 
 jobs:
-  cleanup:
+  cleanup_closed_pr:
+    if: github.event_name == 'pull_request'
+    name: Cleanup docker image for PR after close
     runs-on: ubuntu-latest
     steps:
-      - name: Delete old PR images
-        uses: actions/delete-package-versions@v5
+      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f
         with:
-          package-name: 'hmpps-digital-canteen-medusa-service'
-          package-type: 'container'
-          min-versions-to-keep: 0
-          delete-only-pre-release-versions: false
-          ignore-versions: '^(?!pr-).*'
+          packages: 'hmpps-digital-canteen-api'
+          delete-tags: 'pr-${{ github.event.pull_request.number }}'
+          delete-orphaned-images: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  cleanup_stale_prs:
+    if: github.event_name != 'pull_request'
+    name: Cleanup stale PR images
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f
+        with:
+          packages: 'hmpps-digital-canteen-api'
+          delete-tags: 'pr-*'
+          older-than: '2 months'
+          delete-orphaned-images: true
+          token: ${{ secrets.GITHUB_TOKEN }}
