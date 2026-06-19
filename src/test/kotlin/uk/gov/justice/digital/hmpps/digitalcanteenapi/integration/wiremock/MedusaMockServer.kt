@@ -32,7 +32,7 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
   fun stubGetMedusaAdminTest(): StubMapping {
     stubGetAdminToken()
     return stubFor(
-      get("/admin/test-request-from-api")
+      get("/admin/request-from-api")
         .willReturn(
           aResponse()
             .withHeader("Content-Type", "application/json")
@@ -47,7 +47,7 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
   }
 
   fun stubGetMedusaStoreTest(): StubMapping = stubFor(
-    get("/store/test-request-from-api")
+    get("/store/request-from-api")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")

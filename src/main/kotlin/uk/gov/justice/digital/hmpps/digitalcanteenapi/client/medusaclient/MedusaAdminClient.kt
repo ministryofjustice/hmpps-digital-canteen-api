@@ -26,7 +26,7 @@ class MedusaAdminClient(
     .flatMap { token ->
       medusaAdminClient
         .get()
-        .uri("/admin/test-request-from-api")
+        .uri("/admin/request-from-api")
         .header("Authorization", "Bearer $token")
         .retrieve()
         .bodyToMono(MedusaDto::class.java)

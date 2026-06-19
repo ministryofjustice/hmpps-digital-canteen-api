@@ -13,7 +13,7 @@ class MedusaStoreClient(
 
   fun medusaStoreTest(): Mono<MedusaDto> = medusaStoreClient
     .get()
-    .uri("/store/test-request-from-api")
+    .uri("/store/request-from-api")
     .retrieve()
     .bodyToMono(MedusaDto::class.java)
 }
