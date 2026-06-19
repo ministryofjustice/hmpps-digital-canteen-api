@@ -9,12 +9,12 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Me
 
 @Component
 class MedusaAdminClient(
-  @Qualifier("medusaAdminWebClient") private val webClient: WebClient,
+  @Qualifier("medusaAdminWebClient") private val medusaAdminClient: WebClient,
   @param:Value("\${admin-email}") private val adminEmail: String,
   @param:Value("\${admin-password}") private val adminPassword: String,
 ) {
 
-  private fun getAdminToken(): Mono<String> = webClient
+  internal fun getAdminToken(): Mono<String> = medusaAdminClient
     .post()
     .uri("/auth/user/emailpass")
     .bodyValue(mapOf("email" to adminEmail, "password" to adminPassword))
@@ -24,7 +24,7 @@ class MedusaAdminClient(
 
   fun medusaAdminTest(): Mono<MedusaDto> = getAdminToken()
     .flatMap { token ->
-      webClient
+      medusaAdminClient
         .get()
         .uri("/admin/test-request-from-api")
         .header("Authorization", "Bearer $token")

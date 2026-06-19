@@ -80,7 +80,8 @@ class WebClientConfiguration(
 
   @Bean
   @Suppress("MaxLineLength")
-  fun medusaStoreWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(medusaBaseUri).build()
+  fun medusaStoreWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(medusaBaseUri)
+    .defaultHeader("x-publishable-api-key", medusaPublishableKey).build()
 
   @Bean
   @Suppress("MaxLineLength")

@@ -8,10 +8,10 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Me
 
 @Component
 class MedusaStoreClient(
-  @Qualifier("medusaStoreWebClient") private val medusaResponse: WebClient,
+  @Qualifier("medusaStoreWebClient") private val medusaStoreClient: WebClient,
 ) {
 
-  fun medusaStoreTest(): Mono<MedusaDto> = medusaResponse
+  fun medusaStoreTest(): Mono<MedusaDto> = medusaStoreClient
     .get()
     .uri("/store/test-request-from-api")
     .retrieve()

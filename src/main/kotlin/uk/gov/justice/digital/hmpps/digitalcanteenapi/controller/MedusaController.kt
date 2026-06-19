@@ -18,7 +18,7 @@ class MedusaController(
 ) {
 
   @GetMapping("/test-request-to-api", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun testEndpoint(): Map<String, String> = mapOf("message" to "successful from API")
+  fun testEndpointFromMedusa(): Map<String, String> = mapOf("message" to "successful from API")
 
   @GetMapping("/test-request-from-api-store", produces = [MediaType.APPLICATION_JSON_VALUE])
   fun testMedusaEndpointStore(): Mono<MedusaDto> = medusaService.testMedusaEndpointStore()
