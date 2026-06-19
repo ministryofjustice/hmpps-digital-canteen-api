@@ -3,9 +3,12 @@ name: Cleanup PR images
 on:
   pull_request:
     types: [ closed ]
-  schedule:
-    - cron: '0 8 1 * *'
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: PR number to clean up
+        required: true
+        type: string
 
 permissions:
   packages: write
