@@ -16,22 +16,23 @@ jobs:
     name: Cleanup docker image for PR after close
     runs-on: ubuntu-latest
     steps:
-      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f
-        with:
-          packages: 'hmpps-digital-canteen-api'
-          delete-tags: 'pr-${{ github.event.pull_request.number }}'
-          delete-orphaned-images: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-
-  cleanup_stale_prs:
-    if: github.event_name != 'pull_request'
-    name: Cleanup stale PR images
-    runs-on: ubuntu-latest
-    steps:
-      - uses: dataaxiom/ghcr-cleanup-action@d52806a0dc70b430571a37da1fde39733ffd640f
-        with:
-          packages: 'hmpps-digital-canteen-api'
-          delete-tags: 'pr-*'
-          older-than: '2 months'
-          delete-orphaned-images: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Delete image version for PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ORG: ministryofjustice
+          PKG: hmpps-digital-canteen-api
+          TAG: pr-${{ github.event.pull_request.number }}
+        run: |
+          ids=$(gh api --paginate \
+            "/orgs/$ORG/packages/container/$PKG/versions" \
+            --jq ".[] | select(.metadata.container.tags[]? == \"$TAG\") | .id")
+          
+          if [ -z "$ids" ]; then
+            echo "No version found tagged $TAG"
+            exit 0
+          fi
+          
+          for id in $ids; do
+            echo "Deleting version $id (tag: $TAG)"
+            gh api -X DELETE "/orgs/$ORG/packages/container/$PKG/versions/$id"
+          done
