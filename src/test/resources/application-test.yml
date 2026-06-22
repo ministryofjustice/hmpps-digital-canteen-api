@@ -22,6 +22,13 @@ api:
     base-url: http://localhost:8096
   prison-api:
     base-url: http://localhost:8098
+  medusa:
+    base-url: http://localhost:8097
+    publishable-key: test-pk
+    timeout-ms: 5s
+
+admin-email: test@test.com
+admin-password: test-password
 
 springdoc:
   api-docs:
