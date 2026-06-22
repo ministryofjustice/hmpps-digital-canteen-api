@@ -3,7 +3,12 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import org.mockito.kotlin.*
+import org.mockito.Mockito.mock
+import org.mockito.kotlin.any
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.eq
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
@@ -42,7 +47,7 @@ class PrisonFinanceServiceTest {
     verify(prisonFinanceClient).addHold(
       eq(prisonId),
       eq(offenderNo),
-      captor.capture()
+      captor.capture(),
     )
 
     val request = captor.firstValue
@@ -64,7 +69,7 @@ class PrisonFinanceServiceTest {
   fun `releaseHold builds request correctly and calls client`() {
     // Given
     val prisonId = PRISONER_ID
-    val offenderNo =PRISONER_NUMBER
+    val offenderNo = PRISONER_NUMBER
     val holdNumber = HOLD_NUMBER
 
     val expectedResponse = ResponseEntity.noContent().build<Void>()
@@ -81,7 +86,7 @@ class PrisonFinanceServiceTest {
       eq(prisonId),
       eq(offenderNo),
       eq(holdNumber),
-      captor.capture()
+      captor.capture(),
     )
 
     val request = captor.firstValue
@@ -98,7 +103,7 @@ class PrisonFinanceServiceTest {
   fun `releaseHoldCreateTransaction builds request correctly and calls client`() {
     // Given
     val prisonId = PRISONER_ID
-    val offenderNo =PRISONER_NUMBER
+    val offenderNo = PRISONER_NUMBER
     val holdNumber = HOLD_NUMBER
     val clientRequest = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
 
@@ -116,7 +121,7 @@ class PrisonFinanceServiceTest {
       eq(prisonId),
       eq(offenderNo),
       eq(holdNumber),
-      captor.capture()
+      captor.capture(),
     )
 
     val request = captor.firstValue

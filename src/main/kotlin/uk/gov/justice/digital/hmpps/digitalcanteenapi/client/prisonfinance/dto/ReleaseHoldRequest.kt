@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto
 
-data class ReleaseHoldRequest (
+data class ReleaseHoldRequest(
   val description: String,
   val clientTransactionId: String,
   val clientName: String,
@@ -22,5 +22,5 @@ data class ReleaseHoldCreateClientTransactionRequest(
 )
 
 data class ReleaseHoldCreateTransactionResponse(
-  val id: String
+  val id: String,
 )

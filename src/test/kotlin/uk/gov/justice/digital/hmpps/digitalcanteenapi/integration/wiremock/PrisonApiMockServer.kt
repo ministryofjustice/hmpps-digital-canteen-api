@@ -72,7 +72,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
           .withStatus(201)
           .withBody("")
           .withHeader("Content-Length", "0")
-          .withHeader("Connection", "close")
+          .withHeader("Connection", "close"),
       ),
   )
 

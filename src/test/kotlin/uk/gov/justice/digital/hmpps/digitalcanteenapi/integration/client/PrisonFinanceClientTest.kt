@@ -39,7 +39,7 @@ class PrisonFinanceClientTest {
       amount = 10.5,
       clientTransactionId = "trans1",
       clientName = PRISONER_NUMBER,
-      clientUniqueReference = "ref1"
+      clientUniqueReference = "ref1",
     )
 
     val result = client.addHold(PRISONER_ID, PRISONER_NUMBER, request)
@@ -56,7 +56,7 @@ class PrisonFinanceClientTest {
       amount = 1000.0,
       clientTransactionId = "trans1",
       clientName = PRISONER_NUMBER,
-      clientUniqueReference = "ref1"
+      clientUniqueReference = "ref1",
     )
 
     assertThatThrownBy {
@@ -72,7 +72,7 @@ class PrisonFinanceClientTest {
       description = "Remove HOLD",
       clientTransactionId = "trans2",
       clientName = PRISONER_NUMBER,
-      clientUniqueReference = "ref2"
+      clientUniqueReference = "ref2",
     )
 
     val result = client.releaseHold(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
@@ -87,7 +87,7 @@ class PrisonFinanceClientTest {
       description = "Remove HOLD",
       clientTransactionId = "trans2",
       clientName = PRISONER_NUMBER,
-      clientUniqueReference = "ref2"
+      clientUniqueReference = "ref2",
     )
 
     assertThatThrownBy {
@@ -106,7 +106,7 @@ class PrisonFinanceClientTest {
       clientTransactionId = "trans3",
       clientName = PRISONER_NUMBER,
       removeClientUniqueReference = "ref-rem",
-      createClientUniqueReference = "ref-cre"
+      createClientUniqueReference = "ref-cre",
     )
 
     val result = client.releaseHoleCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
@@ -117,7 +117,13 @@ class PrisonFinanceClientTest {
 
   @Test
   fun `releaseHoleCreateTransaction - throws UpstreamException on failure`() {
-    server.stubRelaseHoldAndCreateTransactionFailure(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, 500, "Internal Server Error")
+    server.stubRelaseHoldAndCreateTransactionFailure(
+      PRISONER_ID,
+      PRISONER_NUMBER,
+      HOLD_NUMBER,
+      500,
+      "Internal Server Error",
+    )
     val request = ReleaseHoldCreateTransactionRequest(
       type = "PHONE",
       removeDescription = "Remove HOLD",
@@ -125,7 +131,7 @@ class PrisonFinanceClientTest {
       clientTransactionId = "trans3",
       clientName = PRISONER_NUMBER,
       removeClientUniqueReference = "ref-rem",
-      createClientUniqueReference = "ref-cre"
+      createClientUniqueReference = "ref-cre",
     )
 
     assertThatThrownBy {

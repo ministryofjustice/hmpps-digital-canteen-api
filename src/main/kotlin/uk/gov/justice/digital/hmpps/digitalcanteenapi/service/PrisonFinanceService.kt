@@ -10,14 +10,14 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.R
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
-import java.util.*
 import kotlin.String
+
 /**
  * Service responsible for managing prison finance operations.
  */
 @Service
 class PrisonFinanceService(
-    private val prisonFinanceClient: PrisonFinanceClient,
+  private val prisonFinanceClient: PrisonFinanceClient,
 ) {
 
   companion object {

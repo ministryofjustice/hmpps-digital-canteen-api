@@ -11,7 +11,7 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
   @Test
   fun `addHold - successfully adds a hold`() {
     val request = AddHoldClientRequest(
-        amount = 1634,
+      amount = 1634,
     )
 
     HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
@@ -30,7 +30,7 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
   @Test
   fun `addHold - returns 400 when insufficient balance`() {
     val request = AddHoldClientRequest(
-        amount = 1000000,
+      amount = 1000000,
     )
     val errorMessage = "Insufficient funds"
 
@@ -53,10 +53,11 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
     PrisonApiExtension.Companion.prisonApi.stubReleaseHold(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
-          PRISONER_ID,
-          OFFENDER_ID,
-          HOLD_NUMBER
+      .uri(
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
+        PRISONER_ID,
+        OFFENDER_ID,
+        HOLD_NUMBER,
       )
       .headers(setAuthorisation())
       .exchange()
@@ -69,15 +70,19 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
     val errorMessage = "Hold not found"
     HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
     PrisonApiExtension.Companion.prisonApi.stubReleaseHoldFailure(
-        PRISONER_ID,
-        OFFENDER_ID,
-        HOLD_NUMBER, 400, errorMessage)
+      PRISONER_ID,
+      OFFENDER_ID,
+      HOLD_NUMBER,
+      400,
+      errorMessage,
+    )
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
-          PRISONER_ID,
-          OFFENDER_ID,
-          HOLD_NUMBER
+      .uri(
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
+        PRISONER_ID,
+        OFFENDER_ID,
+        HOLD_NUMBER,
       )
       .headers(setAuthorisation())
       .exchange()
@@ -93,10 +98,11 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
     PrisonApiExtension.Companion.prisonApi.stubRelaseHoldAndCreateTransaction(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
-          PRISONER_ID,
-          OFFENDER_ID,
-          HOLD_NUMBER
+      .uri(
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
+        PRISONER_ID,
+        OFFENDER_ID,
+        HOLD_NUMBER,
       )
       .headers(setAuthorisation())
       .bodyValue(request)
@@ -112,15 +118,19 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
     val errorMessage = "Transaction creation failed"
     HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
     PrisonApiExtension.Companion.prisonApi.stubRelaseHoldAndCreateTransactionFailure(
-        PRISONER_ID,
-        OFFENDER_ID,
-        HOLD_NUMBER, 400, errorMessage)
+      PRISONER_ID,
+      OFFENDER_ID,
+      HOLD_NUMBER,
+      400,
+      errorMessage,
+    )
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
-          PRISONER_ID,
-          OFFENDER_ID,
-          HOLD_NUMBER
+      .uri(
+        "/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
+        PRISONER_ID,
+        OFFENDER_ID,
+        HOLD_NUMBER,
       )
       .headers(setAuthorisation())
       .bodyValue(request)
