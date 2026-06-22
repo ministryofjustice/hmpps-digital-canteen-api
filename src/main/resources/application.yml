@@ -75,3 +75,8 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+api:
+  prison-api:
+    base-url: ${API_PRISON_API_BASE_URL}
+    timeout-ms: 20s

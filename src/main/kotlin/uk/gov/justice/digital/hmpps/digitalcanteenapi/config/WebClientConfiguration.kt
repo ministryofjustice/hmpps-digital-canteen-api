@@ -35,6 +35,9 @@ class WebClientConfiguration(
   @param:Value("\${api.open-products-facts.base-url}") val openProductsFactsBaseUri: String,
   @param:Value("\${api.open-products-facts.timeout-ms:20s}") val openProductsFactsTimeout: Duration,
 
+  @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
+  @param:Value("\${api.prison-api.timeout-ms:20s}") val prisonApiTimeout: Duration,
+
   private val builder: WebClient.Builder,
 ) {
   @Bean
@@ -83,6 +86,15 @@ class WebClientConfiguration(
   @Bean
   @Suppress("MaxLineLength")
   fun openProductsFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openProductsFactsBaseUri).build()
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun prisonApiWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    prisonApiBaseUri,
+    prisonApiTimeout,
+  )
 
   @Bean
   fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
