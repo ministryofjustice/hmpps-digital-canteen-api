@@ -10,8 +10,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Me
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaService
 
 @RestController
-// to be replaced with new role once created
-@PreAuthorize("hasRole('ROLE_PRISONER_SEARCH')")
+// Potentially to be replaced with new role once created
+@PreAuthorize("permitAll()")
 @RequestMapping("/api")
 class MedusaController(
   private val medusaService: MedusaService,
