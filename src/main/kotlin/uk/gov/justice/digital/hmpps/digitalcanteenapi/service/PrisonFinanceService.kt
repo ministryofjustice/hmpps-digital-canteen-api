@@ -19,10 +19,14 @@ import kotlin.String
 class PrisonFinanceService(
     private val prisonFinanceClient: PrisonFinanceClient,
 ) {
-    private val HOLD_DESCRIPTION = "HOLD"
-    private val REMOVE_HOLD_DESCRIPTION = "Remove HOLD"
-    private val CLIENT_REFERENCE_PREFIX = "CLIENT-"
-    private val CLIENT_TRANSACTION_ID_LENGTH = 12
+
+  companion object {
+    const val HOLD_DESCRIPTION = "HOLD"
+    const val REMOVE_HOLD_DESCRIPTION = "Remove HOLD"
+    const val CLIENT_REFERENCE_PREFIX = "CLIENT-"
+    const val CLIENT_TRANSACTION_ID_LENGTH = 12
+  }
+
   /**
    * Adds a hold to the prisoner.
    */
@@ -36,7 +40,6 @@ class PrisonFinanceService(
       clientUniqueReference = clientReference.toClientUniqueReference(),
     )
 
-    System.out.println("Request: $request")
     return prisonFinanceClient.addHold(prisonId, offenderNo, request)
   }
 
@@ -51,8 +54,6 @@ class PrisonFinanceService(
       clientName = offenderNo,
       clientUniqueReference = clientReference.toClientUniqueReference(),
     )
-
-    System.out.println("Request: $request")
 
     return prisonFinanceClient.releaseHold(prisonId, offenderNo, holdNumber, request)
   }

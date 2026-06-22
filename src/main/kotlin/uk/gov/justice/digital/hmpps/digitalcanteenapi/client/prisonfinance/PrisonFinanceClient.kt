@@ -22,28 +22,22 @@ class PrisonFinanceClient(
 ) {
   val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
 
-  fun addHold(
+ fun addHold(
     prisonId: String,
     offenderNo: String,
     request: AddHoldRequest
   ): AddHoldResponse {
     return try {
-      val rawResponse = webClient.post()
-        .uri(
-          "/api/finance-holds/prison/{prisonId}/offenders/{offenderNo}/add-hold",
-          prisonId,
-          offenderNo
-        )
+      webClient.post()
+        .uri("/api/finance-holds/prison/{prisonId}/offenders/{offenderNo}/add-hold", prisonId, offenderNo)
         .bodyValue(request)
         .retrieve()
-        .bodyToMono(String::class.java)
-        .block()
-      objectMapper.readValue(rawResponse, AddHoldResponse::class.java)
-
+        .bodyToMono(AddHoldResponse::class.java)
+        .block()!!
     } catch (ex: WebClientResponseException) {
-      val errorResponse = handleError(ex)
-      logger.error("AddHold request failed for offenderNo: $offenderNo", errorResponse)
-      throw UpstreamException(errorResponse.userMessage ?: "AddHold request failed")
+      val error = handleError(ex)
+      logger.error("AddHold request failed for offenderNo: $offenderNo", error)
+      throw UpstreamException(error.userMessage ?: "AddHold request failed")
     }
   }
 
@@ -66,7 +60,7 @@ class PrisonFinanceClient(
         .bodyValue(request)
         .retrieve()
         .toBodilessEntity()
-        .block() ?: ResponseEntity.status(201).build()
+        .block()!!
 
     } catch (ex: WebClientResponseException) {
       val errorResponse = handleError(ex)
@@ -83,7 +77,7 @@ class PrisonFinanceClient(
   ): ReleaseHoldCreateTransactionResponse {
 
     return try {
-      val rawResponse = webClient.post()
+       webClient.post()
         .uri(
           "/api/finance-holds/prison/{prisonId}/offenders/{offenderNo}/release-hold-transaction/{holdNumber}",
           prisonId,
@@ -92,9 +86,8 @@ class PrisonFinanceClient(
         )
         .bodyValue(request)
         .retrieve()
-        .bodyToMono(String::class.java)
-        .block()
-      objectMapper.readValue(rawResponse, ReleaseHoldCreateTransactionResponse::class.java)
+        .bodyToMono(ReleaseHoldCreateTransactionResponse::class.java)
+        .block()!!
     } catch (ex: WebClientResponseException) {
       val errorResponse = handleError(ex)
       logger.error("ReleaseHoldCreateTransaction request failed for offenderNo: $offenderNo", errorResponse)

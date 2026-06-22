@@ -3,19 +3,19 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 import org.junit.jupiter.api.Test
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.HmppsAuthApiExtension.Companion.hmppsAuth
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonApiExtension.Companion.prisonApi
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.HmppsAuthApiExtension
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonApiExtension
 
-class PrisonFinanceControllerIntegrationTest : IntegrationTestBase() {
+class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `addHold - successfully adds a hold`() {
     val request = AddHoldClientRequest(
-      amount = 1634,
+        amount = 1634,
     )
 
-    hmppsAuth.stubGrantToken()
-    prisonApi.stubAddHold(PRISONER_ID, OFFENDER_ID)
+    HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
+    PrisonApiExtension.Companion.prisonApi.stubAddHold(PRISONER_ID, OFFENDER_ID)
 
     webTestClient.post()
       .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold", PRISONER_ID, OFFENDER_ID)
@@ -30,12 +30,12 @@ class PrisonFinanceControllerIntegrationTest : IntegrationTestBase() {
   @Test
   fun `addHold - returns 400 when insufficient balance`() {
     val request = AddHoldClientRequest(
-      amount = 1000000,
+        amount = 1000000,
     )
     val errorMessage = "Insufficient funds"
 
-    hmppsAuth.stubGrantToken()
-    prisonApi.stubAddHoldFailure(PRISONER_ID, OFFENDER_ID, 400, errorMessage)
+    HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
+    PrisonApiExtension.Companion.prisonApi.stubAddHoldFailure(PRISONER_ID, OFFENDER_ID, 400, errorMessage)
 
     webTestClient.post()
       .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold", PRISONER_ID, OFFENDER_ID)
@@ -49,11 +49,15 @@ class PrisonFinanceControllerIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `releaseHold - successfully releases a hold`() {
-    hmppsAuth.stubGrantToken()
-    prisonApi.stubReleaseHold(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
+    HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
+    PrisonApiExtension.Companion.prisonApi.stubReleaseHold(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}", PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
+      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
+          PRISONER_ID,
+          OFFENDER_ID,
+          HOLD_NUMBER
+      )
       .headers(setAuthorisation())
       .exchange()
       .expectStatus().isCreated
@@ -63,11 +67,18 @@ class PrisonFinanceControllerIntegrationTest : IntegrationTestBase() {
   @Test
   fun `releaseHold - returns 400 when release fails`() {
     val errorMessage = "Hold not found"
-    hmppsAuth.stubGrantToken()
-    prisonApi.stubReleaseHoldFailure(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER, 400, errorMessage)
+    HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
+    PrisonApiExtension.Companion.prisonApi.stubReleaseHoldFailure(
+        PRISONER_ID,
+        OFFENDER_ID,
+        HOLD_NUMBER, 400, errorMessage)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}", PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
+      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}",
+          PRISONER_ID,
+          OFFENDER_ID,
+          HOLD_NUMBER
+      )
       .headers(setAuthorisation())
       .exchange()
       .expectStatus().isBadRequest
@@ -78,11 +89,15 @@ class PrisonFinanceControllerIntegrationTest : IntegrationTestBase() {
   @Test
   fun `releaseHoldAndCreateTransaction - successfully releases a hold and creates a transaction`() {
     val request = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
-    hmppsAuth.stubGrantToken()
-    prisonApi.stubRelaseHoldAndCreateTransaction(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
+    HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
+    PrisonApiExtension.Companion.prisonApi.stubRelaseHoldAndCreateTransaction(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}", PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
+      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
+          PRISONER_ID,
+          OFFENDER_ID,
+          HOLD_NUMBER
+      )
       .headers(setAuthorisation())
       .bodyValue(request)
       .exchange()
@@ -95,11 +110,18 @@ class PrisonFinanceControllerIntegrationTest : IntegrationTestBase() {
   fun `releaseHoldAndCreateTransaction - returns 400 when request fails`() {
     val request = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
     val errorMessage = "Transaction creation failed"
-    hmppsAuth.stubGrantToken()
-    prisonApi.stubRelaseHoldAndCreateTransactionFailure(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER, 400, errorMessage)
+    HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
+    PrisonApiExtension.Companion.prisonApi.stubRelaseHoldAndCreateTransactionFailure(
+        PRISONER_ID,
+        OFFENDER_ID,
+        HOLD_NUMBER, 400, errorMessage)
 
     webTestClient.post()
-      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}", PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
+      .uri("/api/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}",
+          PRISONER_ID,
+          OFFENDER_ID,
+          HOLD_NUMBER
+      )
       .headers(setAuthorisation())
       .bodyValue(request)
       .exchange()
