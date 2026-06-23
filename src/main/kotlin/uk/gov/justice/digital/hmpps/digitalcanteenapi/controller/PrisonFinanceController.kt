@@ -32,6 +32,7 @@ class PrisonFinanceController(
     @PathVariable holdNumber: Number,
   ): ResponseEntity<Void> = prisonFinanceService.releaseHold(prisonId, offenderNo, holdNumber)
 
+  @Suppress("MaxLineLength")
   @PostMapping("/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}")
   fun releaseHoldAndCreateTransaction(
     @PathVariable prisonId: String,

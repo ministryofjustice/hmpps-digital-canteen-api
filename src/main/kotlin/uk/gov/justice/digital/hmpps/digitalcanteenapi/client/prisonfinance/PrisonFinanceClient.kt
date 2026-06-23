@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import tools.jackson.core.JacksonException
 import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
@@ -97,7 +98,7 @@ class PrisonFinanceClient(
 
   private fun handleError(ex: WebClientResponseException): ErrorResponse = try {
     objectMapper.readValue(ex.responseBodyAsString, ErrorResponse::class.java)
-  } catch (parseException: Exception) {
+  } catch (parseException: JacksonException) {
     logger.error("Failed to parse error response body for status: ${ex.statusCode}", parseException)
     ErrorResponse(
       status = ex.statusCode.value(),

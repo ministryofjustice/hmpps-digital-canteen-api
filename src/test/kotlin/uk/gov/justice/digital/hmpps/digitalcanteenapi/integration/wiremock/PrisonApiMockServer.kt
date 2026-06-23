@@ -76,6 +76,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
+  @Suppress("MaxLineLength")
   fun stubReleaseHoldFailure(prisonId: String, offenderNo: String, holdNumber: Number, status: Int, userMessage: String): StubMapping = stubFor(
     post(urlEqualTo("/api/finance-holds/prison/$prisonId/offenders/$offenderNo/release-hold/$holdNumber"))
       .willReturn(
@@ -91,6 +92,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
+  @Suppress("MaxLineLength")
   fun stubRelaseHoldAndCreateTransaction(prisonId: String, offenderNo: String, holdNumber: Number): StubMapping = stubFor(
     post(urlEqualTo("/api/finance-holds/prison/$prisonId/offenders/$offenderNo/release-hold-transaction/$holdNumber"))
       .willReturn(
@@ -105,6 +107,7 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
+  @Suppress("MaxLineLength")
   fun stubRelaseHoldAndCreateTransactionFailure(prisonId: String, offenderNo: String, holdNumber: Number, status: Int, userMessage: String): StubMapping = stubFor(
     post(urlEqualTo("/api/finance-holds/prison/$prisonId/offenders/$offenderNo/release-hold-transaction/$holdNumber"))
       .willReturn(
