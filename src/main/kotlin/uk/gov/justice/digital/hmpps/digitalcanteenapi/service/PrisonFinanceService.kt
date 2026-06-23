@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.R
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
+import java.util.UUID
 import kotlin.String
 
 /**
