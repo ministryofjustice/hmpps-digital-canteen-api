@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 
 import org.springframework.http.ResponseEntity
+import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -14,6 +15,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonFinanceServi
 
 @RestController
 @RequestMapping("/api/finance")
+@PreAuthorize("permitAll()")
 class PrisonFinanceController(
   private val prisonFinanceService: PrisonFinanceService,
 ) {
