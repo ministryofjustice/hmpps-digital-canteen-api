@@ -48,6 +48,11 @@ class DigitalCanteenApiExceptionHandler {
       ),
     ).also { log.debug("Forbidden (403) returned: {}", e.message) }
 
+  @ExceptionHandler(UpstreamException::class)
+  fun handleUpstreamException(ex: UpstreamException): ResponseEntity<Map<String, String?>> = ResponseEntity
+    .badRequest()
+    .body(mapOf("message" to ex.message))
+
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(INTERNAL_SERVER_ERROR)
@@ -63,3 +68,5 @@ class DigitalCanteenApiExceptionHandler {
     private val log = LoggerFactory.getLogger(this::class.java)
   }
 }
+
+class UpstreamException(message: String) : RuntimeException(message)

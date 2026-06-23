@@ -20,3 +20,6 @@ api:
   open-products-facts:
     base-url: "https://world.openproductsfacts.org"
     timeout-ms: 20s
+  prison-api:
+    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
+    timeout-ms: 20s
