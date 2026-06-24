@@ -52,7 +52,7 @@ class ProductEnrichmentInfoService(
       product = product.copy(
         ingredientsAnalysisTags = product.ingredientsAnalysisTags.cleanTags(),
         packagingTags = product.packagingTags.cleanTags(),
-        categoriesTags = product.categoriesTags.cleanTags(),
+        //categoriesTags = product.categoriesTags.cleanTags(),
         allergens = product.allergens.cleanAllergens(),
       ),
     )
