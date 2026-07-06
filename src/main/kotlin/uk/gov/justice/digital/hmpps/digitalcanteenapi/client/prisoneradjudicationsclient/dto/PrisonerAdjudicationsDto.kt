@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto
 
 import java.time.LocalDate
 

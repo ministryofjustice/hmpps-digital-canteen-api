@@ -7,10 +7,12 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
+import reactor.core.publisher.Mono
 import tools.jackson.core.JacksonException
 import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
@@ -94,6 +96,19 @@ class PrisonFinanceClient(
       logger.error("ReleaseHoldCreateTransaction request failed for offenderNo: $offenderNo", errorResponse)
       throw UpstreamException(errorResponse.userMessage ?: "ReleaseHoldCreateTransaction request failed")
     }
+  }
+
+  @Suppress("ktlint:standard:function-expression-body")
+  fun getPrisonerBalance(bookingId: String): Mono<BalanceDto> {
+    return webClient.get()
+      .uri("/api/bookings/{bookingId}/balances", bookingId)
+      .retrieve()
+      .bodyToMono(BalanceDto::class.java)
+      .onErrorMap(WebClientResponseException::class.java) { ex ->
+        val errorResponse = handleError(ex)
+        logger.error("GET Balance request failed for bookingId: $bookingId", errorResponse)
+        UpstreamException(errorResponse.userMessage ?: "getPrisonerBalance request failed")
+      }
   }
 
   private fun handleError(ex: WebClientResponseException): ErrorResponse = try {

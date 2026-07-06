@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerIncentivesClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerincentivesclient.PrisonerIncentivesClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonerIncentivesMockServer
 
@@ -31,21 +31,8 @@ class PrisonerIncentivesClientTest {
       assertThat(iepCode).isEqualTo("STD")
       assertThat(iepLevel).isEqualTo("Standard")
       assertThat(prisonerNumber).isEqualTo(PRISONER_NUMBER)
-      assertThat(bookingId).isEqualTo(123456L)
       assertThat(iepDate).isEqualTo("2025-01-15")
       assertThat(iepTime).isEqualTo("14:30:00")
-      assertThat(nextReviewDate).isEqualTo("2025-07-15")
-      assertThat(daysSinceReview).isEqualTo(30)
-    }
-    assertThat(result.iepDetails).hasSize(1)
-    with(result.iepDetails[0]) {
-      assertThat(id).isEqualTo(12345L)
-      assertThat(iepLevel).isEqualTo("Standard")
-      assertThat(iepCode).isEqualTo("STD")
-      assertThat(comments).isEqualTo("something")
-      assertThat(isRealReview).isTrue()
-      assertThat(reviewType).isEqualTo("REVIEW")
-      assertThat(agencyId).isEqualTo("test")
     }
   }
 

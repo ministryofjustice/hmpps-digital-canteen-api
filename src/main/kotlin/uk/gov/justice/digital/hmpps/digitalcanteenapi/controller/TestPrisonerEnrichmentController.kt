@@ -5,16 +5,16 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonerEnrichmentService
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhonePrisonerEnrichmentService
 
 @RestController
 @RequestMapping("/api")
 class TestPrisonerEnrichmentController(
-  private val prisonerEnrichmentService: PrisonerEnrichmentService,
+  private val pinPhonePrisonerEnrichmentService: PinPhonePrisonerEnrichmentService,
 ) {
 
   @PreAuthorize("permitAll()")
   @GetMapping("/prisoner-enrichment/{prisonerNumber}")
   @Suppress("MaxLineLength")
-  fun testEndpoint6(@PathVariable prisonerNumber: String) = prisonerEnrichmentService.getEnrichedPrisoner(prisonerNumber)
+  fun testEndpoint6(@PathVariable prisonerNumber: String) = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(prisonerNumber)
 }
