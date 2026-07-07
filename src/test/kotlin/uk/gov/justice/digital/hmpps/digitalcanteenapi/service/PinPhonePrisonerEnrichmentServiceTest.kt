@@ -13,10 +13,9 @@ import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerincentivesclient.PrisonerIncentivesClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PrisonerEnrichmentTestFixture
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PinPhonePrisonerEnrichmentTestFixture
 
 @ExtendWith(MockitoExtension::class)
 class PinPhonePrisonerEnrichmentServiceTest {
@@ -26,9 +25,6 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Mock
   lateinit var prisonerAdjudicationsClient: PrisonerAdjudicationsClient
-
-  @Mock
-  lateinit var prisonerIncentivesClient: PrisonerIncentivesClient
 
   @Mock
   lateinit var btPinPhoneClient: BtPinPhoneClient
@@ -43,7 +39,6 @@ class PinPhonePrisonerEnrichmentServiceTest {
     service = PinPhonePrisonerEnrichmentService(
       prisonerSearchClient,
       prisonerAdjudicationsClient,
-      prisonerIncentivesClient,
       btPinPhoneClient,
       prisonFinanceClient,
     )
@@ -51,31 +46,30 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns fully enriched prisoner and has adjudications`() {
-    val prisoner = PrisonerEnrichmentTestFixture.prisonerSearchDto()
-    val incentives = PrisonerEnrichmentTestFixture.prisonerIncentivesDto()
-    val adjudications = PrisonerEnrichmentTestFixture.activePunishments()
-    val prisonerBalance = PrisonerEnrichmentTestFixture.balanceDto()
-    val btPinPhoneBalance = PrisonerEnrichmentTestFixture.btPinPhoneDto()
+    val prisoner = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchDto()
+    val prisonerResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchResponseDto()
+    val incentivesResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchIncentiveResponseDto()
+    val adjudications = PinPhonePrisonerEnrichmentTestFixture.activePunishments()
+    val prisonerBalance = PinPhonePrisonerEnrichmentTestFixture.balanceDto()
+    val btPinPhoneBalance = PinPhonePrisonerEnrichmentTestFixture.btPinPhoneDto()
 
-    whenever(prisonerSearchClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(prisoner))
-    whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-      .thenReturn(Mono.just(incentives))
-    whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(btPinPhoneBalance))
-    whenever(prisonFinanceClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.BOOKING_ID))
+    whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.just(prisonerBalance))
-    whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PrisonerEnrichmentTestFixture.BOOKING_ID))
+    whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.just(adjudications))
 
-    val result = service.getEnrichedPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER)
+    val result = service.getEnrichedPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER)
 
     StepVerifier.create(result)
       .assertNext { enriched ->
         // prisoner search
-        Assertions.assertThat(enriched.prisoner).isEqualTo(prisoner)
+        Assertions.assertThat(enriched.prisoner).isEqualTo(prisonerResponse)
         // incentives
-        Assertions.assertThat(enriched.incentives).isEqualTo(incentives)
+        Assertions.assertThat(enriched.incentives).isEqualTo(incentivesResponse)
         // bt pin phone balance
         Assertions.assertThat(enriched.prisonerBtBalance).isEqualTo(btPinPhoneBalance)
         // prisoner finance balance
@@ -90,30 +84,29 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns fully enriched prisoner does not have adjudications`() {
-    val prisoner = PrisonerEnrichmentTestFixture.prisonerSearchDto()
-    val incentives = PrisonerEnrichmentTestFixture.prisonerIncentivesDto()
-    val prisonerBalance = PrisonerEnrichmentTestFixture.balanceDto()
-    val btPinPhoneBalance = PrisonerEnrichmentTestFixture.btPinPhoneDto()
+    val prisoner = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchDto()
+    val prisonerResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchResponseDto()
+    val incentivesResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchIncentiveResponseDto()
+    val prisonerBalance = PinPhonePrisonerEnrichmentTestFixture.balanceDto()
+    val btPinPhoneBalance = PinPhonePrisonerEnrichmentTestFixture.btPinPhoneDto()
 
-    whenever(prisonerSearchClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(prisoner))
-    whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-      .thenReturn(Mono.just(incentives))
-    whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PrisonerEnrichmentTestFixture.BOOKING_ID))
+    whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.empty())
-    whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(btPinPhoneBalance))
-    whenever(prisonFinanceClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.BOOKING_ID))
+    whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.just(prisonerBalance))
 
-    val result = service.getEnrichedPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER)
+    val result = service.getEnrichedPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER)
 
     StepVerifier.create(result)
       .assertNext { enriched ->
         // prisoner search
-        Assertions.assertThat(enriched.prisoner).isEqualTo(prisoner)
+        Assertions.assertThat(enriched.prisoner).isEqualTo(prisonerResponse)
         // incentives
-        Assertions.assertThat(enriched.incentives).isEqualTo(incentives)
+        Assertions.assertThat(enriched.incentives).isEqualTo(incentivesResponse)
         // bt pin phone balance
         Assertions.assertThat(enriched.prisonerBtBalance).isEqualTo(btPinPhoneBalance)
         // prisoner finance balance
@@ -127,25 +120,24 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns partial enriched prisoner can't find booking`() {
-    val prisoner = PrisonerEnrichmentTestFixture.prisonerSearchDto().copy(bookingId = null)
-    val incentives = PrisonerEnrichmentTestFixture.prisonerIncentivesDto()
-    val btPinPhoneBalance = PrisonerEnrichmentTestFixture.btPinPhoneDto()
+    val prisoner = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchDto()
+    val prisonerResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchResponseDto()
+    val incentivesResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchIncentiveResponseDto()
+    val btPinPhoneBalance = PinPhonePrisonerEnrichmentTestFixture.btPinPhoneDto()
 
-    whenever(prisonerSearchClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(prisoner))
-    whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-      .thenReturn(Mono.just(incentives))
-    whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(btPinPhoneBalance))
 
-    val result = service.getEnrichedPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER)
+    val result = service.getEnrichedPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER)
 
     StepVerifier.create(result)
       .assertNext { enriched ->
         // prisoner search
-        Assertions.assertThat(enriched.prisoner).isEqualTo(prisoner)
+        Assertions.assertThat(enriched.prisoner).isEqualTo(prisonerResponse)
         // incentives
-        Assertions.assertThat(enriched.incentives).isEqualTo(incentives)
+        Assertions.assertThat(enriched.incentives).isEqualTo(incentivesResponse)
         // bt pin phone balance
         Assertions.assertThat(enriched.prisonerBtBalance).isEqualTo(btPinPhoneBalance)
         // prisoner finance balance
@@ -160,77 +152,57 @@ class PinPhonePrisonerEnrichmentServiceTest {
   @Suppress("LongMethod")
   @ParameterizedTest
   @CsvSource(
-    "incentives-failure",
     "adjudications-failure",
     "bt-failure",
     "finance-failure",
   )
   fun `getEnrichedPrisoner - handles service errors`(failingService: String) {
-    val prisoner = PrisonerEnrichmentTestFixture.prisonerSearchDto()
-    val incentives = PrisonerEnrichmentTestFixture.prisonerIncentivesDto()
-    val prisonerBalance = PrisonerEnrichmentTestFixture.balanceDto()
-    val btPinPhoneBalance = PrisonerEnrichmentTestFixture.btPinPhoneDto()
+    val prisoner = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchDto()
+    val prisonerResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchResponseDto()
+    val incentivesResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchIncentiveResponseDto()
+    val prisonerBalance = PinPhonePrisonerEnrichmentTestFixture.balanceDto()
+    val btPinPhoneBalance = PinPhonePrisonerEnrichmentTestFixture.btPinPhoneDto()
 
-    whenever(prisonerSearchClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(prisoner))
 
     when (failingService) {
-      "incentives-failure" -> {
-        whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-          .thenReturn(Mono.error(RuntimeException("Service unavailable")))
-        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PrisonerEnrichmentTestFixture.BOOKING_ID))
-          .thenReturn(Mono.empty())
-        whenever(prisonFinanceClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.BOOKING_ID))
-          .thenReturn(Mono.just(prisonerBalance))
-        whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-          .thenReturn(Mono.just(btPinPhoneBalance))
-      }
-
       "adjudications-failure" -> {
-        whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-          .thenReturn(Mono.just(incentives))
-        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PrisonerEnrichmentTestFixture.BOOKING_ID))
+        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
-        whenever(prisonFinanceClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.BOOKING_ID))
+        whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.just(prisonerBalance))
-        whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+        whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
           .thenReturn(Mono.just(btPinPhoneBalance))
       }
 
       "bt-failure" -> {
-        whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-          .thenReturn(Mono.just(incentives))
-        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PrisonerEnrichmentTestFixture.BOOKING_ID))
+        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
-        whenever(prisonFinanceClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.BOOKING_ID))
+        whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.just(prisonerBalance))
-        whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+        whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
       }
 
       "finance-failure" -> {
-        whenever(prisonerIncentivesClient.getPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
-          .thenReturn(Mono.just(incentives))
-        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PrisonerEnrichmentTestFixture.BOOKING_ID))
+        whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.empty())
-        whenever(prisonFinanceClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.BOOKING_ID))
+        whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
-        whenever(btPinPhoneClient.getPrisonerBalance(PrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+        whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
           .thenReturn(Mono.just(btPinPhoneBalance))
       }
     }
 
-    val result = service.getEnrichedPrisoner(PrisonerEnrichmentTestFixture.PRISONER_NUMBER)
+    val result = service.getEnrichedPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER)
 
     StepVerifier.create(result)
       .assertNext { enriched ->
-        Assertions.assertThat(enriched.prisoner).isEqualTo(prisoner)
+        Assertions.assertThat(enriched.prisoner).isEqualTo(prisonerResponse)
+        Assertions.assertThat(enriched.incentives).isEqualTo(incentivesResponse)
 
         when (failingService) {
-          "incentives-failure" -> {
-            Assertions.assertThat(enriched.incentives).isNull()
-          }
-
           "adjudications-failure" -> {
             Assertions.assertThat(enriched.hasActiveAdjudications).isFalse()
           }

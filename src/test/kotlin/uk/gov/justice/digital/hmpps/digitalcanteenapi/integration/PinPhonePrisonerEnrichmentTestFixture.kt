@@ -2,13 +2,17 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.Punishment
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerincentivesclient.dto.PrisonerIncentivesDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhonePrisonerEnrichmentService.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhonePrisonerEnrichmentService.PrisonerSearchResponseDto
 import java.time.LocalDate
+import java.time.LocalDateTime
 import kotlin.String
 
-object PrisonerEnrichmentTestFixture {
+object PinPhonePrisonerEnrichmentTestFixture {
   const val PRISONER_NUMBER = "A1234BC"
   const val BOOKING_ID = "A1234BC"
 
@@ -21,15 +25,32 @@ object PrisonerEnrichmentTestFixture {
     dateOfBirth = LocalDate.of(1990, 1, 15),
     youthOffender = false,
     gender = "Female",
+    currentIncentive = IncentivesDto(
+      level = IncentivesLevelDto(
+        code = "STD",
+        description = "Standard",
+      ),
+      dateTime = LocalDateTime.of(2020, 1, 1, 15, 0),
+      nextReviewDate = LocalDate.of(2020, 2, 1),
+    ),
   )
 
-  fun prisonerIncentivesDto(prisonerNumber: String = PRISONER_NUMBER) = PrisonerIncentivesDto(
-    id = 12345L,
-    iepCode = "STD",
-    iepLevel = "Standard",
+  fun prisonerSearchResponseDto(prisonerNumber: String = PRISONER_NUMBER) = PrisonerSearchResponseDto(
     prisonerNumber = prisonerNumber,
-    iepDate = "2025-01-15",
-    iepTime = "14:30:00",
+    prisonId = "MDI",
+    prisonName = "Moorland (HMP & YOI)",
+    bookNumber = "12345",
+    bookingId = BOOKING_ID,
+    dateOfBirth = LocalDate.of(1990, 1, 15),
+    youthOffender = false,
+    gender = "Female",
+  )
+
+  fun prisonerSearchIncentiveResponseDto() = PrisonerIncentivesResponseDto(
+    code = "STD",
+    description = "Standard",
+    dateTime = LocalDateTime.of(2020, 1, 1, 15, 0),
+    nextReviewDate = LocalDate.of(2020, 2, 1),
   )
 
   fun activePunishments() = listOf(
@@ -59,7 +80,7 @@ object PrisonerEnrichmentTestFixture {
   fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneClientDto(
     reference = "test reference",
     prisonerId = prisonerNumber,
-    balancePence = 12.88,
-    creditLimitPounds = 50.00,
+    balancePence = 1288,
+    creditLimitPounds = 5000,
   )
 }

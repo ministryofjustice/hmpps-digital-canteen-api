@@ -35,6 +35,8 @@ class PrisonerSearchClientTest {
     assertThat(result.youthOffender).isEqualTo(false)
     assertThat(result.gender).isEqualTo("Female")
     assertThat(result.prisonId).isEqualTo("MDI")
+    assertThat(result.currentIncentive.level.code).isEqualTo("STD")
+    assertThat(result.currentIncentive.level.description).isEqualTo("Standard")
   }
 
   companion object {

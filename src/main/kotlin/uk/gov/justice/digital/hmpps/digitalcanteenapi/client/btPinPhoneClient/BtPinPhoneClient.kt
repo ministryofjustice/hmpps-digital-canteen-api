@@ -11,8 +11,8 @@ class BtPinPhoneClient {
     BtPinPhoneClientDto(
       reference = "random reference",
       prisonerId = prisonerNumber,
-      balancePence = 12.2,
-      creditLimitPounds = 30.0,
+      balancePence = 1220,
+      creditLimitPounds = 300,
     ),
   )
 }
