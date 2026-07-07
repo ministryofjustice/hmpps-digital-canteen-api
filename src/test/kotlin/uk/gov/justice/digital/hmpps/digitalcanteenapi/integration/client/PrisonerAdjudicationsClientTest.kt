@@ -32,7 +32,7 @@ class PrisonerAdjudicationsClientTest {
       assertThat(chargeNumber).isEqualTo("12345")
       assertThat(punishmentType).isEqualTo("PRIVILEGE")
       assertThat(privilegeType).isEqualTo("CANTEEN")
-      assertThat(otherPrivilegeType).isEqualTo("none")
+      assertThat(otherPrivilege).isEqualTo("none")
       assertThat(duration).isEqualTo(5)
       assertThat(measurement).isEqualTo("DAYS")
       assertThat(startDate).isEqualTo(LocalDate.parse("2025-01-01"))

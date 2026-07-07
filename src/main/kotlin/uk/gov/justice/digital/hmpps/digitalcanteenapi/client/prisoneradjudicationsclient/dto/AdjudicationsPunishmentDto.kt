@@ -6,7 +6,7 @@ data class AdjudicationsPunishmentDto(
   val chargeNumber: String,
   val punishmentType: String?,
   val privilegeType: String?,
-  val otherPrivilegeType: String?,
+  val otherPrivilege: String?,
   val duration: Int?,
   val measurement: String?,
   val startDate: LocalDate?,

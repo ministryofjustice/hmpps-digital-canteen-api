@@ -59,7 +59,7 @@ object PinPhonePrisonerEnrichmentTestFixture {
       chargeNumber = "12345",
       punishmentType = "PRIVILEGE",
       privilegeType = "CANTEEN",
-      otherPrivilegeType = "none",
+      otherPrivilege = "none",
       duration = 5,
       measurement = "DAYS",
       startDate = LocalDate.parse("2025-01-01"),
