@@ -1,18 +1,19 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.Punishment
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
-import java.time.LocalDate
-import java.time.LocalDateTime
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
 import java.util.Optional
 
 /**
@@ -70,7 +71,7 @@ class PinPhonePrisonerEnrichmentService(
         EnrichedPinPhonePrisonerDto(
           prisoner = prisoner.toPrisonerSearchResponseDto(),
           incentives = prisoner.currentIncentive.toPrisonerIncentiveResponseDto(),
-          prisonerBalance = tuple.t2.orElse(null),
+          prisonerBalance = tuple.t2.orElse(null)?.toBalanceResponseDto(),
           prisonerBtBalance = tuple.t3.orElse(null),
           hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
           activeAdjudications = activeAdjudications?.takeIf { it.isNotEmpty() },
@@ -81,45 +82,9 @@ class PinPhonePrisonerEnrichmentService(
   data class EnrichedPinPhonePrisonerDto(
     val prisoner: PrisonerSearchResponseDto,
     val incentives: PrisonerIncentivesResponseDto,
-    val prisonerBalance: BalanceDto?,
+    val prisonerBalance: BalanceResponseDto?,
     val prisonerBtBalance: BtPinPhoneClientDto?,
     val hasActiveAdjudications: Boolean,
-    val activeAdjudications: List<Punishment>?,
-  )
-
-  data class PrisonerSearchResponseDto(
-    val prisonerNumber: String,
-    val prisonId: String,
-    val prisonName: String,
-    val bookNumber: String,
-    val bookingId: String,
-    val dateOfBirth: LocalDate,
-    val youthOffender: Boolean,
-    val gender: String,
-  )
-
-  data class PrisonerIncentivesResponseDto(
-    val code: String,
-    val description: String,
-    val dateTime: LocalDateTime,
-    val nextReviewDate: LocalDate,
-  )
-
-  private fun PrisonerSearchDto.toPrisonerSearchResponseDto() = PrisonerSearchResponseDto(
-    prisonerNumber = prisonerNumber,
-    prisonId = prisonId,
-    prisonName = prisonName,
-    bookNumber = bookNumber,
-    bookingId = bookingId,
-    dateOfBirth = dateOfBirth,
-    youthOffender = youthOffender,
-    gender = gender,
-  )
-
-  private fun IncentivesDto.toPrisonerIncentiveResponseDto() = PrisonerIncentivesResponseDto(
-    code = level.code,
-    description = level.description,
-    dateTime = dateTime,
-    nextReviewDate = nextReviewDate,
+    val activeAdjudications: List<AdjudicationsPunishmentDto>?,
   )
 }

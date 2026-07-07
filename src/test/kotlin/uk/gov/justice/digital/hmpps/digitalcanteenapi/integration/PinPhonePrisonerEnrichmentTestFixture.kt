@@ -1,13 +1,14 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.Punishment
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhonePrisonerEnrichmentService.PrisonerIncentivesResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhonePrisonerEnrichmentService.PrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.String
@@ -54,7 +55,7 @@ object PinPhonePrisonerEnrichmentTestFixture {
   )
 
   fun activePunishments() = listOf(
-    Punishment(
+    AdjudicationsPunishmentDto(
       chargeNumber = "12345",
       punishmentType = "PRIVILEGE",
       privilegeType = "CANTEEN",
@@ -74,6 +75,14 @@ object PinPhonePrisonerEnrichmentTestFixture {
     cash = 0.0,
     savings = 1.25,
     damageObligations = 0.0,
+    currency = "GBP",
+  )
+
+  fun balanceResponseDto() = BalanceResponseDto(
+    spendsPence = 8888,
+    cashPence = 0,
+    savingsPence = 125,
+    damageObligationsPence = 0,
     currency = "GBP",
   )
 

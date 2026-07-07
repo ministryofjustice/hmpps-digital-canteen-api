@@ -16,6 +16,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicatio
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PinPhonePrisonerEnrichmentTestFixture
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 
 @ExtendWith(MockitoExtension::class)
 class PinPhonePrisonerEnrichmentServiceTest {
@@ -51,6 +52,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
     val incentivesResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchIncentiveResponseDto()
     val adjudications = PinPhonePrisonerEnrichmentTestFixture.activePunishments()
     val prisonerBalance = PinPhonePrisonerEnrichmentTestFixture.balanceDto()
+    val prisonerBalanceResponse = PinPhonePrisonerEnrichmentTestFixture.balanceResponseDto()
     val btPinPhoneBalance = PinPhonePrisonerEnrichmentTestFixture.btPinPhoneDto()
 
     whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
@@ -73,7 +75,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
         // bt pin phone balance
         Assertions.assertThat(enriched.prisonerBtBalance).isEqualTo(btPinPhoneBalance)
         // prisoner finance balance
-        Assertions.assertThat(enriched.prisonerBalance).isEqualTo(prisonerBalance)
+        Assertions.assertThat(enriched.prisonerBalance).isEqualTo(prisonerBalanceResponse)
         // adjudications
         Assertions.assertThat(enriched.hasActiveAdjudications).isTrue()
         Assertions.assertThat(enriched.activeAdjudications).hasSize(1)
@@ -88,6 +90,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
     val prisonerResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhonePrisonerEnrichmentTestFixture.prisonerSearchIncentiveResponseDto()
     val prisonerBalance = PinPhonePrisonerEnrichmentTestFixture.balanceDto()
+    val prisonerBalanceResponse = PinPhonePrisonerEnrichmentTestFixture.balanceResponseDto()
     val btPinPhoneBalance = PinPhonePrisonerEnrichmentTestFixture.btPinPhoneDto()
 
     whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
@@ -110,7 +113,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
         // bt pin phone balance
         Assertions.assertThat(enriched.prisonerBtBalance).isEqualTo(btPinPhoneBalance)
         // prisoner finance balance
-        Assertions.assertThat(enriched.prisonerBalance).isEqualTo(prisonerBalance)
+        Assertions.assertThat(enriched.prisonerBalance).isEqualTo(prisonerBalanceResponse)
         // adjudications
         Assertions.assertThat(enriched.hasActiveAdjudications).isFalse()
         Assertions.assertThat(enriched.activeAdjudications).isNull()

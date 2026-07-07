@@ -2,11 +2,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicati
 
 import java.time.LocalDate
 
-data class PrisonerAdjudicationsDto(
-  val punishments: List<Punishment>? = null,
-)
-
-data class Punishment(
+data class AdjudicationsPunishmentDto(
   val chargeNumber: String,
   val punishmentType: String?,
   val privilegeType: String?,
