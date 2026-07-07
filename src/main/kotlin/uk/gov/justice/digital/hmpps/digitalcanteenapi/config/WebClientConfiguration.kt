@@ -39,6 +39,8 @@ class WebClientConfiguration(
   @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
   @param:Value("\${api.prison-api.timeout-ms:20s}") val prisonApiTimeout: Duration,
 
+  @param:Value("\${opa.base-url}") val opaBaseurl: String,
+
   private val builder: WebClient.Builder,
 ) {
   @Bean
@@ -107,4 +109,9 @@ class WebClientConfiguration(
     prisonApiBaseUri,
     prisonApiTimeout,
   )
+
+  @Bean
+  @Suppress("MaxLineLength")
+  fun opaWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(opaBaseurl).build()
+
 }

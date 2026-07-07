@@ -11,6 +11,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclien
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
+import java.math.BigDecimal
+import java.math.RoundingMode
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.Optional
@@ -70,7 +72,7 @@ class PinPhonePrisonerEnrichmentService(
         EnrichedPinPhonePrisonerDto(
           prisoner = prisoner.toPrisonerSearchResponseDto(),
           incentives = prisoner.currentIncentive.toPrisonerIncentiveResponseDto(),
-          prisonerBalance = tuple.t2.orElse(null),
+          prisonerBalance = tuple.t2.orElse(null)?.toBalanceResponseDto(),
           prisonerBtBalance = tuple.t3.orElse(null),
           hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
           activeAdjudications = activeAdjudications?.takeIf { it.isNotEmpty() },
@@ -81,7 +83,7 @@ class PinPhonePrisonerEnrichmentService(
   data class EnrichedPinPhonePrisonerDto(
     val prisoner: PrisonerSearchResponseDto,
     val incentives: PrisonerIncentivesResponseDto,
-    val prisonerBalance: BalanceDto?,
+    val prisonerBalance: BalanceResponseDto?,
     val prisonerBtBalance: BtPinPhoneClientDto?,
     val hasActiveAdjudications: Boolean,
     val activeAdjudications: List<Punishment>?,
@@ -122,4 +124,26 @@ class PinPhonePrisonerEnrichmentService(
     dateTime = dateTime,
     nextReviewDate = nextReviewDate,
   )
+
+  data class BalanceResponseDto(
+    val spendsPence: Long,
+    val cashPence: Long,
+    val savingsPence: Long,
+    val damageObligationsPence: Long,
+    val currency: String,
+  )
+
+  fun BalanceDto.toBalanceResponseDto() = BalanceResponseDto(
+    spendsPence = spends.toPence(),
+    cashPence = cash.toPence(),
+    savingsPence = savings.toPence(),
+    damageObligationsPence = damageObligations.toPence(),
+    currency = currency,
+  )
+
+  private fun Double.toPence(): Long =
+    BigDecimal(this.toString())
+      .multiply(BigDecimal(100))
+      .setScale(0, RoundingMode.HALF_UP)
+      .longValueExact()
 }

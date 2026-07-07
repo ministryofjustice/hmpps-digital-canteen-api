@@ -23,3 +23,6 @@ api:
   prison-api:
     base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
     timeout-ms: 20s
+
+opa:
+  base-url: "http://localhost:8181"
