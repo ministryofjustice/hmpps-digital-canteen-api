@@ -4,5 +4,5 @@ data class BtPinPhoneClientDto(
   val reference: String,
   val prisonerId: String,
   val balancePence: Int,
-  val creditLimitPounds: Int,
+  val creditLimitPence: Int,
 )

@@ -9,10 +9,10 @@ class BtPinPhoneClient {
 
   fun getPrisonerBalance(prisonerNumber: String): Mono<BtPinPhoneClientDto> = Mono.just(
     BtPinPhoneClientDto(
-      reference = "random reference",
+      reference = "reference_FN",
       prisonerId = prisonerNumber,
       balancePence = 1220,
-      creditLimitPounds = 300,
+      creditLimitPence = 300,
     ),
   )
 }

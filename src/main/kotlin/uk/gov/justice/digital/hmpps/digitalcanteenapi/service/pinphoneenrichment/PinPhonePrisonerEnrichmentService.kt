@@ -3,15 +3,16 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichmen
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
 import java.util.Optional
@@ -72,7 +73,7 @@ class PinPhonePrisonerEnrichmentService(
           prisoner = prisoner.toPrisonerSearchResponseDto(),
           incentives = prisoner.currentIncentive.toPrisonerIncentiveResponseDto(),
           prisonerBalance = tuple.t2.orElse(null)?.toBalanceResponseDto(),
-          prisonerBtBalance = tuple.t3.orElse(null),
+          prisonerBtBalance = tuple.t3.orElse(null)?.toBtPinPhoneResponseDto(),
           hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
           activeAdjudications = activeAdjudications?.takeIf { it.isNotEmpty() },
         )
@@ -83,7 +84,7 @@ class PinPhonePrisonerEnrichmentService(
     val prisoner: PrisonerSearchResponseDto,
     val incentives: PrisonerIncentivesResponseDto,
     val prisonerBalance: BalanceResponseDto?,
-    val prisonerBtBalance: BtPinPhoneClientDto?,
+    val prisonerBtBalance: BtPinPhoneResponseDto?,
     val hasActiveAdjudications: Boolean,
     val activeAdjudications: List<AdjudicationsPunishmentDto>?,
   )

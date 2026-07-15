@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
+import net.bytebuddy.implementation.FixedValue.reference
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
@@ -7,6 +8,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclien
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
 import java.time.LocalDate
@@ -16,6 +18,7 @@ import kotlin.String
 object PinPhonePrisonerEnrichmentTestFixture {
   const val PRISONER_NUMBER = "A1234BC"
   const val BOOKING_ID = "A1234BC"
+  const val REFERENCE = "mark_FN"
 
   fun prisonerSearchDto(prisonerNumber: String = PRISONER_NUMBER) = PrisonerSearchDto(
     prisonerNumber = prisonerNumber,
@@ -87,9 +90,17 @@ object PinPhonePrisonerEnrichmentTestFixture {
   )
 
   fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneClientDto(
-    reference = "test reference",
+    reference = REFERENCE,
     prisonerId = prisonerNumber,
     balancePence = 1288,
-    creditLimitPounds = 5000,
+    creditLimitPence = 5000,
+  )
+
+  fun btPinPhoneResponseDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneResponseDto(
+    reference = REFERENCE,
+    prisonerId = prisonerNumber,
+    balancePence = 1288,
+    creditLimitPence = 5000,
+    isFn = REFERENCE.endsWith("_FN"),
   )
 }
