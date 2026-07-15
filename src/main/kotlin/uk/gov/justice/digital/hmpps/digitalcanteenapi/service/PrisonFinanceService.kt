@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
 import org.springframework.http.ResponseEntity
+import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
@@ -31,7 +32,10 @@ class PrisonFinanceService(
   /**
    * Adds a hold to the prisoner.
    */
-  fun addHold(prisonId: String, offenderNo: String, clientRequest: AddHoldClientRequest): AddHoldResponse {
+  @Retryable(
+    maxRetries = 3,
+  )
+  fun addHold(prisonId: String?, offenderNo: String, clientRequest: AddHoldClientRequest): AddHoldResponse {
     val clientReference = generateClientReference()
     val request = AddHoldRequest(
       description = HOLD_DESCRIPTION,
@@ -47,7 +51,10 @@ class PrisonFinanceService(
   /**
    * Releases a hold.
    */
-  fun releaseHold(prisonId: String, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
+  @Retryable(
+    maxRetries = 3,
+  )
+  fun releaseHold(prisonId: String?, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
     val clientReference = generateClientReference()
     val request = ReleaseHoldRequest(
       description = REMOVE_HOLD_DESCRIPTION,
@@ -62,8 +69,11 @@ class PrisonFinanceService(
   /**
    * Creates a transaction for the release of a hold.
    */
+  @Retryable(
+    maxRetries = 3
+  )
   fun releaseHoldAndCreateTransaction(
-    prisonId: String,
+    prisonId: String?,
     offenderNo: String,
     holdNumber: Number,
     clientRequest: ReleaseHoldCreateClientTransactionRequest,
@@ -80,7 +90,7 @@ class PrisonFinanceService(
       createClientUniqueReference = createClientReference.toClientUniqueReference(),
     )
 
-    return prisonFinanceClient.releaseHoleCreateTransaction(prisonId, offenderNo, holdNumber, request)
+    return prisonFinanceClient.releaseHoldCreateTransaction(prisonId, offenderNo, holdNumber, request)
   }
 
   private fun generateClientReference(): String = UUID.randomUUID().toString()

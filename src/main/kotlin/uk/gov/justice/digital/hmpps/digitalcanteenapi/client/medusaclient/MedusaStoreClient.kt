@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 
 @Component
 class MedusaStoreClient(
@@ -16,4 +17,12 @@ class MedusaStoreClient(
     .uri("/store/request-from-api")
     .retrieve()
     .bodyToMono(MedusaDto::class.java)
+
+  fun completeCart(cartId: String, request: PaymentResult): Mono<MedusaDto> = medusaStoreClient
+    .post()
+    .uri("/store/pin-phone/carts/$cartId/complete")
+    .bodyValue(request)
+    .retrieve()
+    .bodyToMono(MedusaDto::class.java)
+
 }

@@ -26,7 +26,7 @@ class PrisonFinanceClient(
 
   @Suppress("ktlint:standard:function-expression-body")
   fun addHold(
-    prisonId: String,
+    prisonId: String?,
     offenderNo: String,
     request: AddHoldRequest,
   ): AddHoldResponse {
@@ -46,7 +46,7 @@ class PrisonFinanceClient(
 
   @Suppress("ktlint:standard:function-expression-body")
   fun releaseHold(
-    prisonId: String,
+    prisonId: String?,
     offenderNo: String,
     holdNumber: Number,
     request: ReleaseHoldRequest,
@@ -71,8 +71,8 @@ class PrisonFinanceClient(
   }
 
   @Suppress("ktlint:standard:function-expression-body")
-  fun releaseHoleCreateTransaction(
-    prisonId: String,
+  fun releaseHoldCreateTransaction(
+    prisonId: String?,
     offenderNo: String,
     holdNumber: Number,
     request: ReleaseHoldCreateTransactionRequest,
