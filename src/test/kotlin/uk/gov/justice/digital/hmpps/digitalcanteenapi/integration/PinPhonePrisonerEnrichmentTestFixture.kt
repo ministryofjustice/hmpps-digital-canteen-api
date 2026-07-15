@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
-import net.bytebuddy.implementation.FixedValue.reference
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
@@ -89,7 +88,7 @@ object PinPhonePrisonerEnrichmentTestFixture {
     currency = "GBP",
   )
 
-  fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneClientDto(
+  fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneBalanceResponseDto(
     reference = REFERENCE,
     prisonerId = prisonerNumber,
     balancePence = 1288,

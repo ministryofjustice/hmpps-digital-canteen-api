@@ -9,11 +9,11 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicatio
 
 @Component
 class PrisonerAdjudicationsClient(
-  @Qualifier("prisonerAdjudicationsWebClient") private val prisonerAdjudicationsDto: WebClient,
+  @Qualifier("prisonerAdjudicationsWebClient") private val prisonerAdjudicationsClient: WebClient,
 ) {
 
   @Suppress("MaxLineLength")
-  fun getPrisonerAdjudication(offenderBookingId: String): Mono<List<AdjudicationsPunishmentDto>> = prisonerAdjudicationsDto
+  fun getPrisonerAdjudication(offenderBookingId: String): Mono<List<AdjudicationsPunishmentDto>> = prisonerAdjudicationsClient
     .get()
     .uri("/reported-adjudications/punishments/{offenderBookingId}/active", offenderBookingId)
     .retrieve()

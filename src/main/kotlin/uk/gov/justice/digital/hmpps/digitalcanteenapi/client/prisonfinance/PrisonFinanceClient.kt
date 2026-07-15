@@ -21,7 +21,7 @@ import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @Component
 class PrisonFinanceClient(
-  @Qualifier("prisonApiWebClient") private val webClient: WebClient,
+  @Qualifier("prisonApiWebClient") private val prisonerApiClient: WebClient,
   private val objectMapper: ObjectMapper,
 ) {
   val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
@@ -33,7 +33,7 @@ class PrisonFinanceClient(
     request: AddHoldRequest,
   ): AddHoldResponse {
     return try {
-      webClient.post()
+      prisonerApiClient.post()
         .uri("/api/finance-holds/prison/{prisonId}/offenders/{offenderNo}/add-hold", prisonId, offenderNo)
         .bodyValue(request)
         .retrieve()
@@ -54,7 +54,7 @@ class PrisonFinanceClient(
     request: ReleaseHoldRequest,
   ): ResponseEntity<Void> {
     return try {
-      webClient.post()
+      prisonerApiClient.post()
         .uri(
           "/api/finance-holds/prison/{prisonId}/offenders/{offenderNo}/release-hold/{holdNumber}",
           prisonId,
@@ -80,7 +80,7 @@ class PrisonFinanceClient(
     request: ReleaseHoldCreateTransactionRequest,
   ): ReleaseHoldCreateTransactionResponse {
     return try {
-      webClient.post()
+      prisonerApiClient.post()
         .uri(
           "/api/finance-holds/prison/{prisonId}/offenders/{offenderNo}/release-hold-transaction/{holdNumber}",
           prisonId,
@@ -100,7 +100,7 @@ class PrisonFinanceClient(
 
   @Suppress("ktlint:standard:function-expression-body")
   fun getPrisonerBalance(bookingId: String): Mono<BalanceDto> {
-    return webClient.get()
+    return prisonerApiClient.get()
       .uri("/api/bookings/{bookingId}/balances", bookingId)
       .retrieve()
       .bodyToMono(BalanceDto::class.java)

@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto
 
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneClientDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
@@ -43,7 +43,7 @@ data class BtPinPhoneResponseDto(
   val isFn: Boolean,
 )
 
-fun BtPinPhoneClientDto.toBtPinPhoneResponseDto() = BtPinPhoneResponseDto(
+fun BtPinPhoneBalanceResponseDto.toBtPinPhoneResponseDto() = BtPinPhoneResponseDto(
   reference = reference,
   prisonerId = prisonerId,
   balancePence = balancePence,
