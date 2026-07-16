@@ -1,7 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
 import org.springframework.http.ResponseEntity
-import org.springframework.resilience.annotation.Retryable
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
@@ -48,7 +47,7 @@ class PrisonFinanceService(
   /**
    * Releases a hold.
    */
-   fun releaseHold(prisonId: String?, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
+  fun releaseHold(prisonId: String?, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
     val clientReference = generateClientReference()
     val request = ReleaseHoldRequest(
       description = REMOVE_HOLD_DESCRIPTION,

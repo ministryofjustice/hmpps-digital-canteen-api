@@ -18,6 +18,5 @@ class APIController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneB
 
   @Suppress("MaxLineLength")
   @PostMapping("/{cartId}/complete", produces = [MediaType.APPLICATION_JSON_VALUE])
-  suspend fun completeCart(@PathVariable cartId: String, @RequestBody request: CompleteCartRequest,): CompleteCartResponse
-  = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
+  suspend fun completeCart(@PathVariable cartId: String, @RequestBody request: CompleteCartRequest): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
 }

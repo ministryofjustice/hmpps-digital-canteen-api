@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
-import io.swagger.v3.core.util.Json
 import io.swagger.v3.core.util.Json.mapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -136,4 +135,3 @@ class PinPhoneBuyCreditOrchestrationService(
     )
   }
 }
-
