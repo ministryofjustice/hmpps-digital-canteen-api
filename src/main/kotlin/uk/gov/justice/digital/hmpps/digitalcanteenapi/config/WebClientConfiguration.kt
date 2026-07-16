@@ -45,6 +45,7 @@ class WebClientConfiguration(
   @Suppress("MaxLineLength")
   fun hmppsAuthHealthWebClient(builder: WebClient.Builder): WebClient = builder.healthWebClient(hmppsAuthBaseUri, hmppsAuthHealthTimeout)
 
+  // todo: consider removing, not required for pin phone, but will be for canteen
   @Bean
   @Suppress("MaxLineLength")
   fun prisonerHealthAndMedicationWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
@@ -72,6 +73,7 @@ class WebClientConfiguration(
     prisonerAdjudicationsTimeout,
   )
 
+  // todo: consider removing if we decide to rely on prisoner search for incentive info
   @Bean
   @Suppress("MaxLineLength")
   fun prisonerIncentivesWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(

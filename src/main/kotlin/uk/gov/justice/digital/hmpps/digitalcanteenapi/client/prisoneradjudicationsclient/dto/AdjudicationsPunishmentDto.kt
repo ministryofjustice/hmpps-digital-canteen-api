@@ -1,16 +1,12 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.dto
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto
 
 import java.time.LocalDate
 
-data class PrisonerAdjudicationsDto(
-  val punishments: List<Punishment>? = null,
-)
-
-data class Punishment(
+data class AdjudicationsPunishmentDto(
   val chargeNumber: String,
   val punishmentType: String?,
   val privilegeType: String?,
-  val otherPrivilegeType: String?,
+  val otherPrivilege: String?,
   val duration: Int?,
   val measurement: String?,
   val startDate: LocalDate?,

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerenrichment.PrisonerSearchClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonerSearchMockServer
 import java.time.LocalDate
@@ -35,6 +35,8 @@ class PrisonerSearchClientTest {
     assertThat(result.youthOffender).isEqualTo(false)
     assertThat(result.gender).isEqualTo("Female")
     assertThat(result.prisonId).isEqualTo("MDI")
+    assertThat(result.currentIncentive.level.code).isEqualTo("STD")
+    assertThat(result.currentIncentive.level.description).isEqualTo("Standard")
   }
 
   companion object {

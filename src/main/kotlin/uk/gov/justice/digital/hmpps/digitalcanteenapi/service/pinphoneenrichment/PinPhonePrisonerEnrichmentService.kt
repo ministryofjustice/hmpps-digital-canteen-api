@@ -1,0 +1,91 @@
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment
+
+import org.springframework.stereotype.Service
+import reactor.core.publisher.Mono
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
+import java.util.Optional
+
+/**
+ * Service responsible for enriching prisoner data with additional information from multiple sources.
+ *
+ * Aggregates data from various HMPPS APIs,
+ * including incentives, adjudications, finance information from NOMIS and BT.
+ *
+ * @property prisonerSearchClient Client for retrieving basic prisoner information and incentives
+ * @property prisonerAdjudicationsClient Client for retrieving prisoner adjudication data
+ * @property btPinPhoneClient Client for retrieving prisoner BT PinPhone balance information
+ * @property prisonFinanceClient Client for retrieving prisoner finance information
+ */
+@Service
+class PinPhonePrisonerEnrichmentService(
+  private val prisonerSearchClient: PrisonerSearchClient,
+  private val prisonerAdjudicationsClient: PrisonerAdjudicationsClient,
+  private val btPinPhoneClient: BtPinPhoneClient,
+  private val prisonFinanceClient: PrisonFinanceClient,
+) {
+
+  /**
+   * @param prisonerNumber The unique identifier for the prisoner
+   * @return A Mono emitting an [EnrichedPinPhonePrisonerDto] containing aggregated prisoner data
+   */
+  fun getEnrichedPrisoner(prisonerNumber: String): Mono<EnrichedPinPhonePrisonerDto> {
+    val prisonerMono =
+      prisonerSearchClient.getPrisoner(prisonerNumber).cache()
+
+    val bookingIdMono: Mono<String> =
+      prisonerMono.mapNotNull { it.bookingId }
+
+    val activeAdjudicationsMono = bookingIdMono
+      .flatMap { bookingId -> prisonerAdjudicationsClient.getPrisonerAdjudication(bookingId) }
+      .onErrorResume { Mono.empty() }
+
+    val balanceMono = bookingIdMono
+      .flatMap { bookingId -> prisonFinanceClient.getPrisonerBalance(bookingId) }
+      .onErrorResume { Mono.empty() }
+
+    // Bt is currently faked/hardcoded
+    val btPinPhoneMono =
+      btPinPhoneClient.getPrisonerBalance(prisonerNumber)
+        .onErrorResume { Mono.empty() }
+
+    return Mono.zip(
+      prisonerMono,
+      balanceMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
+      btPinPhoneMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
+      activeAdjudicationsMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
+    )
+      .map { tuple ->
+        val prisoner = tuple.t1
+        val activeAdjudications = tuple.t4.orElse(null)
+        EnrichedPinPhonePrisonerDto(
+          prisoner = prisoner.toPrisonerSearchResponseDto(),
+          incentives = prisoner.currentIncentive.toPrisonerIncentiveResponseDto(),
+          prisonerBalance = tuple.t2.orElse(null)?.toBalanceResponseDto(),
+          prisonerBtBalance = tuple.t3.orElse(null)?.toBtPinPhoneResponseDto(),
+          hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
+          activeAdjudications = activeAdjudications?.takeIf { it.isNotEmpty() },
+        )
+      }
+  }
+
+  data class EnrichedPinPhonePrisonerDto(
+    val prisoner: PrisonerSearchResponseDto,
+    val incentives: PrisonerIncentivesResponseDto,
+    val prisonerBalance: BalanceResponseDto?,
+    val prisonerBtBalance: BtPinPhoneResponseDto?,
+    val hasActiveAdjudications: Boolean,
+    val activeAdjudications: List<AdjudicationsPunishmentDto>?,
+  )
+}
