@@ -32,9 +32,6 @@ class PrisonFinanceService(
   /**
    * Adds a hold to the prisoner.
    */
-  @Retryable(
-    maxRetries = 3,
-  )
   fun addHold(prisonId: String?, offenderNo: String, clientRequest: AddHoldClientRequest): AddHoldResponse {
     val clientReference = generateClientReference()
     val request = AddHoldRequest(
@@ -51,10 +48,7 @@ class PrisonFinanceService(
   /**
    * Releases a hold.
    */
-  @Retryable(
-    maxRetries = 3,
-  )
-  fun releaseHold(prisonId: String?, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
+   fun releaseHold(prisonId: String?, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
     val clientReference = generateClientReference()
     val request = ReleaseHoldRequest(
       description = REMOVE_HOLD_DESCRIPTION,
@@ -69,9 +63,6 @@ class PrisonFinanceService(
   /**
    * Creates a transaction for the release of a hold.
    */
-  @Retryable(
-    maxRetries = 3
-  )
   fun releaseHoldAndCreateTransaction(
     prisonId: String?,
     offenderNo: String,

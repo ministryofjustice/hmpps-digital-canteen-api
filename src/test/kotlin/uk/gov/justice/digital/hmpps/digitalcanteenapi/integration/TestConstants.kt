@@ -8,3 +8,4 @@ const val HOLD_NUMBER = 468198333
 
 const val MEDUSA_ADMIN_EMAIL = "test@test.com"
 const val MEDUSA_ADMIN_PASSWORD = "test-password"
+const val CART_ID = "cart_01KXGJ2H6MEWSHDYB2G7B5QW52"

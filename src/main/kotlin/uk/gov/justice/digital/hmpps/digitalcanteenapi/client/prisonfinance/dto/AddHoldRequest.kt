@@ -24,7 +24,6 @@ data class CompleteCartRequest(
 data class PaymentResult(
   val offender_no: String,
   val status: PaymentStatus,
-  val transactionBatchNumber: String?,
   val transactionReference: String?,
   val holdNumber: String,
   val errorCode: String?,

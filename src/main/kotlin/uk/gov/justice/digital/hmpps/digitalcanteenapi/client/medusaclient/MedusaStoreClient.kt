@@ -18,11 +18,12 @@ class MedusaStoreClient(
     .retrieve()
     .bodyToMono(MedusaDto::class.java)
 
-  fun completeCart(cartId: String, request: PaymentResult): Mono<MedusaDto> = medusaStoreClient
+  fun completeCart(cartId: String, request: PaymentResult): MedusaDto = medusaStoreClient
     .post()
     .uri("/store/pin-phone/carts/$cartId/complete")
     .bodyValue(request)
     .retrieve()
     .bodyToMono(MedusaDto::class.java)
+    .block()!!
 
 }
