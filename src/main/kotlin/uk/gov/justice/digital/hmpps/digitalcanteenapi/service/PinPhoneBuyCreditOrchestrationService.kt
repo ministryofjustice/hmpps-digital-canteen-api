@@ -63,9 +63,9 @@ class PinPhoneBuyCreditOrchestrationService(
 
       // return the following response to the client
       CompleteCartResponse(
-        status = PaymentStatus.AUTHORIZED.toString(),
+        status = "SUCCESS",
         orderId = cartResponse.order?.id,
-        message = "Cart completed successfully",
+        message = "Purchase completed successfully.",
       )
     } catch (e: WebClientResponseException) { // added to handled the medusa store error
       val jsonString = e.responseBodyAsString
@@ -86,8 +86,9 @@ class PinPhoneBuyCreditOrchestrationService(
   /* TO DO: This needs to refactor based upon the final design decision*/
   private fun callBtApiWithRetry(offenderNo: String, amountPence: Int) {
     var lastException: Exception? = null
-    val count = 3
-    for (i in count..count) { // Initial call + 2 retries
+    val initialAttempts = 1
+    val maxAttempts = 3
+    for (i in initialAttempts..maxAttempts) { // Initial call + 2 retries
       try {
         val btPinPhoneBuyCreditRequest = BtPinPhoneBuyCreditRequest(
           reference = "reference_FN",

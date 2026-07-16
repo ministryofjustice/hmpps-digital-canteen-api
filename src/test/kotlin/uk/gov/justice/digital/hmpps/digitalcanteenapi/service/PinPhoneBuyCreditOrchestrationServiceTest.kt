@@ -92,9 +92,9 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val result = service.processCheckout(PRISONER_NUMBER, amount, cartId)
 
     // Then
-    assertEquals("AUTHORIZED", result.status)
+    assertEquals("SUCCESS", result.status)
     assertEquals("order123", result.orderId)
-    assertEquals("Cart completed successfully", result.message)
+    assertEquals("Purchase completed successfully.", result.message)
 
     verify(pinPhonePrisonerEnrichmentService).getEnrichedPrisoner(PRISONER_NUMBER)
     verify(financeService).addHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), any())
@@ -120,7 +120,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(Mono.error(RuntimeException("BT failed")))
+      .thenReturn(Mono.error(UpstreamException("BT failed")))
       .thenReturn(Mono.empty())
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
@@ -133,9 +133,9 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val result = service.processCheckout(PRISONER_NUMBER, amount, cartId)
 
     // Then
-    assertEquals("AUTHORIZED", result.status)
+    assertEquals("SUCCESS", result.status)
     assertEquals("order123", result.orderId)
-    assertEquals("Cart completed successfully", result.message)
+    assertEquals("Purchase completed successfully.", result.message)
     verify(btPinPhoneClient, times(2)).addCredit(any())
   }
 
@@ -149,9 +149,9 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenReturn(Mono.just(enrichedPrisoner))
     whenever { financeService.addHold(any(), any(), any()) }.thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
     whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(Mono.error(RuntimeException("BT failed")))
-      .thenReturn(Mono.error(RuntimeException("BT failed again")))
-      .thenReturn(Mono.error(RuntimeException("BT Down")))
+      .thenReturn(Mono.error(UpstreamException("BT failed")))
+      .thenReturn(Mono.error(UpstreamException("BT failed again")))
+      .thenReturn(Mono.error(UpstreamException("BT Down")))
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
       .thenReturn(ReleaseHoldCreateTransactionResponse(id = "tx123"))
     whenever(medusaStoreClient.completeCart(any(), any()))
@@ -182,7 +182,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenReturn(Mono.empty())
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
-      .thenThrow(RuntimeException("Transaction failed"))
+      .thenThrow(UpstreamException("Transaction failed"))
 
     // When
     val result = service.processCheckout(PRISONER_NUMBER, amount, cartId)
