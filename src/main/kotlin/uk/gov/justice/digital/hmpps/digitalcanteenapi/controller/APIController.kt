@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartResponse
 
 @RestController
 @PreAuthorize("permitAll()")
@@ -19,5 +20,5 @@ class APIController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneB
   suspend fun completeCart(
     @PathVariable cartId: String,
     @RequestBody request: CompleteCartRequest
-  ): String = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
+  ): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
 }

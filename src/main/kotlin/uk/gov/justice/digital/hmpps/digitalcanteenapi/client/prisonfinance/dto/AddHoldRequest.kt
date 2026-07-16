@@ -25,7 +25,7 @@ data class PaymentResult(
   val offender_no: String,
   val status: PaymentStatus,
   val transactionReference: String?,
-  val holdNumber: String,
+  val holdNumber: Number,
   val errorCode: String?,
   val errorMessage: String?,
 )
@@ -35,3 +35,8 @@ enum class PaymentStatus {
   ERROR,
   CANCELED,
 }
+data class CompleteCartResponse(
+  val status: String,
+  val orderId: String? = null,
+  val message: String,
+)

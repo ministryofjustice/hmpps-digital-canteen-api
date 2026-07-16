@@ -1,37 +1,47 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
+import io.swagger.v3.core.util.Json
+import io.swagger.v3.core.util.Json.mapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
+import tools.jackson.module.kotlin.jacksonObjectMapper
+import tools.jackson.module.kotlin.readValue
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBuyCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import kotlin.String
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 
 @Service
 class PinPhoneBuyCreditOrchestrationService(
   private val financeService: PrisonFinanceService,
-  private val prisonerEnrichmentService: PrisonerEnrichmentService,
+  private val pinPhonePrisonerEnrichmentService: PinPhonePrisonerEnrichmentService,
   private val medusaStoreClient: MedusaStoreClient,
+  private val btPinPhoneClient: BtPinPhoneClient,
 ) {
   private val log: Logger = LoggerFactory.getLogger("PinPhoneBuyCreditOrchestrationService")
 
-  fun processCheckout(offenderNo: String, amount: Number, cartId: String): String {
-    val prisonerInfo = prisonerEnrichmentService.getEnrichedPrisoner(offenderNo).block()
+  fun processCheckout(offenderNo: String, amount: Number, cartId: String): CompleteCartResponse {
+    val prisonerInfo = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(offenderNo).block()
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Prisoner not found")
 
+    log.info("Processing checkout for prisoner {}", prisonerInfo)
     val prisonId = prisonerInfo.prisoner.prisonId
     val holdResponse = financeService.addHold(prisonId, offenderNo, AddHoldClientRequest(amount))
     log.info("Hold added for prisoner {} with hold number {}", offenderNo, holdResponse.holdNumber)
 
     return try {
-      // TODO: call add credit BT API
-      // if success call create transaction
+      callBtApiWithRetry(offenderNo, amount.toInt())
+
       val transactionResponse = financeService.releaseHoldAndCreateTransaction(
         prisonId,
         offenderNo,
@@ -44,14 +54,30 @@ class PinPhoneBuyCreditOrchestrationService(
         offender_no = offenderNo,
         status = PaymentStatus.AUTHORIZED,
         transactionReference = "1234567890", // TODO: Replace with actual reference
-        holdNumber = holdResponse.holdNumber.toString(),
+        holdNumber = holdResponse.holdNumber,
         errorCode = null,
         errorMessage = null,
       )
-      log.info("Completing cart {} for prisoner {}",request, offenderNo)
-      medusaStoreClient.completeCart(cartId, request)
+
+      val cartResponse = medusaStoreClient.completeCart(cartId, request)
       log.info("Successfully completed cart {} for prisoner {}", cartId, offenderNo)
-      PaymentStatus.AUTHORIZED.toString()
+
+      // return the following response to the client
+      CompleteCartResponse(
+        status = PaymentStatus.AUTHORIZED.toString(),
+        orderId = cartResponse.order?.id,
+        message = "Cart completed successfully",
+      )
+    } catch (e: WebClientResponseException) { // added to handled the medusa store error
+      val jsonString = e.responseBodyAsString
+      val mapper = jacksonObjectMapper()
+      val jsonMap = mapper.readValue<Map<String, Any>>(jsonString)
+      val message = jsonMap["message"] as? String
+
+      CompleteCartResponse(
+        status = PaymentStatus.ERROR.toString(),
+        message = message ?: "Medusa store error",
+      )
     } catch (e: UpstreamException) {
       log.error("Upstream error processing checkout for prisoner {}: {}", offenderNo, e.message)
       handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, e.message)
@@ -61,29 +87,55 @@ class PinPhoneBuyCreditOrchestrationService(
     }
   }
 
+  /* TO DO: This needs to refactor based upon the final design decision*/
+  private fun callBtApiWithRetry(offenderNo: String, amountPence: Int) {
+    var lastException: Exception? = null
+    for (i in 1..3) { // Initial call + 2 retries
+      try {
+        val btPinPhoneBuyCreditRequest = BtPinPhoneBuyCreditRequest(
+          reference = "reference_FN",
+          prisonerId = offenderNo,
+          amountPence = amountPence,
+          type = 50,
+        )
+        btPinPhoneClient.addCredit(btPinPhoneBuyCreditRequest).block()
+        log.info("Successfully added credit to BT for prisoner {} on attempt {}", offenderNo, i)
+        return
+      } catch (e: Exception) {
+        log.error("Failed to add credit to BT for prisoner {} on attempt {}: {}", offenderNo, i, e.message)
+        lastException = e
+      }
+    }
+    throw lastException ?: RuntimeException("Failed to call BT API")
+  }
+
   private fun handleCheckoutError(
     prisonId: String?,
     offenderNo: String,
     holdNumber: Number,
     cartId: String,
     errorMessage: String?,
-  ): String {
+  ): CompleteCartResponse {
     try {
+      log.info("Releasing hold for prisoner {} with hold number {}", offenderNo, holdNumber)
       financeService.releaseHold(prisonId, offenderNo, holdNumber)
-    } catch (e: UpstreamException) {
-
-      val request = PaymentResult(
-        offender_no = offenderNo,
-        status = PaymentStatus.ERROR,
-        transactionReference = null,
-        holdNumber = holdNumber.toString(),
-        errorCode = null,
-        errorMessage = errorMessage,
-      )
-
-      medusaStoreClient.completeCart(cartId, request)
+    } catch (e: Exception) {
+      log.error("Failed to release hold for prisoner {} with hold number {}: {}", offenderNo, holdNumber, e.message)
     }
-    return PaymentStatus.ERROR.toString()
+
+    val request = PaymentResult(
+      offender_no = offenderNo,
+      status = PaymentStatus.ERROR,
+      transactionReference = null,
+      holdNumber = holdNumber,
+      errorCode = null,
+      errorMessage = errorMessage,
+    )
+    medusaStoreClient.completeCart(cartId, request)
+    return CompleteCartResponse(
+      status = PaymentStatus.ERROR.toString(),
+      message = errorMessage ?: "Checkout failed",
+    )
   }
 }
 
