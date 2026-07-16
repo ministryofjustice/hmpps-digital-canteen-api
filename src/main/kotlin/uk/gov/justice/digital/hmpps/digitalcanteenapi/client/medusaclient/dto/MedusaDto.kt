@@ -4,7 +4,6 @@ data class MedusaDto(
   val status: String,
 )
 
-
 data class CompleteCartResponse(
   val order: Order? = null,
   val message: String? = null,
@@ -12,5 +11,5 @@ data class CompleteCartResponse(
 )
 
 data class Order(
-  val id: String
+  val id: String,
 )

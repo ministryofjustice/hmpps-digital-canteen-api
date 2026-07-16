@@ -163,7 +163,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(null, result.orderId)
     assertEquals("BT Down", result.message)
     verify(btPinPhoneClient, times(3)).addCredit(any())
-
   }
 
   @Test
