@@ -21,6 +21,7 @@ data class CompleteCartRequest(
   val amount: Number,
 )
 
+@Suppress("ConstructorParameterNaming")
 data class PaymentResult(
   val offender_no: String,
   val status: PaymentStatus,

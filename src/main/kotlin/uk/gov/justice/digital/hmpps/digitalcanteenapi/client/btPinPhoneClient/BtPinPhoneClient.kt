@@ -17,5 +17,6 @@ class BtPinPhoneClient {
     ),
   )
 
+  @Suppress("UnusedParameter")
   fun addCredit(btPinPhoneBuyCreditRequest: BtPinPhoneBuyCreditRequest): Mono<Void> = Mono.empty()
 }

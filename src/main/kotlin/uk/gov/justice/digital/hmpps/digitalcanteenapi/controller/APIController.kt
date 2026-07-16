@@ -20,5 +20,6 @@ class APIController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneB
   suspend fun completeCart(
     @PathVariable cartId: String,
     @RequestBody request: CompleteCartRequest
-  ): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
+  ):CompleteCartResponse
+  = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
 }

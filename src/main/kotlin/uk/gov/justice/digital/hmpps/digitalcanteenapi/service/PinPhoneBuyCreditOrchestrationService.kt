@@ -53,7 +53,7 @@ class PinPhoneBuyCreditOrchestrationService(
       val request = PaymentResult(
         offender_no = offenderNo,
         status = PaymentStatus.AUTHORIZED,
-        transactionReference = "1234567890", // TODO: Replace with actual reference
+        transactionReference = "1234567890", // later Replace it with actual reference
         holdNumber = holdResponse.holdNumber,
         errorCode = null,
         errorMessage = null,
@@ -81,16 +81,14 @@ class PinPhoneBuyCreditOrchestrationService(
     } catch (e: UpstreamException) {
       log.error("Upstream error processing checkout for prisoner {}: {}", offenderNo, e.message)
       handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, e.message)
-    } catch (e: Exception) {
-      log.error("Failed to process checkout for prisoner {}: {}", offenderNo, e.message, e)
-      handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, e.message)
     }
   }
 
   /* TO DO: This needs to refactor based upon the final design decision*/
   private fun callBtApiWithRetry(offenderNo: String, amountPence: Int) {
     var lastException: Exception? = null
-    for (i in 1..3) { // Initial call + 2 retries
+    val count = 3
+    for (i in count..count) { // Initial call + 2 retries
       try {
         val btPinPhoneBuyCreditRequest = BtPinPhoneBuyCreditRequest(
           reference = "reference_FN",
@@ -101,7 +99,7 @@ class PinPhoneBuyCreditOrchestrationService(
         btPinPhoneClient.addCredit(btPinPhoneBuyCreditRequest).block()
         log.info("Successfully added credit to BT for prisoner {} on attempt {}", offenderNo, i)
         return
-      } catch (e: Exception) {
+      } catch (e: UpstreamException) {
         log.error("Failed to add credit to BT for prisoner {} on attempt {}: {}", offenderNo, i, e.message)
         lastException = e
       }
@@ -119,7 +117,7 @@ class PinPhoneBuyCreditOrchestrationService(
     try {
       log.info("Releasing hold for prisoner {} with hold number {}", offenderNo, holdNumber)
       financeService.releaseHold(prisonId, offenderNo, holdNumber)
-    } catch (e: Exception) {
+    } catch (e: UpstreamException) {
       log.error("Failed to release hold for prisoner {} with hold number {}: {}", offenderNo, holdNumber, e.message)
     }
 
