@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
@@ -110,6 +111,41 @@ class PrisonApiMockServer : WireMockServer(WIREMOCK_PORT) {
   @Suppress("MaxLineLength")
   fun stubRelaseHoldAndCreateTransactionFailure(prisonId: String, offenderNo: String, holdNumber: Number, status: Int, userMessage: String): StubMapping = stubFor(
     post(urlEqualTo("/api/finance-holds/prison/$prisonId/offenders/$offenderNo/release-hold-transaction/$holdNumber"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            "{\n" +
+              "  \"status\": $status,\n" +
+              "  \"userMessage\": \"$userMessage\"\n" +
+              "}",
+          )
+          .withStatus(status),
+      ),
+  )
+
+  @Suppress("MaxLineLength")
+  fun stubGetPrisonerBalance(bookingId: String): StubMapping = stubFor(
+    get(urlEqualTo("/api/bookings/$bookingId/balances"))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            "{\n" +
+              "  \"spends\": 12.22,\n" +
+              "  \"cash\": 10.00,\n" +
+              "  \"savings\": 2.22,\n" +
+              "  \"damageObligations\": 10.00,\n" +
+              "  \"currency\": \"GBP\"\n" +
+              "}",
+          )
+          .withStatus(200),
+      ),
+  )
+
+  @Suppress("MaxLineLength")
+  fun stubGetPrisonerBalanceTransactionFailure(bookingId: String, status: Int, userMessage: String): StubMapping = stubFor(
+    get(urlEqualTo("/api/bookings/$bookingId/balances"))
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")

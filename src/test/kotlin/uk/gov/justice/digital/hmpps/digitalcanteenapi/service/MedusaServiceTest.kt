@@ -1,6 +1,6 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.service
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
-import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -12,7 +12,6 @@ import reactor.test.StepVerifier
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaAdminClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaService
 
 @ExtendWith(MockitoExtension::class)
 class MedusaServiceTest {
@@ -39,7 +38,7 @@ class MedusaServiceTest {
 
     StepVerifier.create(result)
       .assertNext { response ->
-        assertThat(response.status).isEqualTo("success store call")
+        Assertions.assertThat(response.status).isEqualTo("success store call")
       }
       .verifyComplete()
   }
@@ -53,7 +52,7 @@ class MedusaServiceTest {
 
     StepVerifier.create(result)
       .assertNext { response ->
-        assertThat(response.status).isEqualTo("success admin call")
+        Assertions.assertThat(response.status).isEqualTo("success admin call")
       }
       .verifyComplete()
   }

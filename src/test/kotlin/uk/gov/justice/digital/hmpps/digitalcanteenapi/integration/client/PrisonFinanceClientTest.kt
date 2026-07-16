@@ -14,6 +14,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.R
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.OFFENDER_BOOKING_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonApiMockServer
@@ -136,6 +137,31 @@ class PrisonFinanceClientTest {
 
     assertThatThrownBy {
       client.releaseHoldCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+    }.isInstanceOf(UpstreamException::class.java)
+      .hasMessage("Internal Server Error")
+  }
+
+  @Test
+  fun `getPrisonerBalance - successfully retrieves prisoner balance info`() {
+    server.stubGetPrisonerBalance(OFFENDER_BOOKING_ID)
+
+    val result = client.getPrisonerBalance(OFFENDER_BOOKING_ID).block()
+
+    assertThat(result).isNotNull
+    assertThat(result?.spends).isEqualTo(12.22)
+    assertThat(result?.cash).isEqualTo(10.00)
+  }
+
+  @Test
+  fun `getPrisonerBalance - throws UpstreamException on failure`() {
+    server.stubGetPrisonerBalanceTransactionFailure(
+      OFFENDER_BOOKING_ID,
+      500,
+      "Internal Server Error",
+    )
+
+    assertThatThrownBy {
+      client.getPrisonerBalance(OFFENDER_BOOKING_ID).block()
     }.isInstanceOf(UpstreamException::class.java)
       .hasMessage("Internal Server Error")
   }
