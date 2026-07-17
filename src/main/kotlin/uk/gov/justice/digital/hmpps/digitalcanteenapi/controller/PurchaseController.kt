@@ -18,8 +18,9 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditO
 @RestController
 @PreAuthorize("permitAll()")
 @RequestMapping("/api")
-@Tag(name = "Purchase",
-     description = "Purchase API"
+@Tag(
+  name = "Purchase",
+  description = "Purchase API",
 )
 class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService) {
 
