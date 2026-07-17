@@ -80,7 +80,7 @@ class PrisonFinanceService(
       createClientUniqueReference = createClientReference.toClientUniqueReference(),
     )
 
-    return prisonFinanceClient.releaseHoleCreateTransaction(prisonId, offenderNo, holdNumber, request)
+    return prisonFinanceClient.releaseHoldCreateTransaction(prisonId, offenderNo, holdNumber, request)
   }
 
   private fun generateClientReference(): String = UUID.randomUUID().toString()

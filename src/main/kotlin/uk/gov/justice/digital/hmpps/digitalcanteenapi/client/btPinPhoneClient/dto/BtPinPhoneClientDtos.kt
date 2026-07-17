@@ -6,3 +6,10 @@ data class BtPinPhoneBalanceResponseDto(
   val balancePence: Int,
   val creditLimitPence: Int,
 )
+
+data class BtPinPhoneBuyCreditRequest(
+  val reference: String,
+  val prisonerId: String,
+  val amountPence: Int,
+  val type: Int,
+)

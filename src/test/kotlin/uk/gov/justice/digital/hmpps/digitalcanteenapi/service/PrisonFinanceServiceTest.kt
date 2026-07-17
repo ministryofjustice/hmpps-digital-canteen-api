@@ -108,7 +108,7 @@ class PrisonFinanceServiceTest {
     val clientRequest = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
 
     val expectedResponse = ReleaseHoldCreateTransactionResponse(id = "111-1")
-    whenever(prisonFinanceClient.releaseHoleCreateTransaction(any(), any(), any(), any()))
+    whenever(prisonFinanceClient.releaseHoldCreateTransaction(any(), any(), any(), any()))
       .thenReturn(expectedResponse)
 
     // When
@@ -117,7 +117,7 @@ class PrisonFinanceServiceTest {
     // Then
     val captor = argumentCaptor<ReleaseHoldCreateTransactionRequest>()
 
-    verify(prisonFinanceClient).releaseHoleCreateTransaction(
+    verify(prisonFinanceClient).releaseHoldCreateTransaction(
       eq(prisonId),
       eq(offenderNo),
       eq(holdNumber),

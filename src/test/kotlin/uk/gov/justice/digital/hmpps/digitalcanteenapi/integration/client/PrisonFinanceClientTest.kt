@@ -110,7 +110,7 @@ class PrisonFinanceClientTest {
       createClientUniqueReference = "ref-cre",
     )
 
-    val result = client.releaseHoleCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+    val result = client.releaseHoldCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
 
     assertThat(result).isNotNull
     assertThat(result.id).isEqualTo("468198331-1")
@@ -136,7 +136,7 @@ class PrisonFinanceClientTest {
     )
 
     assertThatThrownBy {
-      client.releaseHoleCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+      client.releaseHoldCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
     }.isInstanceOf(UpstreamException::class.java)
       .hasMessage("Internal Server Error")
   }
