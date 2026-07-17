@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,7 +18,10 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditO
 @RestController
 @PreAuthorize("permitAll()")
 @RequestMapping("/api")
-class APIController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService) {
+@Tag(name = "Purchase",
+     description = "Purchase API"
+)
+class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService) {
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Completes the cart and processes the checkout for PIN Phone credit purchase")
