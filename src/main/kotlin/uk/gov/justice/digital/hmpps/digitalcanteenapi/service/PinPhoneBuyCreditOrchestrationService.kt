@@ -1,6 +1,5 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
-import io.swagger.v3.core.util.Json.mapper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -27,14 +26,17 @@ class PinPhoneBuyCreditOrchestrationService(
   private val medusaStoreClient: MedusaStoreClient,
   private val btPinPhoneClient: BtPinPhoneClient,
 ) {
-  private val log: Logger = LoggerFactory.getLogger("PinPhoneBuyCreditOrchestrationService")
+  companion object {
+    private val log: Logger = LoggerFactory.getLogger("PinPhoneBuyCreditOrchestrationService")
+  }
 
   fun processCheckout(offenderNo: String, amount: Number, cartId: String): CompleteCartResponse {
-    val prisonerInfo = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(offenderNo).block()
+    val prisonId = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(offenderNo).block()
+      ?. also { log.info("Processing checkout for prisoner") }
+      ?. prisoner
+      ?. prisonId
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Prisoner not found")
 
-    log.info("Processing checkout for prisoner {}", prisonerInfo)
-    val prisonId = prisonerInfo.prisoner.prisonId
     val holdResponse = financeService.addHold(prisonId, offenderNo, AddHoldClientRequest(amount))
     log.info("Hold added for prisoner {} with hold number {}", offenderNo, holdResponse.holdNumber)
 
@@ -108,7 +110,7 @@ class PinPhoneBuyCreditOrchestrationService(
   }
 
   private fun handleCheckoutError(
-    prisonId: String?,
+    prisonId: String,
     offenderNo: String,
     holdNumber: Number,
     cartId: String,

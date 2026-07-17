@@ -1,5 +1,8 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PathVariable
@@ -17,6 +20,15 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditO
 class APIController(private val pinPhoneBuyCreditOrchestrationService: PinPhoneBuyCreditOrchestrationService) {
 
   @Suppress("MaxLineLength")
+  @Operation(summary = "Completes the cart and processes the checkout for PIN Phone credit purchase")
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Purchase completed successfully"),
+      ApiResponse(responseCode = "404", description = "Prisoner not found"),
+      ApiResponse(responseCode = "400", description = "Bad request or upstream error"),
+      ApiResponse(responseCode = "500", description = "Internal server error"),
+    ],
+  )
   @PostMapping("/{cartId}/complete", produces = [MediaType.APPLICATION_JSON_VALUE])
-  suspend fun completeCart(@PathVariable cartId: String, @RequestBody request: CompleteCartRequest): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
+  fun completeCart(@PathVariable cartId: String, @RequestBody request: CompleteCartRequest): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
 }

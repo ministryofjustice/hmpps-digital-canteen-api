@@ -24,11 +24,13 @@ class PrisonFinanceClient(
   @Qualifier("prisonApiWebClient") private val prisonerApiClient: WebClient,
   private val objectMapper: ObjectMapper,
 ) {
-  val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
+  companion object {
+    val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
+  }
 
   @Suppress("ktlint:standard:function-expression-body")
   fun addHold(
-    prisonId: String?,
+    prisonId: String,
     offenderNo: String,
     request: AddHoldRequest,
   ): AddHoldResponse {
@@ -48,7 +50,7 @@ class PrisonFinanceClient(
 
   @Suppress("ktlint:standard:function-expression-body")
   fun releaseHold(
-    prisonId: String?,
+    prisonId: String,
     offenderNo: String,
     holdNumber: Number,
     request: ReleaseHoldRequest,
@@ -74,7 +76,7 @@ class PrisonFinanceClient(
 
   @Suppress("ktlint:standard:function-expression-body")
   fun releaseHoldCreateTransaction(
-    prisonId: String?,
+    prisonId: String,
     offenderNo: String,
     holdNumber: Number,
     request: ReleaseHoldCreateTransactionRequest,
