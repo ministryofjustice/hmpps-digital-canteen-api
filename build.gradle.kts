@@ -2,7 +2,7 @@ plugins {
   id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.1"
   id("org.openapi.generator") version "7.24.0"
   kotlin("plugin.spring") version "2.4.10"
-  id("dev.detekt") version "2.0.0-alpha.4"
+  id("dev.detekt") version "2.0.0-alpha.5"
 }
 dependencyCheck {
   skipConfigurations.add("detekt")
