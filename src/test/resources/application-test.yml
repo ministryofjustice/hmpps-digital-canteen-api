@@ -26,6 +26,8 @@ api:
     base-url: http://localhost:8097
     publishable-key: test-pk
     timeout-ms: 5s
+  bt:
+    base-url: http://localhost:8098
 
 admin-email: test@test.com
 admin-password: test-password
