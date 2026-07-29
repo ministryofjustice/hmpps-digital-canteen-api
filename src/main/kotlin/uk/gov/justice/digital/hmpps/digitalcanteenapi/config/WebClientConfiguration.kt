@@ -39,6 +39,8 @@ class WebClientConfiguration(
   @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
   @param:Value("\${api.prison-api.timeout-ms:20s}") val prisonApiTimeout: Duration,
 
+  @param:Value("\${api.bt.base-url}") val btPinPhoneBaseUri: String,
+
   private val builder: WebClient.Builder,
 ) {
   @Bean
@@ -107,4 +109,7 @@ class WebClientConfiguration(
     prisonApiBaseUri,
     prisonApiTimeout,
   )
+
+  @Bean
+  fun btPinPhoneWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(btPinPhoneBaseUri).build()
 }
