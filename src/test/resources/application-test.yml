@@ -29,6 +29,11 @@ api:
   bt:
     base-url: http://localhost:8098
 
+bt:
+  client:
+    id: test-client-id
+    secret: test-client-secret
+
 admin-email: test@test.com
 admin-password: test-password
 
