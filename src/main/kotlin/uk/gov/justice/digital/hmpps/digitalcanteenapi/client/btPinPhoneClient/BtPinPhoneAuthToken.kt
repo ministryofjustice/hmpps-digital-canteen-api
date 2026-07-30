@@ -25,7 +25,7 @@ class BtPinPhoneAuthToken(
   @Synchronized
   fun getBtToken(): Mono<String> = btPinPhoneWebClient
     .post()
-    .uri("/Auth/token")
+    .uri("/auth/token")
     .bodyValue(BtTokenRequest(clientId = clientId, clientSecret = clientSecret))
     .retrieve()
     .bodyToMono(String::class.java)
