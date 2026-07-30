@@ -33,7 +33,7 @@ class TestController(
   ): Mono<ProductDetailsResponse> = productEnrichmentInfoService.getProductEnrichmentDetails(ean)
 
   @PreAuthorize("permitAll()")
-  @GetMapping("/test-bt-auth}")
+  @GetMapping("/test-bt-auth")
   fun testBtAuth() = btPinPhoneAuthToken.getBtToken()
 
   @PreAuthorize("permitAll()")
