@@ -26,7 +26,17 @@ class BtPinPhoneClient(
   fun getPrisonerBalanceUpdated(btPinPhoneBalanceRequest: BtPinPhoneBalanceRequest): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneAuthToken.getBtToken().flatMap { token ->
     btPinPhoneWebClient
       .post()
-      .uri("/PCS/Balance")
+      .uri("/pcs/Balance")
+      .headers { it.setBearerAuth(token) }
+      .bodyValue(btPinPhoneBalanceRequest)
+      .retrieve()
+      .bodyToMono(BtPinPhoneBalanceResponseDto::class.java)
+  }
+
+  fun getPrisonerBalanceUpdated2(btPinPhoneBalanceRequest: BtPinPhoneBalanceRequest): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneAuthToken.getBtToken().flatMap { token ->
+    btPinPhoneWebClient
+      .post()
+      .uri("/pcs/balance")
       .headers { it.setBearerAuth(token) }
       .bodyValue(btPinPhoneBalanceRequest)
       .retrieve()
