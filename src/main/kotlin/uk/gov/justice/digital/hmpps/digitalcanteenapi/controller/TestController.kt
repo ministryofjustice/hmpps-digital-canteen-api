@@ -36,7 +36,6 @@ class TestController(
   @GetMapping("/test-bt-auth}")
   fun testBtAuth() = btPinPhoneAuthToken.getBtToken()
 
-
   @PreAuthorize("permitAll()")
   @GetMapping("/test-bt/{prisonerId}/{reference}")
   fun testBt(
