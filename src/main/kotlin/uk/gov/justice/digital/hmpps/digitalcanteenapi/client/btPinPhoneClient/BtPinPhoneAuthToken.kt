@@ -32,6 +32,6 @@ class BtPinPhoneAuthToken(
     .doOnNext { rawBody -> log.info("BT auth raw response: {}", rawBody) }
     .map { rawBody ->
       val response = objectMapper.readValue(rawBody, BtTokenResponse::class.java)
-      response.token
+      response.accessToken
     }
 }

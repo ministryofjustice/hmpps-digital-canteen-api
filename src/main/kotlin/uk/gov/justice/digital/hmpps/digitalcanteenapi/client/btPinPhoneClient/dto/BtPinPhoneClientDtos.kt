@@ -7,7 +7,9 @@ data class BtTokenRequest(
 )
 
 data class BtTokenResponse(
-  val token: String,
+  val accessToken: String,
+  val tokenType: String,
+  val expiresIn: Long,
 )
 
 // Balance
