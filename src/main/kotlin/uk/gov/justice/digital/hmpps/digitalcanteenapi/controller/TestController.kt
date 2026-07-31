@@ -47,16 +47,4 @@ class TestController(
       prisonerId = prisonerId,
     ),
   )
-
-  @PreAuthorize("permitAll()")
-  @GetMapping("/test-bt2/{prisonerId}/{reference}")
-  fun testBt2(
-    @PathVariable prisonerId: String,
-    @PathVariable reference: String,
-  ): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneClient.getPrisonerBalanceUpdated(
-    BtPinPhoneBalanceRequest(
-      reference = reference,
-      prisonerId = prisonerId,
-    ),
-  )
 }
