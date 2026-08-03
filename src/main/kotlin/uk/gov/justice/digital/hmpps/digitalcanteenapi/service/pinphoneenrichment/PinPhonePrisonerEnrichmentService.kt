@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichmen
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
@@ -16,6 +17,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
 import java.util.Optional
+import java.util.UUID
 
 /**
  * Service responsible for enriching prisoner data with additional information from multiple sources.
@@ -55,15 +57,15 @@ class PinPhonePrisonerEnrichmentService(
       .flatMap { bookingId -> prisonFinanceClient.getPrisonerBalance(bookingId) }
       .onErrorResume { Mono.empty() }
 
-    // Bt is currently faked/hardcoded
-    val btPinPhoneMono =
-      btPinPhoneClient.getPrisonerBalance(prisonerNumber)
+    val reference = "${UUID.randomUUID()}-$prisonerNumber"
+    val btBalanceMono =
+      btPinPhoneClient.getPrisonerBalance(BtPinPhoneBalanceRequest(reference, prisonerNumber))
         .onErrorResume { Mono.empty() }
 
     return Mono.zip(
       prisonerMono,
       balanceMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
-      btPinPhoneMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
+      btBalanceMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
       activeAdjudicationsMono.map { Optional.of(it) }.defaultIfEmpty(Optional.empty()),
     )
       .map { tuple ->

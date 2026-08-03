@@ -114,6 +114,7 @@ class WebClientConfiguration(
     prisonApiTimeout,
   )
 
+  // todo: remove insecure cert (bt is currently on QA environment)
   @Bean
   fun btPinPhoneWebClient(builder: WebClient.Builder): WebClient {
     val sslContext = SslContextBuilder.forClient()

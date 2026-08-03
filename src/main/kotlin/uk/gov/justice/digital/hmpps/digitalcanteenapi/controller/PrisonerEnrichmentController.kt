@@ -9,12 +9,12 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment
 
 @RestController
 @RequestMapping("/api")
-class TestPrisonerEnrichmentController(
+class PrisonerEnrichmentController(
   private val pinPhonePrisonerEnrichmentService: PinPhonePrisonerEnrichmentService,
 ) {
 
   @PreAuthorize("permitAll()")
   @GetMapping("/prisoner-enrichment/{prisonerNumber}")
   @Suppress("MaxLineLength")
-  fun testEndpoint6(@PathVariable prisonerNumber: String) = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(prisonerNumber)
+  fun getPrisonerEnrichment(@PathVariable prisonerNumber: String) = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(prisonerNumber)
 }

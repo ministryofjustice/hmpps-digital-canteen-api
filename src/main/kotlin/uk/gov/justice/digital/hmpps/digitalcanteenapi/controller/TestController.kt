@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneAuthToken
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
@@ -18,7 +17,6 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneClient: BtPinPhoneClient,
-  private val btPinPhoneAuthToken: BtPinPhoneAuthToken,
 ) {
 
   @Suppress("FunctionOnlyReturningConstant")
@@ -34,14 +32,14 @@ class TestController(
 
   @PreAuthorize("permitAll()")
   @GetMapping("/test-bt-auth")
-  fun testBtAuth() = btPinPhoneAuthToken.getBtToken()
+  fun testBtAuth() = btPinPhoneClient.getBtToken()
 
   @PreAuthorize("permitAll()")
   @GetMapping("/test-bt/{prisonerId}/{reference}")
   fun testBt(
     @PathVariable prisonerId: String,
     @PathVariable reference: String,
-  ): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneClient.getPrisonerBalanceUpdated(
+  ): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneClient.getPrisonerBalance(
     BtPinPhoneBalanceRequest(
       reference = reference,
       prisonerId = prisonerId,
