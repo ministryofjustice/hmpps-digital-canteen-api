@@ -1,0 +1,137 @@
+{
+  "rules": [
+    {
+      "ruleId": "R001",
+      "name": "Under 18 Vape Restriction",
+      "providers": ["DHL"],
+      "scope": "ALL_PRISONS",
+      "effect": "DENY",
+      "conditions": {
+        "prisoner": {
+          "age": {
+            "operator": "<",
+            "value": 18
+          }
+        }
+      },
+      "products": {
+        "attributes": ["VAPE"]
+      }
+    },
+
+    {
+      "ruleId": "R003",
+      "name": "Prisoner On Arson Charge",
+      "providers": ["DHL"],
+      "scope": "SPECIFIC_PRISON",
+      "prisons": ["MSI"],
+      "effect": "DENY",
+      "conditions": {
+        "prisoner": {
+          "arsonCharge": true
+        }
+      },
+      "products": {
+        "attributes": [
+          "CAN_PRODUCE_FLAME"
+        ]
+      }
+    },
+
+    {
+      "ruleId": "BT_STANDARD_LIMIT",
+      "providers": ["BT"],
+      "scope": "ALL_PRISONS",
+      "effect": "LIMIT",
+      "products": {
+        "ids": [
+          "BT_PIN_Phone"
+        ]
+      },
+      "conditions": {
+        "prisoner": {
+          "isFN": false,
+          "isLG": false
+        }
+      },
+      "creditLimitMax": 5000,
+      "accountSource": "spends"
+    },
+
+    {
+      "ruleId": "BT_FN_ACCOUNT",
+      "providers": ["BT"],
+      "scope": "ALL_PRISONS",
+      "effect": "ALLOW",
+      "products": {
+        "ids": [
+          "BT_PIN_Phone"
+        ]
+      },
+      "conditions": {
+        "prisoner": {
+          "isFN": true
+        }
+      },
+      "creditLimitEnabled": false,
+      "accountSource": "cash"
+    },
+
+    {
+      "ruleId": "BT_LG_ACCOUNT",
+      "providers": ["BT"],
+      "scope": "ALL_PRISONS",
+      "effect": "ALLOW",
+      "products": {
+        "ids": [
+          "BT_PIN_Phone"
+        ]
+      },
+      "conditions": {
+        "prisoner": {
+          "isLG": true
+        }
+      },
+      "creditLimitEnabled": false,
+      "accountSource": "cash"
+    },
+    {
+      "ruleId": "R004",
+      "name": "Arson Prisoner Religious Item Allowance",
+      "providers": ["DHL"],
+      "scope": "SPECIFIC_PRISON",
+      "prisons": ["MSI", "LEI"],
+      "effect": "ALLOW",
+      "products": {
+        "attributes": [
+          "RELIGIOUS_ARTEFACT"
+        ]
+      },
+      "conditions": {
+        "prisoner": {
+          "arsonCharge": true,
+          "religiousAffiliation": true
+        }
+      },
+      "maxQuantityPerCycle": 5
+    },
+    {
+      "ruleId": "R005",
+      "name": "Arson Prisoner Religious Vape Allowance",
+      "providers": ["DHL"],
+      "scope": "ALL_PRISONS",
+      "effect": "ALLOW",
+      "products": {
+        "attributes": [
+          "RELIGIOUS_VAPE"
+        ]
+      },
+      "conditions": {
+        "prisoner": {
+          "arsonCharge": true
+        }
+      },
+      "maxQuantityPerCycle": 10
+    }
+  ]
+}

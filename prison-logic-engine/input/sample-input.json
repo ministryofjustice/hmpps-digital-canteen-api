@@ -1,0 +1,110 @@
+Standard Account (Within Limit)
+{
+  "input": {
+    "provider": "BT",
+    "productId": "BT_PIN_Phone",
+    "prisoner": {
+      "prisonId": "MSI",
+      "isFN": false,
+      "isLG": false,
+      "onAdjudication": false
+    },
+    "incentives": {
+      "iepCode": "STD"
+    },
+    "currentBalance": 1000,
+    "creditRequested": 500
+  }
+}
+
+Standard Account (Exceeds Limit)
+
+{
+  "input": {
+    "provider": "BT",
+    "productId": "BT_PIN_Phone",
+    "prisoner": {
+      "prisonId": "MSI",
+      "isFN": false,
+      "isLG": false
+    },
+    "incentives": {
+      "iepCode": "STD"
+    },
+    "currentBalance": 2400,
+    "creditRequested": 200
+  }
+}
+
+
+Foreign National Account - no credit limit involved
+
+{
+  "input": {
+    "provider": "BT",
+    "productId": "BT_PIN_Phone",
+    "prisoner": {
+      "prisonId": "LEI",
+      "isFN": true,
+      "isLG": false
+    },
+    "incentives": {
+      "iepCode": "STD"
+    },
+    "currentBalance": 10000,
+    "creditRequested": 5000
+  }
+}
+
+VAPE TEST- under 18
+
+
+{
+  "input": {
+    "provider": "DHL",
+    "productId": "VAPE001",
+    "prisoner": {
+      "prisonId": "MSI",
+      "age": 17
+    }
+  }
+}
+
+Arson prisoner buying lighter - deny
+
+{
+  "input": {
+    "provider": "DHL",
+    "productId": "LIGHTER001",
+    "prisoner": {
+      "prisonId": "MSI",
+      "arsonCharge": true
+    }
+  }
+}
+
+Prisoner Not on Arson Charge
+
+{
+  "input": {
+    "provider": "DHL",
+    "productId": "LIGHTER001",
+    "prisoner": {
+      "prisonId": "MSI",
+      "arsonCharge": false
+    }
+  }
+}
+
+Religious book with in a limit
+{
+  "input": {
+    "productId": "BOOK001",
+    "quantity": 3,
+    "prisoner": {
+      "prisonId": "MSI",
+      "arsonCharge": true,
+      "religiousAffiliation": true
+    }
+  }
+}
