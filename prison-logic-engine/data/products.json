@@ -1,0 +1,41 @@
+{
+  "products": {
+    "BT_PIN_Phone": {
+      "category": "PIN_CREDIT",
+      "global": true,
+      "attributes": [
+        "PHONE_CREDIT"
+      ]
+    },
+
+    "VAPE001": {
+      "category": "VAPE",
+      "global": true,
+      "attributes": [
+        "VAPE"
+      ]
+    },
+
+    "LIGHTER001": {
+      "category": "FIRE_STARTER",
+      "global": true,
+      "attributes": [
+        "CAN_PRODUCE_FLAME"
+      ]
+    },
+    "BOOK001": {
+      "category": "RELIGIOUS",
+      "global": true,
+      "attributes": [
+        "RELIGIOUS_ARTEFACT"
+      ]
+    },
+    "VAPE_REL001": {
+      "category": "VAPE",
+      "global": true,
+      "attributes": [
+        "RELIGIOUS_VAPE"
+      ]
+    }
+  }
+}
