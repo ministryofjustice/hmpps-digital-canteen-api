@@ -14,7 +14,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dt
 
 class BtMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
-    private const val WIREMOCK_PORT = 8098
+    private const val WIREMOCK_PORT = 8099
   }
 
   private val mapper: JsonMapper = JsonMapper.builder().build()

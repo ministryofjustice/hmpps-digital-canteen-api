@@ -27,7 +27,7 @@ api:
     publishable-key: test-pk
     timeout-ms: 5s
   bt:
-    base-url: http://localhost:8098
+    base-url: http://localhost:8099
 
 bt:
   client:

@@ -44,11 +44,11 @@ services:
   wiremock:
     image: wiremock/wiremock:3x
     ports:
-      - "8081:8081"
+      - "8075:8075"
     volumes:
       - ./wiremock/mappings:/home/wiremock/mappings
       - ./wiremock/__files:/home/wiremock/__files
-    command: --verbose --local-response-templating --port 8081
+    command: --verbose --local-response-templating --port 8075
 
 networks:
   hmpps:
