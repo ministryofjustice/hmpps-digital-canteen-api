@@ -41,5 +41,14 @@ services:
       - POSTGRES_DB=hmpps-digital-canteen-data
       - TZ="Europe/London"
 
+  opa:
+    image: openpolicyagent/opa:latest
+    command: ["run", "--server", "--addr", ":8181", "--watch", "/policies"]
+    ports:
+      - "8181:8181"
+    volumes:
+      - ./opa:/policies
+
 networks:
   hmpps:
+

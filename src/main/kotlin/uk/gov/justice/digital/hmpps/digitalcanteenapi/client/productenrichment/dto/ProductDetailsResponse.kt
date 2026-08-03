@@ -25,7 +25,7 @@ data class ProductEnrichmentInfo(
   val ingredientsAnalysisTags: List<String>?,
   @JsonProperty("packaging_tags")
   val packagingTags: List<String>?,
-  @JsonProperty("categories_tags")
+  @JsonProperty("_keywords")
   val categoriesTags: List<String>?,
   val nutriments: Nutriments?,
 )
