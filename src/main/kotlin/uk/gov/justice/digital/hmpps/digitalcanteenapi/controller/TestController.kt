@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 
@@ -39,7 +39,7 @@ class TestController(
   fun testBt(
     @PathVariable prisonerId: String,
     @PathVariable reference: String,
-  ): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneClient.getPrisonerBalance(
+  ): Mono<BtPinPhoneBalanceResponse> = btPinPhoneClient.getPrisonerBalance(
     BtPinPhoneBalanceRequest(
       reference = reference,
       prisonerId = prisonerId,

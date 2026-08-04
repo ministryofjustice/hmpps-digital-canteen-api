@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -10,7 +9,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import tools.jackson.databind.json.JsonMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 
 class BtMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -46,7 +45,7 @@ class BtMockServer : WireMockServer(WIREMOCK_PORT) {
             .withHeader("Content-Type", "application/json")
             .withBody(
               mapper.writeValueAsString(
-                BtPinPhoneBalanceResponseDto(
+                BtPinPhoneBalanceResponse(
                   "testReference",
                   "xyz",
                   200001,

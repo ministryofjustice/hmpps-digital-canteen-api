@@ -4,12 +4,13 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBuyCreditRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtTokenRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtTokenResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenResponse
 
 @Component
 class BtPinPhoneClient(
@@ -23,16 +24,16 @@ class BtPinPhoneClient(
     .uri("/auth/token")
     .bodyValue(BtTokenRequest(clientId = clientId, clientSecret = clientSecret))
     .retrieve()
-    .bodyToMono(BtTokenResponse::class.java)
+    .bodyToMono<BtTokenResponse>()
 
-  fun getPrisonerBalance(btPinPhoneBalanceRequest: BtPinPhoneBalanceRequest): Mono<BtPinPhoneBalanceResponseDto> = getBtToken().flatMap { btAuthResponse ->
+  fun getPrisonerBalance(btPinPhoneBalanceRequest: BtPinPhoneBalanceRequest): Mono<BtPinPhoneBalanceResponse> = getBtToken().flatMap { btAuthResponse ->
     btPinPhoneWebClient
       .post()
       .uri("/pcs/Balance")
       .headers { it.setBearerAuth(btAuthResponse.accessToken) }
       .bodyValue(btPinPhoneBalanceRequest)
       .retrieve()
-      .bodyToMono(BtPinPhoneBalanceResponseDto::class.java)
+      .bodyToMono<BtPinPhoneBalanceResponse>()
   }
 
   @Suppress("UnusedParameter")
