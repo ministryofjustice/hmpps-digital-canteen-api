@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneContactsRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneContactsResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 
@@ -41,6 +43,18 @@ class TestController(
     @PathVariable reference: String,
   ): Mono<BtPinPhoneBalanceResponseDto> = btPinPhoneClient.getPrisonerBalance(
     BtPinPhoneBalanceRequest(
+      reference = reference,
+      prisonerId = prisonerId,
+    ),
+  )
+
+  @PreAuthorize("permitAll()")
+  @GetMapping("/test-bt-contact/{prisonerId}/{reference}")
+  fun testBtContact(
+    @PathVariable prisonerId: String,
+    @PathVariable reference: String,
+  ): Mono<BtPinPhoneContactsResponseDto> = btPinPhoneClient.getPrisonerContacts(
+    BtPinPhoneContactsRequest(
       reference = reference,
       prisonerId = prisonerId,
     ),
