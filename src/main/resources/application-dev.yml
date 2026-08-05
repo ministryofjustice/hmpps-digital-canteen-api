@@ -23,3 +23,10 @@ api:
   prison-api:
     base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
     timeout-ms: 20s
+  bt:
+    base-url: http://localhost:8075
+
+bt:
+  client:
+    id: test-client-id
+    secret: test-client-secret

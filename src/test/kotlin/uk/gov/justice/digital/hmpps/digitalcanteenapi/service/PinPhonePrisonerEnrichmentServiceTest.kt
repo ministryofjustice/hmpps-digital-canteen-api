@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.whenever
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
@@ -58,7 +59,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
     whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(prisoner))
-    whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(btPinPhoneClient.getPrisonerBalance(any()))
       .thenReturn(Mono.just(btPinPhoneBalance))
     whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.just(prisonerBalance))
@@ -99,7 +100,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
       .thenReturn(Mono.just(prisoner))
     whenever(prisonerAdjudicationsClient.getPrisonerAdjudication(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.empty())
-    whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(btPinPhoneClient.getPrisonerBalance(any()))
       .thenReturn(Mono.just(btPinPhoneBalance))
     whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
       .thenReturn(Mono.just(prisonerBalance))
@@ -133,7 +134,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
     whenever(prisonerSearchClient.getPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
       .thenReturn(Mono.just(prisoner))
-    whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+    whenever(btPinPhoneClient.getPrisonerBalance(any()))
       .thenReturn(Mono.just(btPinPhoneBalance))
 
     val result = service.getEnrichedPrisoner(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER)
@@ -178,7 +179,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
         whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.just(prisonerBalance))
-        whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+        whenever(btPinPhoneClient.getPrisonerBalance(any()))
           .thenReturn(Mono.just(btPinPhoneBalance))
       }
 
@@ -187,7 +188,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
         whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.just(prisonerBalance))
-        whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+        whenever(btPinPhoneClient.getPrisonerBalance(any()))
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
       }
 
@@ -196,7 +197,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
           .thenReturn(Mono.empty())
         whenever(prisonFinanceClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.BOOKING_ID))
           .thenReturn(Mono.error(RuntimeException("Service unavailable")))
-        whenever(btPinPhoneClient.getPrisonerBalance(PinPhonePrisonerEnrichmentTestFixture.PRISONER_NUMBER))
+        whenever(btPinPhoneClient.getPrisonerBalance(any()))
           .thenReturn(Mono.just(btPinPhoneBalance))
       }
     }
