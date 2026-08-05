@@ -254,13 +254,13 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       prisonId = PRISONER_ID,
       offenderNo = PRISONER_NUMBER,
       firstName = "John",
-      lastName = "Doe"
+      lastName = "Doe",
     )
     val medusaCart = MedusaCart(
       id = CART_ID,
       regionId = "region-1",
       customerId = "customer-1",
-      currencyCode = "gbp"
+      currencyCode = "gbp",
     )
     val medusaResponse = MedusaCreateCartResponse(cart = medusaCart)
 
@@ -281,7 +281,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       prisonId = PRISONER_ID,
       offenderNo = PRISONER_NUMBER,
       firstName = "John",
-      lastName = "Doe"
+      lastName = "Doe",
     )
     whenever(medusaStoreClient.createCart(any())).thenThrow(RuntimeException("Medusa failed"))
 
