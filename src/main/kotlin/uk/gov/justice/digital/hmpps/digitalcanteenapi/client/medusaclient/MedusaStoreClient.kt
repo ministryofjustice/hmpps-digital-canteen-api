@@ -32,7 +32,7 @@ class MedusaStoreClient(
 
   fun createCart(cartRequest: MedusaCreateCartRequest): MedusaCreateCartResponse = medusaStoreClient
     .post()
-    .uri ("/store/pin-phone/carts")
+    .uri("/store/pin-phone/carts")
     .bodyValue(cartRequest)
     .retrieve()
     .bodyToMono(MedusaCreateCartResponse::class.java)

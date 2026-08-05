@@ -151,18 +151,18 @@ class PinPhoneBuyCreditOrchestrationService(
           prison_id = request.prisonId,
           offender_no = request.offenderNo,
           first_name = request.firstName,
-          last_name = request.lastName
-        )
+          last_name = request.lastName,
+        ),
       )
       val response = medusaStoreClient.createCart(medusaRequest)
 
       log.info("Successfully created cart for offender {}", response.cart.id)
       return CreateCartResponse(
-        cartId = response.cart.id
+        cartId = response.cart.id,
       )
     } catch (ex: Exception) {
       throw CartCreationException(
-        "Failed to create cart for offender ${request.offenderNo}"
+        "Failed to create cart for offender ${request.offenderNo}",
       )
     }
   }

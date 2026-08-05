@@ -65,15 +65,14 @@ class DigitalCanteenApiExceptionHandler {
       ),
     ).also { log.error("Unexpected exception", e) }
 
-
   @ExceptionHandler(CartCreationException::class)
   fun handleCartCreationException(ex: CartCreationException): ResponseEntity<Map<String, String>> = ResponseEntity
     .status(HttpStatus.BAD_GATEWAY)
     .body(
-          mapOf(
-            "code" to "CART_CREATION_FAILED",
-            "message" to (ex.message ?: "Failed to create cart")
-          ),
+      mapOf(
+        "code" to "CART_CREATION_FAILED",
+        "message" to (ex.message ?: "Failed to create cart"),
+      ),
     )
 
   private companion object {

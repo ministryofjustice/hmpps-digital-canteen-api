@@ -49,7 +49,5 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     ],
   )
   @PostMapping("/createCart", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun createCart(@RequestBody createCartRequest: CreateCartRequest): CreateCartResponse {
-    return pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
-  }
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): CreateCartResponse = pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
 }

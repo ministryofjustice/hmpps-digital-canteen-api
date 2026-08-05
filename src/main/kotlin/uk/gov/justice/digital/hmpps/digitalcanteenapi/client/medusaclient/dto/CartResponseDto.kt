@@ -7,5 +7,5 @@ data class CompleteCartResponse(
 )
 
 data class CreateCartResponse(
-  val cartId: String
+  val cartId: String,
 )

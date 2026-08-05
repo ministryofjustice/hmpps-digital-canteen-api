@@ -18,18 +18,18 @@ data class CreateCartRequest(
 )
 
 data class MedusaCreateCartRequest(
-  val metadata: CartMetadata
+  val metadata: CartMetadata,
 )
 
 data class CartMetadata(
   val prison_id: String,
   val offender_no: String,
   val first_name: String,
-  val last_name: String
+  val last_name: String,
 )
 
 data class MedusaCreateCartResponse(
-  val cart: MedusaCart
+  val cart: MedusaCart,
 )
 
 data class MedusaCart(
@@ -42,5 +42,5 @@ data class MedusaCart(
   val customerId: String?,
 
   @JsonProperty("currency_code")
-  val currencyCode: String
+  val currencyCode: String,
 )
