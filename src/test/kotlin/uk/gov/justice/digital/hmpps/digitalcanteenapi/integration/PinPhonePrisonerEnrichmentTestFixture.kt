@@ -1,6 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
@@ -88,7 +88,7 @@ object PinPhonePrisonerEnrichmentTestFixture {
     currency = "GBP",
   )
 
-  fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneBalanceResponseDto(
+  fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneBalanceResponse(
     reference = REFERENCE,
     prisonerId = prisonerNumber,
     balancePence = 1288,

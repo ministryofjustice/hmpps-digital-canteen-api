@@ -1,0 +1,255 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BT Pin Phone API",
+    "description": "BT Pin Phone service API for prisoner phone credit management.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "HMPPS Digital Studio",
+      "email": "feedback@digital.justice.gov.uk"
+    }
+  },
+  "paths": {
+    "/auth/token": {
+      "post": {
+        "operationId": "getToken",
+        "summary": "Obtain an authentication token",
+        "description": "Authenticates with the BT Pin Phone service using client credentials and returns a bearer token.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BtTokenRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BtTokenResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid client credentials"
+          }
+        }
+      }
+    },
+    "/pcs/Balance": {
+      "post": {
+        "operationId": "getPrisonerBalance",
+        "summary": "Get a prisoner's PIN phone balance",
+        "description": "Retrieves the current balance and credit limit for a prisoner's PIN phone account.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BtPinPhoneBalanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Balance retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BtPinPhoneBalanceResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorised — token missing or expired"
+          },
+          "404": {
+            "description": "Prisoner not found"
+          }
+        }
+      }
+    },
+    "/pcs/BuyCredit": {
+      "post": {
+        "operationId": "buyCredit",
+        "summary": "Purchase PIN phone credit for a prisoner",
+        "description": "Adds credit to a prisoner's PIN phone account.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BtPinPhoneBuyCreditRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Credit added successfully"
+          },
+          "400": {
+            "description": "Invalid request — e.g. amount exceeds credit limit"
+          },
+          "401": {
+            "description": "Unauthorised — token missing or expired"
+          },
+          "404": {
+            "description": "Prisoner not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Token obtained from /auth/token"
+      }
+    },
+    "schemas": {
+      "BtTokenRequest": {
+        "type": "object",
+        "description": "Client credentials for BT authentication",
+        "required": [
+          "clientId",
+          "clientSecret"
+        ],
+        "properties": {
+          "clientId": {
+            "type": "string",
+            "description": "The BT API client identifier"
+          },
+          "clientSecret": {
+            "type": "string",
+            "description": "The BT API client secret"
+          }
+        }
+      },
+      "BtTokenResponse": {
+        "type": "object",
+        "description": "Authentication token response from BT",
+        "required": [
+          "accessToken",
+          "tokenType",
+          "expiresIn"
+        ],
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "The bearer token to use in subsequent requests"
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "The type of token, typically 'Bearer'",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Token validity duration in seconds"
+          }
+        }
+      },
+      "BtPinPhoneBalanceRequest": {
+        "type": "object",
+        "description": "Request to retrieve a prisoner's PIN phone balance",
+        "required": [
+          "reference",
+          "prisonerId"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "A unique reference for this request"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          }
+        }
+      },
+      "BtPinPhoneBalanceResponse": {
+        "type": "object",
+        "description": "Prisoner's PIN phone balance details",
+        "required": [
+          "reference",
+          "prisonerId",
+          "balancePence",
+          "creditLimitPence"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "The reference from the original request"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          },
+          "balancePence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Current balance in pence"
+          },
+          "creditLimitPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "Maximum credit limit in pence"
+          }
+        }
+      },
+      "BtPinPhoneBuyCreditRequest": {
+        "type": "object",
+        "description": "Request to add credit to a prisoner's PIN phone account",
+        "required": [
+          "reference",
+          "prisonerId",
+          "amountPence",
+          "type"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "A unique reference for this transaction"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          },
+          "amountPence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The amount of credit to add in pence"
+          },
+          "type": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The type of credit"
+          }
+        }
+      }
+    }
+  }
+}

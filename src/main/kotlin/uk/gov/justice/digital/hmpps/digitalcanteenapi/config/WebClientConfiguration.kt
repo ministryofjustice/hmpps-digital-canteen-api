@@ -1,10 +1,14 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.config
 
+import io.netty.handler.ssl.SslContextBuilder
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.http.client.reactive.ReactorClientHttpConnector
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager
 import org.springframework.web.reactive.function.client.WebClient
+import reactor.netty.http.client.HttpClient
 import uk.gov.justice.hmpps.kotlin.auth.authorisedWebClient
 import uk.gov.justice.hmpps.kotlin.auth.healthWebClient
 import java.time.Duration
@@ -38,6 +42,8 @@ class WebClientConfiguration(
 
   @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
   @param:Value("\${api.prison-api.timeout-ms:20s}") val prisonApiTimeout: Duration,
+
+  @param:Value("\${api.bt.base-url}") val btPinPhoneBaseUri: String,
 
   private val builder: WebClient.Builder,
 ) {
@@ -107,4 +113,18 @@ class WebClientConfiguration(
     prisonApiBaseUri,
     prisonApiTimeout,
   )
+
+  // todo: remove insecure cert (bt is currently on QA environment)
+  @Bean
+  fun btPinPhoneWebClient(builder: WebClient.Builder): WebClient {
+    val sslContext = SslContextBuilder.forClient()
+      .trustManager(InsecureTrustManagerFactory.INSTANCE)
+      .build()
+    val httpClient = HttpClient.create()
+      .secure { it.sslContext(sslContext) }
+    return builder
+      .baseUrl(btPinPhoneBaseUri)
+      .clientConnector(ReactorClientHttpConnector(httpClient))
+      .build()
+  }
 }
