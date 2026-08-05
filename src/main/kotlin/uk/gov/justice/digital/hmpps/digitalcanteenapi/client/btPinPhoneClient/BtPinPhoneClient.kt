@@ -40,7 +40,7 @@ class BtPinPhoneClient(
   fun getPrisonerContacts(btPinPhoneContactRequest: BtPinPhoneContactsRequest): Mono<BtPinPhoneContactsResponseDto> = getBtToken().flatMap { btAuthResponse ->
     btPinPhoneWebClient
       .post()
-      .uri("/pcs/ControlledNumber")
+      .uri("/pcs/ControlledNumbers")
       .headers { it.setBearerAuth(btAuthResponse.accessToken) }
       .bodyValue(btPinPhoneContactRequest)
       .retrieve()
