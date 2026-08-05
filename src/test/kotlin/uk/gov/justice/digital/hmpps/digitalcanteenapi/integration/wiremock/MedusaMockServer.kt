@@ -55,6 +55,45 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
           .withStatus(200),
       ),
   )
+
+  fun stubCreateCart(): StubMapping = stubFor(
+    post("/store/pin-phone/carts")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """
+            {
+              "cart": {
+                "id": "test-cart-id",
+                "region_id": "test-region-id",
+                "customer_id": "test-customer-id",
+                "currency_code": "gbp"
+              }
+            }
+            """,
+          )
+          .withStatus(200),
+      ),
+  )
+
+  fun stubCompleteCart(cartId: String): StubMapping = stubFor(
+    post("/store/pin-phone/carts/$cartId/complete")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """
+            {
+              "order": {
+                "id": "test-order-id"
+              }
+            }
+            """,
+          )
+          .withStatus(200),
+      ),
+  )
 }
 
 class MedusaApiExtension :

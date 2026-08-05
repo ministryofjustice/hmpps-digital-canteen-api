@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CreateCartRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditOrchestrationService
@@ -36,4 +38,18 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
   )
   @PostMapping("/{cartId}/complete", produces = [MediaType.APPLICATION_JSON_VALUE])
   fun completeCart(@PathVariable cartId: String, @RequestBody request: CompleteCartRequest): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
+
+  @Suppress("MaxLineLength")
+  @Operation(summary = "Creates a new cart for the prisoner customer")
+  @ApiResponses(
+    value = [
+      ApiResponse(responseCode = "200", description = "Cart created successfully"),
+      ApiResponse(responseCode = "400", description = "Bad request"),
+      ApiResponse(responseCode = "500", description = "Internal server error"),
+    ],
+  )
+  @PostMapping("/createCart", produces = [MediaType.APPLICATION_JSON_VALUE])
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): CreateCartResponse {
+    return pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
+  }
 }

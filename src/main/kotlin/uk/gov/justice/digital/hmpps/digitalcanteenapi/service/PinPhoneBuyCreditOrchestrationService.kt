@@ -11,11 +11,16 @@ import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBuyCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CartMetadata
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CreateCartRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CreateCartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 
@@ -136,5 +141,29 @@ class PinPhoneBuyCreditOrchestrationService(
       status = PaymentStatus.ERROR.toString(),
       message = errorMessage ?: "Checkout failed",
     )
+  }
+
+  fun createCart(request: CreateCartRequest): CreateCartResponse {
+    log.info("Creating cart for offender {}", request.offenderNo)
+    try {
+      val medusaRequest = MedusaCreateCartRequest(
+        metadata = CartMetadata(
+          prison_id = request.prisonId,
+          offender_no = request.offenderNo,
+          first_name = request.firstName,
+          last_name = request.lastName
+        )
+      )
+      val response = medusaStoreClient.createCart(medusaRequest)
+
+      log.info("Successfully created cart for offender {}", response.cart.id)
+      return CreateCartResponse(
+        cartId = response.cart.id
+      )
+    } catch (ex: Exception) {
+      throw CartCreationException(
+        "Failed to create cart for offender ${request.offenderNo}"
+      )
+    }
   }
 }
