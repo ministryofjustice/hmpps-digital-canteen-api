@@ -9,6 +9,8 @@ import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenResponse
 
@@ -34,6 +36,16 @@ class BtPinPhoneClient(
       .bodyValue(btPinPhoneBalanceRequest)
       .retrieve()
       .bodyToMono<BtPinPhoneBalanceResponse>()
+  }
+
+  fun getPrisonerContacts(btPinPhoneControlledNumbersRequest: BtPinPhoneControlledNumbersRequest): Mono<BtPinPhoneControlledNumbersResponse> = getBtToken().flatMap { btAuthResponse ->
+    btPinPhoneWebClient
+      .post()
+      .uri("/pcs/ControlledNumbers")
+      .headers { it.setBearerAuth(btAuthResponse.accessToken) }
+      .bodyValue(btPinPhoneControlledNumbersRequest)
+      .retrieve()
+      .bodyToMono<BtPinPhoneControlledNumbersResponse>()
   }
 
   @Suppress("UnusedParameter")
