@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 
+import org.springframework.context.annotation.Profile
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -19,6 +20,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 
 @RestController
 @RequestMapping("/api")
+@Profile("dev", "test")
 class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneTestSupportClient: BtPinPhoneTestSupportClient,
