@@ -3,6 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.server.ResponseStatusException
@@ -11,11 +12,16 @@ import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CartMetadata
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 
@@ -66,7 +72,7 @@ class PinPhoneBuyCreditOrchestrationService(
       // return the following response to the client
       CompleteCartResponse(
         status = "SUCCESS",
-        orderId = cartResponse.order?.id,
+        order = cartResponse.order?.id,
         message = "Purchase completed successfully.",
       )
     } catch (e: WebClientResponseException) { // added to handled the medusa store error
@@ -136,5 +142,32 @@ class PinPhoneBuyCreditOrchestrationService(
       status = PaymentStatus.ERROR.toString(),
       message = errorMessage ?: "Checkout failed",
     )
+  }
+
+  fun createCart(request: CreateCartRequest): ResponseEntity<CreateCartResponse> {
+    log.info("Creating cart for offender {}", request.offenderNo)
+    try {
+      val medusaRequest = MedusaCreateCartRequest(
+        metadata = CartMetadata(
+          prison_id = request.prisonId,
+          offender_no = request.offenderNo,
+          first_name = request.firstName,
+          last_name = request.lastName,
+        ),
+      )
+      val response = medusaStoreClient.createCart(medusaRequest)
+
+      log.info("Successfully created cart for offender {}", response.cart.id)
+      return ResponseEntity.ok(
+        CreateCartResponse(
+          cartId = response.cart.id,
+        ),
+      )
+    } catch (ex: Exception) {
+      log.error("Failed to create cart for offender {}", request.offenderNo)
+      throw CartCreationException(
+        "Failed to create cart for offender ${request.offenderNo}",
+      )
+    }
   }
 }
