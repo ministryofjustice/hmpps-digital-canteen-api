@@ -45,7 +45,7 @@ class BtPinPhoneTestSupportClient(
   fun getRelationships(): Mono<BtRelationshipsResponse> = getBtToken().flatMap { token ->
     btPinPhoneWebClient
       .post()
-      .uri("/PCS/Relationships")
+      .uri("/pcs/Relationships")
       .headers { it.setBearerAuth(token) }
       .bodyValue(emptyMap<String, Any>())
       .retrieve()
