@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphonecontacts.BtPinPhoneContactsService
 
 @Tag(
   name = "Prisoner Contacts",
@@ -23,7 +24,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.ge
 @PreAuthorize("permitAll()")
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class BtContactController(
-  private val btPinPhoneClient: BtPinPhoneClient,
+  private val btPinPhoneContactsService: BtPinPhoneContactsService,
 ) {
   @Operation(
     summary = "Retrieves prisoners contacts with information from BT",
@@ -34,18 +35,10 @@ class BtContactController(
       ApiResponse(responseCode = "500", description = "Internal server error"),
     ],
   )
-  @GetMapping("/prisoner-contacts/{prisonerNumber}/{reference}")
+  @GetMapping("/prisoner-contacts/{prisonerNumber}")
   fun getPrisonerContacts(
     @PathVariable
     @Parameter(description = "The prisoner number", example = "A1234BC", required = true)
-    prisonerNumber: String,
-    @PathVariable
-    @Parameter(description = "Unique reference", example = "XYZ-A1234BC", required = true)
-    reference: String,
-  ) = btPinPhoneClient.getPrisonerContacts(
-    BtPinPhoneControlledNumbersRequest(
-      reference,
-      prisonerNumber,
-    ),
-  )
+    prisonerNumber: String ) = btPinPhoneContactsService.getPrisonerContacts(prisonerNumber)
+
 }
