@@ -1,9 +1,12 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenResponse
@@ -14,6 +17,11 @@ class BtPinPhoneTestSupportClient(
   @Value("\${bt.client.id}") private val clientId: String,
   @Value("\${bt.client.secret}") private val clientSecret: String,
 ) {
+
+  companion object {
+    val logger: Logger = LoggerFactory.getLogger(BtPinPhoneTestSupportClient::class.java)
+  }
+
   private fun getBtToken(): Mono<String> = btPinPhoneWebClient
     .post()
     .uri("/auth/token")
@@ -30,6 +38,10 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(request)
       .retrieve()
       .bodyToMono(CreateAccountResponse::class.java)
+      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
+        logger.error("BT response: ${ex.responseBodyAsString}")
+        Mono.error(ex)
+      }
   }
 
   fun createControlledNumber(request: CreateControlledNumberRequest): Mono<CreateControlledNumberResponse> = getBtToken().flatMap { token ->
@@ -40,6 +52,10 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(request)
       .retrieve()
       .bodyToMono(CreateControlledNumberResponse::class.java)
+      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
+        logger.error("BT response: ${ex.responseBodyAsString}")
+        Mono.error(ex)
+      }
   }
 
   fun getRelationships(): Mono<BtRelationshipsResponse> = getBtToken().flatMap { token ->
@@ -50,6 +66,10 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(emptyMap<String, Any>())
       .retrieve()
       .bodyToMono(BtRelationshipsResponse::class.java)
+      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
+        logger.error("BT response: ${ex.responseBodyAsString}")
+        Mono.error(ex)
+      }
   }
 }
 
