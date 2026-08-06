@@ -16,10 +16,11 @@ import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCart
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Order
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
@@ -33,7 +34,6 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBE
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
 import java.time.LocalDate
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CompleteCartResponse as MedusaCompleteCartResponse
 
 class PinPhoneBuyCreditOrchestrationServiceTest {
 
@@ -91,14 +91,14 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenReturn(ReleaseHoldCreateTransactionResponse(id = "tx123"))
 
     whenever(medusaStoreClient.completeCart(any(), any()))
-      .thenReturn(MedusaCompleteCartResponse(order = Order(id = "order123")))
+      .thenReturn(MedusaCompleteCartResponse(Order(id = "order123")))
 
     // When
     val result = service.processCheckout(PRISONER_NUMBER, amount, cartId)
 
     // Then
     assertEquals("SUCCESS", result.status)
-    assertEquals("order123", result.orderId)
+    assertEquals("order123", result.order)
     assertEquals("Purchase completed successfully.", result.message)
 
     verify(pinPhonePrisonerEnrichmentService).getEnrichedPrisoner(PRISONER_NUMBER)
@@ -139,7 +139,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     // Then
     assertEquals("SUCCESS", result.status)
-    assertEquals("order123", result.orderId)
+    assertEquals("order123", result.order)
     assertEquals("Purchase completed successfully.", result.message)
     verify(btPinPhoneClient, times(2)).addCredit(any())
   }
@@ -160,12 +160,12 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
       .thenReturn(ReleaseHoldCreateTransactionResponse(id = "tx123"))
     whenever(medusaStoreClient.completeCart(any(), any()))
-      .thenReturn(MedusaCompleteCartResponse(code = "ORDER_NOT_FOUND", message = "Order not found"))
+      .thenReturn(MedusaCompleteCartResponse(order = Order(id = "order123")))
     val result = service.processCheckout(PRISONER_NUMBER, amount, cartId)
 
     // Then
     assertEquals("ERROR", result.status)
-    assertEquals(null, result.orderId)
+    assertEquals(null, result.order)
     assertEquals("BT Down", result.message)
     verify(btPinPhoneClient, times(3)).addCredit(any())
   }
@@ -270,7 +270,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val result = service.createCart(request)
 
     // Then
-    assertEquals(CART_ID, result.cartId)
+    assertEquals(CART_ID, result.body?.cartId)
     verify(medusaStoreClient).createCart(any())
   }
 

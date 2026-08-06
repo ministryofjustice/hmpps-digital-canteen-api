@@ -16,11 +16,6 @@ data class AddHoldClientRequest(
   val amount: Number,
 )
 
-data class CompleteCartRequest(
-  val offenderNo: String,
-  val amount: Number,
-)
-
 @Suppress("ConstructorParameterNaming")
 data class PaymentResult(
   val offender_no: String,
@@ -36,8 +31,3 @@ enum class PaymentStatus {
   ERROR,
   CANCELED,
 }
-data class CompleteCartResponse(
-  val status: String,
-  val orderId: String? = null,
-  val message: String,
-)
