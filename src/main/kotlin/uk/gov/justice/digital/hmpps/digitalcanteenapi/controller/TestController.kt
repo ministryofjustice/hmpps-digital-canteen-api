@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneTestSupportClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtRelationshipsResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateAccountRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateAccountResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateControlledNumberRequest
@@ -45,4 +46,8 @@ class TestController(
   fun createBtControlledNumber(
     @RequestBody request: CreateControlledNumberRequest,
   ): Mono<CreateControlledNumberResponse> = btPinPhoneTestSupportClient.createControlledNumber(request)
+
+  @PreAuthorize("permitAll()")
+  @PutMapping("/bt-test/relationships")
+  fun getBtRelationships(): Mono<BtRelationshipsResponse> = btPinPhoneTestSupportClient.getRelationships()
 }

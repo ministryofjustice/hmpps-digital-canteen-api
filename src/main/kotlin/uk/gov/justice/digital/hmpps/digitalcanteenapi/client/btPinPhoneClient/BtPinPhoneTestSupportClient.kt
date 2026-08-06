@@ -41,6 +41,16 @@ class BtPinPhoneTestSupportClient(
       .retrieve()
       .bodyToMono(CreateControlledNumberResponse::class.java)
   }
+
+  fun getRelationships(): Mono<BtRelationshipsResponse> = getBtToken().flatMap { token ->
+    btPinPhoneWebClient
+      .post()
+      .uri("/PCS/Relationships")
+      .headers { it.setBearerAuth(token) }
+      .bodyValue(emptyMap<String, Any>())
+      .retrieve()
+      .bodyToMono(BtRelationshipsResponse::class.java)
+  }
 }
 
 data class CreateAccountRequest(
@@ -76,4 +86,13 @@ data class CreateControlledNumberResponse(
   val reference: String,
   val prisonerId: String,
   val id: Int,
+)
+
+data class BtRelationshipsResponse(
+  val relationships: List<BtRelationship>,
+)
+
+data class BtRelationship(
+  val id: Int,
+  val description: String,
 )
