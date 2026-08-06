@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Profile
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -50,6 +51,6 @@ class TestController(
   ): Mono<CreateControlledNumberResponse> = btPinPhoneTestSupportClient.createControlledNumber(request)
 
   @PreAuthorize("permitAll()")
-  @PutMapping("/bt-test/relationships")
+  @PostMapping("/bt-test/relationships")
   fun getBtRelationships(): Mono<BtRelationshipsResponse> = btPinPhoneTestSupportClient.getRelationships()
 }
