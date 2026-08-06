@@ -9,7 +9,7 @@ import org.springframework.web.server.ResponseStatusException
 import tools.jackson.module.kotlin.jacksonObjectMapper
 import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.dto.BtPinPhoneBuyCreditRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CartMetadata
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CreateCartRequest

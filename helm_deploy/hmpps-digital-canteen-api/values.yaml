@@ -37,6 +37,9 @@ generic-service:
       ADMIN_EMAIL: "admin-email"
       ADMIN_PASSWORD: "admin-password"
       API_MEDUSA_PUBLISHABLE_KEY: "publishable-api-key"
+    bt-client-creds:
+      BT_CLIENT_ID: 'BT_CLIENT_ID'
+      BT_CLIENT_SECRET: 'BT_CLIENT_SECRET'
 
   allowlist:
     groups:
