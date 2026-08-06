@@ -25,7 +25,7 @@ class BtPinPhoneTestSupportClient(
   fun createAccount(request: CreateAccountRequest): Mono<CreateAccountResponse> = getBtToken().flatMap { token ->
     btPinPhoneWebClient
       .put()
-      .uri("/pcs/Account")
+      .uri("/PCS/Account")
       .headers { it.setBearerAuth(token) }
       .bodyValue(request)
       .retrieve()
