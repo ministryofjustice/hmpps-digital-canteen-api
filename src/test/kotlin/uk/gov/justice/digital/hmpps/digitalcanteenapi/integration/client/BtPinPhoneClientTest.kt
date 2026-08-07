@@ -1,15 +1,23 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.client
 
+import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.post
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
+import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.BT_CLIENT_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.BT_CLIENT_SECRET
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PinPhoneTestFixture.contactList
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.BtMockServer
 
 class BtPinPhoneClientTest {
@@ -19,32 +27,172 @@ class BtPinPhoneClientTest {
   fun resetMocks() {
     server.resetRequests()
     val webClient = WebClient.create("http://localhost:${server.port()}")
-    client = BtPinPhoneClient(webClient, BT_CLIENT_ID, BT_CLIENT_SECRET)
+    val mapper = JsonMapper.builder()
+      .findAndAddModules()
+      .build()
+    client = BtPinPhoneClient(webClient, BT_CLIENT_ID, BT_CLIENT_SECRET, mapper)
   }
 
-  @Test
-  fun `getBearerToken - successfully returns admin token`() {
-    server.stubGetBtAuthToken()
+  @Nested
+  inner class GetBearerToken {
 
-    val result = client.getBtToken().block()
+    @Test
+    fun `getBearerToken - successfully returns admin token`() {
+      server.stubGetBtAuthToken()
 
-    assertThat(result).isNotNull
-    assertThat(result?.accessToken).isEqualTo("bt-test-token")
-    assertThat(result?.tokenType).isEqualTo("Bearer")
-    assertThat(result?.expiresIn).isEqualTo(3600)
+      val result = client.getBtToken().block()
+
+      assertThat(result).isNotNull
+      assertThat(result?.accessToken).isEqualTo("bt-test-token")
+      assertThat(result?.tokenType).isEqualTo("Bearer")
+      assertThat(result?.expiresIn).isEqualTo(3600)
+    }
+
+    @Test
+    fun `getBearerToken - throws UpstreamException on 401`() {
+      server.stubFor(
+        post("/auth/token")
+          .willReturn(
+            aResponse()
+              .withStatus(401)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":401,"userMessage":"Invalid credentials"}"""),
+          ),
+      )
+
+      assertThatThrownBy { client.getBtToken().block() }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("Invalid credentials")
+    }
+
+    @Test
+    fun `getBearerToken - throws UpstreamException with fallback message on unparseable error`() {
+      server.stubFor(
+        post("/auth/token")
+          .willReturn(
+            aResponse()
+              .withStatus(500)
+              .withHeader("Content-Type", "text/plain")
+              .withBody("Internal Server Error"),
+          ),
+      )
+
+      assertThatThrownBy { client.getBtToken().block() }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("Unable to parse error response from BT")
+    }
   }
 
-  @Test
-  fun `getBtBalance successfully BT balance and credit limit`() {
-    server.stubBtGetBalance()
+  @Nested
+  inner class GetBalance {
 
-    val result = client.getPrisonerBalance(BtPinPhoneBalanceRequest("testReference", "xyz")).block()
+    @Test
+    fun `getBtBalance successfully returns BT balance and credit limit`() {
+      server.stubBtGetBalance()
 
-    assertThat(result).isNotNull
-    assertThat(result?.reference).isEqualTo("testReference")
-    assertThat(result?.prisonerId).isEqualTo("xyz")
-    assertThat(result?.balancePence).isEqualTo(200001)
-    assertThat(result?.creditLimitPence).isEqualTo(500000)
+      val result = client.getPrisonerBalance(BtPinPhoneBalanceRequest("testReference", "xyz")).block()
+
+      assertThat(result).isNotNull
+      assertThat(result?.reference).isEqualTo("testReference")
+      assertThat(result?.prisonerId).isEqualTo("xyz")
+      assertThat(result?.balancePence).isEqualTo(200001)
+      assertThat(result?.creditLimitPence).isEqualTo(500000)
+    }
+
+    @Test
+    fun `getBtBalance - throws UpstreamException on 404`() {
+      server.stubGetBtAuthToken()
+      server.stubFor(
+        post("/pcs/Balance")
+          .willReturn(
+            aResponse()
+              .withStatus(404)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":404,"userMessage":"Prisoner not found"}"""),
+          ),
+      )
+
+      assertThatThrownBy {
+        client.getPrisonerBalance(BtPinPhoneBalanceRequest("testReference", "xyz")).block()
+      }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("Prisoner not found")
+    }
+
+    @Test
+    fun `getBtBalance - throws UpstreamException on 500`() {
+      server.stubGetBtAuthToken()
+      server.stubFor(
+        post("/pcs/Balance")
+          .willReturn(
+            aResponse()
+              .withStatus(500)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":500,"userMessage":"BT service error"}"""),
+          ),
+      )
+
+      assertThatThrownBy {
+        client.getPrisonerBalance(BtPinPhoneBalanceRequest("testReference", "xyz")).block()
+      }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("BT service error")
+    }
+  }
+
+  @Nested
+  inner class GetContacts {
+    @Test
+    fun `getContacts successfully returns BT prisoner contacts`() {
+      server.stubBtGetContacts()
+
+      val result = client.getPrisonerContacts(BtPinPhoneControlledNumbersRequest("testReference", "xyz")).block()
+
+      assertThat(result).isNotNull
+      assertThat(result?.reference).isEqualTo("testReference")
+      assertThat(result?.prisonerId).isEqualTo("xyz")
+      assertThat(result?.controlledNumbers).isEqualTo(contactList)
+    }
+
+    @Test
+    fun `getContacts - throws UpstreamException on 404`() {
+      server.stubGetBtAuthToken()
+      server.stubFor(
+        post("/pcs/ControlledNumbers")
+          .willReturn(
+            aResponse()
+              .withStatus(404)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":404,"userMessage":"Prisoner not found"}"""),
+          ),
+      )
+
+      assertThatThrownBy {
+        client.getPrisonerContacts(BtPinPhoneControlledNumbersRequest("testReference", "xyz")).block()
+      }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("Prisoner not found")
+    }
+
+    @Test
+    fun `getContacts - throws UpstreamException on 500`() {
+      server.stubGetBtAuthToken()
+      server.stubFor(
+        post("/pcs/ControlledNumbers")
+          .willReturn(
+            aResponse()
+              .withStatus(500)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":500,"userMessage":"BT service error"}"""),
+          ),
+      )
+
+      assertThatThrownBy {
+        client.getPrisonerContacts(BtPinPhoneControlledNumbersRequest("testReference", "xyz")).block()
+      }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("BT service error")
+    }
   }
 
   companion object {

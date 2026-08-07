@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphonecontacts.BtPinPhoneContactsService
 
 @Tag(
@@ -39,6 +37,6 @@ class BtContactController(
   fun getPrisonerContacts(
     @PathVariable
     @Parameter(description = "The prisoner number", example = "A1234BC", required = true)
-    prisonerNumber: String ) = btPinPhoneContactsService.getPrisonerContacts(prisonerNumber)
-
+    prisonerNumber: String,
+  ) = btPinPhoneContactsService.getPrisonerContacts(prisonerNumber)
 }

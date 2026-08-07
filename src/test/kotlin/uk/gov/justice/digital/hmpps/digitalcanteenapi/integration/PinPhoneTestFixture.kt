@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.ControlledNumber
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
@@ -14,7 +15,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.String
 
-object PinPhonePrisonerEnrichmentTestFixture {
+object PinPhoneTestFixture {
   const val PRISONER_NUMBER = "A1234BC"
   const val BOOKING_ID = "A1234BC"
   const val REFERENCE = "mark_FN"
@@ -101,5 +102,68 @@ object PinPhonePrisonerEnrichmentTestFixture {
     balancePence = 1288,
     creditLimitPence = 5000,
     isFn = REFERENCE.endsWith("_FN"),
+  )
+
+  var contactList = listOf(
+    ControlledNumber(
+      id = 162439,
+      name = "John Doe",
+      phoneNumber = "07700900351",
+      controlStatus = true,
+      callAllowed = true,
+      legal = true,
+      allowMonitor = false,
+      alert = true,
+      override = true,
+      relationshipId = 2,
+    ),
+    ControlledNumber(
+      id = 162440,
+      name = "Jane Smith",
+      phoneNumber = "07700900352",
+      controlStatus = true,
+      callAllowed = true,
+      legal = true,
+      allowMonitor = false,
+      alert = true,
+      override = true,
+      relationshipId = 1,
+    ),
+    ControlledNumber(
+      id = 162441,
+      name = "Robert Brown",
+      phoneNumber = "07700900353",
+      controlStatus = true,
+      callAllowed = true,
+      legal = false,
+      allowMonitor = true,
+      alert = false,
+      override = false,
+      relationshipId = 25,
+    ),
+    ControlledNumber(
+      id = 162442,
+      name = "Sarah Williams",
+      phoneNumber = "07700900354",
+      controlStatus = true,
+      callAllowed = true,
+      legal = true,
+      allowMonitor = false,
+      alert = true,
+      override = true,
+      relationshipId = 28,
+    ),
+    ControlledNumber(
+      id = 162443,
+      name = "Michael Jones",
+      phoneNumber = "07700900355",
+      controlStatus = true,
+      callAllowed = false,
+      legal = false,
+      allowMonitor = true,
+      alert = true,
+      override = false,
+      relationshipId = 5,
+    ),
   )
 }

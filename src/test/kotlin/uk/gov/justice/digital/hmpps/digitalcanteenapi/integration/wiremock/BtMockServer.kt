@@ -10,6 +10,8 @@ import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PinPhoneTestFixture.contactList
 
 class BtMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -50,6 +52,27 @@ class BtMockServer : WireMockServer(WIREMOCK_PORT) {
                   "xyz",
                   200001,
                   500000,
+                ),
+              ),
+            )
+            .withStatus(200),
+        ),
+    )
+  }
+
+  fun stubBtGetContacts(): StubMapping {
+    stubGetBtAuthToken()
+    return stubFor(
+      post("/pcs/ControlledNumbers")
+        .willReturn(
+          aResponse()
+            .withHeader("Content-Type", "application/json")
+            .withBody(
+              mapper.writeValueAsString(
+                BtPinPhoneControlledNumbersResponse(
+                  reference = "testReference",
+                  prisonerId = "xyz",
+                  controlledNumbers = contactList,
                 ),
               ),
             )

@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphonecontacts
 enum class RelationshipType {
   SOCIAL,
   OFFICIAL,
-  OTHER
+  OTHER,
 }
 
 enum class BtRelationshipType(val id: Int, val description: String, val category: RelationshipType) {

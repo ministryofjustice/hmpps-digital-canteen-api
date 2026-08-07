@@ -58,6 +58,6 @@ class BtPinPhoneContactsService(
     val alert: Boolean,
     val override: Boolean,
     val contactType: String,
-    val contactTypeDescription: String
+    val contactTypeDescription: String,
   )
 }
