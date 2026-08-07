@@ -4,24 +4,13 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.ControlledNumber
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService.EnrichedPinPhonePrisonerDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
-import java.util.Optional
 import java.util.UUID
 
 /**
- * Service responsible for enriching prisoner data with additional information from multiple sources.
+ * Service responsible for retrieving prisoner contacts from BT PinPhone
  *
+ * @property btPinPhoneClient Client for retrieving prisoner contact information
  */
 @Service
 class BtPinPhoneContactsService(
@@ -40,7 +29,6 @@ class BtPinPhoneContactsService(
       .map { response ->
         response.controlledNumbers.map { it.toContactDto(response.prisonerId) }
       }
-      .onErrorResume { Mono.empty() }
   }
 
   private fun ControlledNumber.toContactDto(prisonerId: String) = BtPinPhoneContactDto(
