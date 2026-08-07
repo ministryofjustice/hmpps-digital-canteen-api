@@ -6,7 +6,7 @@ import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PinPhonePrisonerEnrichmentTestFixture
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PinPhoneTestFixture
 
 class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -22,7 +22,7 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
           .withHeader("Content-Type", "application/json")
           .withBody(
             mapper.writeValueAsString(
-              PinPhonePrisonerEnrichmentTestFixture.prisonerSearchDto(),
+              PinPhoneTestFixture.prisonerSearchDto(),
             ),
           )
           .withStatus(200),

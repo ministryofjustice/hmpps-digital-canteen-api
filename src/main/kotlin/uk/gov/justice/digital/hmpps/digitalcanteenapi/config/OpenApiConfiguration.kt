@@ -27,6 +27,7 @@ class OpenApiConfiguration(
     .servers(
       listOf(
         Server().url("https://digital-canteen-dev.prison.service.justice.gov.uk").description("Development"),
+        Server().url("https://digital-canteen-test.prison.service.justice.gov.uk").description("Test"),
         Server().url("https://digital-canteen-preprod.prison.service.justice.gov.uk").description("Pre-Production"),
         Server().url("https://digital-canteen.prison.service.justice.gov.uk").description("Production"),
         Server().url("http://localhost:8080").description("Local"),

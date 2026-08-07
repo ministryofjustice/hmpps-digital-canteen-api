@@ -82,6 +82,46 @@
         }
       }
     },
+    "/pcs/ControlledNumbers": {
+      "post": {
+        "operationId": "getControlledNumbers",
+        "summary": "Get list of prisoner's PIN phone contacts",
+        "description": "Retrieves the current contacts for a prisoner's PIN phone account.",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BtPinPhoneControlledNumbersRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Controlled numbers retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BtPinPhoneControlledNumbersResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Unauthorised — token missing or expired"
+          },
+          "404": {
+            "description": "Prisoner not found"
+          }
+        }
+      }
+    },
     "/pcs/BuyCredit": {
       "post": {
         "operationId": "buyCredit",
@@ -217,6 +257,84 @@
             "type": "integer",
             "format": "int32",
             "description": "Maximum credit limit in pence"
+          }
+        }
+      },
+      "BtPinPhoneControlledNumbersRequest": {
+        "type": "object",
+        "description": "Request to retrieve a prisoner's controlled phone numbers",
+        "required": [
+          "reference",
+          "prisonerId"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "A unique reference for this request"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          }
+        }
+      },
+      "BtPinPhoneControlledNumbersResponse": {
+        "type": "object",
+        "description": "Prisoner's controlled phone numbers",
+        "required": ["reference", "prisonerId", "controlledNumbers"],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "The reference from the original request"
+          },
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          },
+          "controlledNumbers": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ControlledNumber"
+            }
+          }
+        }
+      },
+      "ControlledNumber": {
+        "type": "object",
+        "description": "A controlled phone number on a prisoner's account",
+        "required": ["id", "name", "phoneNumber", "controlStatus", "callAllowed", "legal", "allowMonitor", "alert", "override", "relationshipId"],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "name": {
+            "type": "string"
+          },
+          "phoneNumber": {
+            "type": "string"
+          },
+          "controlStatus": {
+            "type": "boolean"
+          },
+          "callAllowed": {
+            "type": "boolean"
+          },
+          "legal": {
+            "type": "boolean"
+          },
+          "allowMonitor": {
+            "type": "boolean"
+          },
+          "alert": {
+            "type": "boolean"
+          },
+          "override": {
+            "type": "boolean"
+          },
+          "relationshipId": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
