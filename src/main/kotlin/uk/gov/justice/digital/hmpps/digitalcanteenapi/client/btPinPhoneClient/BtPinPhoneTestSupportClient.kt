@@ -33,7 +33,7 @@ class BtPinPhoneTestSupportClient(
   fun createAccount(request: CreateAccountRequest): Mono<CreateAccountResponse> = getBtToken().flatMap { token ->
     btPinPhoneWebClient
       .put()
-      .uri("/PCS/Account")
+      .uri("/pcs/Account")
       .headers { it.setBearerAuth(token) }
       .bodyValue(request)
       .retrieve()
