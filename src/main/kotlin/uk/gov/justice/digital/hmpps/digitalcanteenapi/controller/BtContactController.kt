@@ -38,5 +38,5 @@ class BtContactController(
     @PathVariable
     @Parameter(description = "The prisoner number", example = "A1234BC", required = true)
     prisonerNumber: String,
-  ) = btPinPhoneContactsService.getPrisonerContacts(prisonerNumber)
+  ) = btPinPhoneContactsService.getPrisonerContacts("test")
 }
