@@ -27,3 +27,19 @@ generic-service:
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
   alertSeverity: n/a
+
+
+extraContainers:
+  - name: opa
+    image: openpolicyagent/opa:latest
+    imagePullPolicy: IfNotPresent
+
+    args:
+      - run
+      - --server
+      - --addr=0.0.0.0:8181
+      - /policies
+
+    ports:
+      - name: opa
+        containerPort: 8181
