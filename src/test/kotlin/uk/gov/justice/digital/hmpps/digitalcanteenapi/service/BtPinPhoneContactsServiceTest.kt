@@ -25,7 +25,6 @@ class BtPinPhoneContactsServiceTest {
   @Mock
   lateinit var btPinPhoneClient: BtPinPhoneClient
 
-
   private lateinit var service: BtPinPhoneContactsService
 
   @BeforeEach
@@ -169,6 +168,4 @@ class BtPinPhoneContactsServiceTest {
       .isInstanceOf(UpstreamException::class.java)
       .hasMessageContaining("BT service unavailable")
   }
-
 }
-
