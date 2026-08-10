@@ -11,22 +11,26 @@ generic-service:
   extraContainers:
     - name: opa
       image: openpolicyagent/opa:latest
-      imagePullPolicy: IfNotPresent
-
-      securityContext:
-        runAsNonRoot: true
-        allowPrivilegeEscalation: false
-
 
       args:
         - run
         - --server
         - --addr=0.0.0.0:8181
-        - /policies
 
       ports:
         - name: opa
           containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+
+        capabilities:
+          drop:
+            - ALL
+
+        seccompProfile:
+          type: RuntimeDefault
 
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
