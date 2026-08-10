@@ -67,10 +67,9 @@ class BtPinPhoneClient(
       .bodyValue(btPinPhoneControlledNumbersRequest)
       .retrieve()
       .bodyToMono<BtPinPhoneControlledNumbersResponse>()
-      .onErrorMap(WebClientResponseException::class.java) { ex ->
-        val error = handleError(ex)
-        logger.error("BT contacts request failed for prisoner ${btPinPhoneControlledNumbersRequest.prisonerId}: ${error.userMessage}")
-        UpstreamException(error.userMessage ?: "Contacts request failed")
+      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
+        logger.error("BT response: ${ex.responseBodyAsString}")
+        Mono.error(ex)
       }
   }
 
