@@ -75,3 +75,6 @@ springdoc:
     enabled: false
   swagger-ui:
     enabled: false
+
+opa:
+  url: http://localhost:8181
