@@ -12,8 +12,6 @@ import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CartMetadata
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartResponse
@@ -23,6 +21,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.P
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.toMedusaCreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 
 @Service
@@ -147,14 +146,7 @@ class PinPhoneBuyCreditOrchestrationService(
   fun createCart(request: CreateCartRequest): ResponseEntity<CreateCartResponse> {
     log.info("Creating cart for offender {}", request.offenderNo)
     try {
-      val medusaRequest = MedusaCreateCartRequest(
-        metadata = CartMetadata(
-          prison_id = request.prisonId,
-          offender_no = request.offenderNo,
-          first_name = request.firstName,
-          last_name = request.lastName,
-        ),
-      )
+      val medusaRequest = request.toMedusaCreateCartRequest()
       val response = medusaStoreClient.createCart(medusaRequest)
 
       log.info("Successfully created cart for offender {}", response.cart.id)
