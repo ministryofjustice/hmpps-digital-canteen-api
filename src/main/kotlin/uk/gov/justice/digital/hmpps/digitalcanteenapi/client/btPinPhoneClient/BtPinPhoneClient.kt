@@ -54,7 +54,7 @@ class BtPinPhoneClient(
       .bodyToMono<BtPinPhoneBalanceResponse>()
       .onErrorMap(WebClientResponseException::class.java) { ex ->
         val error = handleError(ex)
-        logger.error("BT balance request failed for prisoner ${btPinPhoneBalanceRequest.prisonerId}: ${error.userMessage}")
+        logger.error("BT balance request failed for prisoner ${btPinPhoneBalanceRequest.prisonerId}: ${ex.responseBodyAsString}")
         UpstreamException(error.userMessage ?: "Balance request failed")
       }
   }

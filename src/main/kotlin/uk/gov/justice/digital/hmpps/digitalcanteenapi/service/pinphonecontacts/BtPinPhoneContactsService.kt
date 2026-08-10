@@ -23,7 +23,7 @@ class BtPinPhoneContactsService(
    * @return A Mono emitting an [BtPinPhoneContactDto] containing list of prisoner contacts
    */
   fun getPrisonerContacts(prisonerNumber: String): Mono<List<BtPinPhoneContactDto>> {
-    val reference = "${UUID.randomUUID()}-$prisonerNumber"
+    val reference = UUID.randomUUID().toString().replace("-", "").take(20)
     return btPinPhoneClient.getPrisonerContacts(
       BtPinPhoneControlledNumbersRequest(reference, prisonerNumber),
     )
