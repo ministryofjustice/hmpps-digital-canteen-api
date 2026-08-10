@@ -13,6 +13,11 @@ generic-service:
       image: openpolicyagent/opa:latest
       imagePullPolicy: IfNotPresent
 
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+
+
       args:
         - run
         - --server
