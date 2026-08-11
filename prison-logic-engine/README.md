@@ -440,10 +440,10 @@ Ex*ected response:
 
 # Benefits
 
-- B*siness rule evaluation moved outsi*e application code.
-- OPA scales a*tomatically with the application p*d.
+- Business rule evaluation moved outside application code.
+- OPA scales automatically with the application p*d.
 - Spring Boot communicates with*OPA locally using `localhost`.
-- K*bernetes security standards are sa*isfied.
-- No additional service-to*service network communication requ*red.
-- Foundation*established*for future dynamic policy and conf*guration updates.
+- Kubernetes security standards are satisfied.
+- No additional service-to*service network communication required.
+- Foundation established for future dynamic policy and configuration updates.
 ````*
