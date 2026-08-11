@@ -3,6 +3,12 @@ name: Deploy PR to dev
 on:
   workflow_dispatch:
     inputs:
+      environment:
+        description: Environment
+        required: true
+        options:
+          - dev
+          - test
       pr_number:
         description: PR number (used for image tag)
         required: true
@@ -54,6 +60,6 @@ jobs:
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/deploy_env.yml@v2
     secrets: inherit
     with:
-      environment: 'dev'
+      environment: ${{ inputs.environment }}
       app_version: '${{ needs.build.outputs.app_version }}'
       slack_notification: 'false'
