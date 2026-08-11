@@ -263,3 +263,179 @@ Maximum:
 ### Outcome
 
 - Credit
+
+# OPA Sidecar Deployment Changes
+
+## Overview
+
+OPA (Open Policy Agent) has been introduced as a sidecar container within the application pod to externalize business rule evaluation from the Spring Boot application.
+
+Current deployment configuration consists of a single application replica:
+
+```text
+Pod
+├── Spring Boot Application
+└── OPA Sidecar
+```
+
+---
+
+# Helm Configuration Changes
+
+OPA is deployed using the Helm chart's:
+
+```yaml
+extraContainers
+```
+
+configuration.
+
+This results in Kubernetes creating an additional container within the same pod as the Spring Boot application.
+
+---
+
+# Communication Between Spring Boot and OPA
+
+Since both containers run in the same pod, they share the same network namespace.
+
+The Spring Boot application communicates with OPA using:
+
+```text
+http://localhost:8181
+```
+
+No additional Kubernetes Service is required.
+
+---
+
+# Security Configuration
+
+The Kubernetes cluster enforces the Pod Security Standard:
+
+```text
+restricted
+```
+
+To comply with Pod Security requirements, the OPA container was configured with the following security settings.
+
+## Run As Non-Root
+
+```yaml
+runAsNonRoot: true
+```
+
+### Purpose
+
+Ensures the OPA process cannot run as the root user.
+
+### Benefit
+
+- Reduces security risk.
+- Prevents unnecessary privileged execution.
+
+---
+
+## Disable Privilege Escalation
+
+```yaml
+allowPrivilegeEscalation: false
+```
+
+### Purpose
+
+Prevents processes inside the OPA container from obtaining elevated privileges.
+
+### Benefit
+
+- Helps protect against privilege escalation attacks.
+- Enforces least-privilege principles.
+
+---
+
+## Remove Linux Capabilities
+
+```yaml
+capabilities:
+  drop:
+    - ALL
+```
+
+### Purpose
+
+Removes all default Linux capabilities from the OPA container.
+
+### Benefit
+
+- Reduces attack surface.
+- Limits operating system level permissions.
+
+---
+
+## Runtime Seccomp Profile
+
+```yaml
+seccompProfile:
+  type: RuntimeDefault
+```
+
+### Purpose
+
+Enforces the container runtime's default syscall restrictions.
+
+### Benefit
+
+- Restricts access to potentially dangerous system calls.
+- Improves compliance with Kubernetes security standards.
+
+---
+
+# Verification
+
+## Verify OPA Sidecar Exists
+
+```bash
+kubectl get pod <pod-name> -o jsonpath='{.spec.containers[*].name}'
+```
+
+Expected output:
+
+`*`text
+springboot-app opa
+```
+
+---
+*## View OPA Logs
+
+```bash
+kubectl *ogs <pod-name> -c opa
+```
+
+---
+
+##*Verify OPA Endpoint
+
+From the appl*cation container:
+
+```bash
+curl http://localhost:8181/v1/data
+```
+
+Ex*ected response:
+
+```json
+{
+  "resu*t": {}
+}
+```
+
+---
+
+# Benefits
+
+- B*siness rule evaluation moved outsi*e application code.
+- OPA scales a*tomatically with the application p*d.
+- Spring Boot communicates with*OPA locally using `localhost`.
+- K*bernetes security standards are sa*isfied.
+- No additional service-to*service network communication requ*red.
+- Foundation*established*for future dynamic policy and conf*guration updates.
+````*
