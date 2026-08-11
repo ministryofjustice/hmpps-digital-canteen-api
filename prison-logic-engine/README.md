@@ -97,21 +97,6 @@ Prisoners currently on adjudication cannot order certain products.
 
 - Prisoner is on adjudication
 
-## Outcome
-
-**DENY**
-
-### Examples
-
-#### Allowed
-
-- BT Phone Credit
-- Prisoner not on adjudication
-
-#### Denied
-
-- BT Phone Credit
-- Prisoner on adjudication
 
 ---
 
@@ -274,7 +259,7 @@ Current deployment configuration consists of a single application replica:
 
 ```text
 Pod
-├── Spring Boot Application
+├── hmpps-digital-canteen-api - Spring Boot Application
 └── OPA Sidecar
 ```
 
@@ -285,7 +270,30 @@ Pod
 OPA is deployed using the Helm chart's:
 
 ```yaml
-extraContainers
+  extraContainers:
+    - name: opa
+      image: openpolicyagent/opa:1.19.0
+
+      args:
+        - run
+        - --server
+        - --addr=0.0.0.0:8181
+
+      ports:
+        - name: opa
+          containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+
+        capabilities:
+          drop:
+            - ALL
+
+        seccompProfile:
+          type: RuntimeDefault
+
 ```
 
 configuration.
