@@ -253,13 +253,13 @@ Maximum:
 
 ## Overview
 
-OPA (Open Policy Agent) has been introduced as a sidecar container within the application pod to externalize business rule evaluation from the Spring Boot application.
+OPA (Open Policy Agent) has been introduced as a sidecar container within the application pod to externalize business rule evaluation from the hmpps-digital-canteen-api application.
 
 Current deployment configuration consists of a single application replica:
 
 ```text
 Pod
-├── hmpps-digital-canteen-api - Spring Boot Application
+├── hmpps-digital-canteen-api - hmpps-digital-canteen-api Application
 └── OPA Sidecar
 ```
 
@@ -298,15 +298,15 @@ OPA is deployed using the Helm chart's:
 
 configuration.
 
-This results in Kubernetes creating an additional container within the same pod as the Spring Boot application.
+This results in Kubernetes creating an additional container within the same pod as the hmpps-digital-canteen-api application.
 
 ---
 
-# Communication Between Spring Boot and OPA
+# Communication Between hmpps-digital-canteen-api and OPA
 
 Since both containers run in the same pod, they share the same network namespace.
 
-The Spring Boot application communicates with OPA using:
+The hmpps-digital-canteen-api application communicates with OPA using:
 
 ```text
 http://localhost:8181
@@ -408,31 +408,31 @@ kubectl get pod <pod-name> -o jsonpath='{.spec.containers[*].name}'
 Expected output:
 
 `*`text
-springboot-app opa
+hmpps-digital-canteen-api opa%
 ```
 
 ---
 *## View OPA Logs
 
 ```bash
-kubectl *ogs <pod-name> -c opa
+kubectl logs <pod-name> -c opa
 ```
 
 ---
 
 ##*Verify OPA Endpoint
 
-From the appl*cation container:
+From the application container:
 
 ```bash
 curl http://localhost:8181/v1/data
 ```
 
-Ex*ected response:
+Expected response:
 
 ```json
 {
-  "resu*t": {}
+  "result": {}
 }
 ```
 
@@ -441,9 +441,9 @@ Ex*ected response:
 # Benefits
 
 - Business rule evaluation moved outside application code.
-- OPA scales automatically with the application p*d.
-- Spring Boot communicates with*OPA locally using `localhost`.
+- OPA scales automatically with the application pod.
+- hmpps-digital-canteen-api communicates with OPA locally using `localhost`.
 - Kubernetes security standards are satisfied.
-- No additional service-to*service network communication required.
+- No additional service-to-service network communication required.
 - Foundation established for future dynamic policy and configuration updates.
 ````*
