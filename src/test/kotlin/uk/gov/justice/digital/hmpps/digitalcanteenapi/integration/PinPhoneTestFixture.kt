@@ -5,7 +5,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.ge
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.CurrentIncentive
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.IncentiveLevel
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.Prisoner
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
@@ -59,13 +59,13 @@ object PinPhoneTestFixture {
   )
 
   fun activePunishments() = listOf(
-    AdjudicationsPunishmentDto(
+    ActivePunishmentDto(
       chargeNumber = "12345",
-      punishmentType = "PRIVILEGE",
-      privilegeType = "CANTEEN",
+      punishmentType = ActivePunishmentDto.PunishmentType.PRIVILEGE,
+      privilegeType = ActivePunishmentDto.PrivilegeType.CANTEEN,
       otherPrivilege = "none",
       duration = 5,
-      measurement = "DAYS",
+      measurement = ActivePunishmentDto.Measurement.DAYS,
       startDate = LocalDate.parse("2025-01-01"),
       lastDay = LocalDate.parse("2025-01-31"),
       amount = 0.1,

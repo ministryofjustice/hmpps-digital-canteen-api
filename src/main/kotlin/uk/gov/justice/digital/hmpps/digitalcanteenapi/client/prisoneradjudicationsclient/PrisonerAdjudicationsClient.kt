@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 
 @Component
 class PrisonerAdjudicationsClient(
@@ -13,7 +13,7 @@ class PrisonerAdjudicationsClient(
 ) {
 
   @Suppress("MaxLineLength")
-  fun getPrisonerAdjudication(offenderBookingId: String): Mono<List<AdjudicationsPunishmentDto>> = prisonerAdjudicationsClient
+  fun getPrisonerAdjudication(offenderBookingId: String): Mono<List<ActivePunishmentDto>> = prisonerAdjudicationsClient
     .get()
     .uri("/reported-adjudications/punishments/{offenderBookingId}/active", offenderBookingId)
     .retrieve()

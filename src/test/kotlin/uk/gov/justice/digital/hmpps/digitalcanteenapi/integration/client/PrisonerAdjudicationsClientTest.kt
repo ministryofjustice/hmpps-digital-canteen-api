@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.OFFENDER_BOOKING_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonerAdjudicationsMockServer
@@ -30,11 +31,11 @@ class PrisonerAdjudicationsClientTest {
     assertThat(result).isNotNull.hasSize(1)
     with(result!![0]) {
       assertThat(chargeNumber).isEqualTo("12345")
-      assertThat(punishmentType).isEqualTo("PRIVILEGE")
-      assertThat(privilegeType).isEqualTo("CANTEEN")
+      assertThat(punishmentType).isEqualTo(ActivePunishmentDto.PunishmentType.PRIVILEGE)
+      assertThat(privilegeType).isEqualTo(ActivePunishmentDto.PrivilegeType.CANTEEN)
       assertThat(otherPrivilege).isEqualTo("none")
       assertThat(duration).isEqualTo(5)
-      assertThat(measurement).isEqualTo("DAYS")
+      assertThat(measurement).isEqualTo(ActivePunishmentDto.Measurement.DAYS)
       assertThat(startDate).isEqualTo(LocalDate.parse("2025-01-01"))
       assertThat(lastDay).isEqualTo(LocalDate.parse("2025-01-31"))
       assertThat(amount).isEqualTo(0.1)

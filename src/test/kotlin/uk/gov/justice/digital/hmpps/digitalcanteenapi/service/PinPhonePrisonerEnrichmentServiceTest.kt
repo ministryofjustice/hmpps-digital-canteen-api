@@ -13,6 +13,7 @@ import org.mockito.kotlin.whenever
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
@@ -81,7 +82,9 @@ class PinPhonePrisonerEnrichmentServiceTest {
         // adjudications
         Assertions.assertThat(enriched.hasActiveAdjudications).isTrue()
         Assertions.assertThat(enriched.activeAdjudications).hasSize(1)
-        Assertions.assertThat(enriched.activeAdjudications?.map { it.privilegeType }).containsExactly("CANTEEN")
+        Assertions.assertThat(enriched.activeAdjudications?.map { it.privilegeType }).containsExactly(
+          ActivePunishmentDto.PrivilegeType.CANTEEN,
+        )
       }
       .verifyComplete()
   }
