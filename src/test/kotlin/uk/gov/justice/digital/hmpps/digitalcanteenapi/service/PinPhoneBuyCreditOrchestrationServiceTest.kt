@@ -31,8 +31,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
 import java.time.LocalDate
 
 class PinPhoneBuyCreditOrchestrationServiceTest {

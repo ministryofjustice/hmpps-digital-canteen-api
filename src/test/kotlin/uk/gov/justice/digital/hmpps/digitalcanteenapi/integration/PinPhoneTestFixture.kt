@@ -7,10 +7,10 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.gene
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.Prisoner
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime

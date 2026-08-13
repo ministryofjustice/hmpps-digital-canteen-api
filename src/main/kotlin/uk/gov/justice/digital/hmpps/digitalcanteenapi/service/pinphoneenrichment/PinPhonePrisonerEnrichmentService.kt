@@ -8,14 +8,14 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicatio
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toBtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toPrisonerIncentiveResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toPrisonerSearchResponseDto
 import java.util.Optional
 import java.util.UUID
 
