@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto
 
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.CurrentIncentive
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.Prisoner
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -11,18 +11,18 @@ import java.time.LocalDateTime
 
 data class PrisonerSearchResponseDto(
   val prisonerNumber: String,
-  val prisonId: String,
-  val prisonName: String,
-  val bookNumber: String,
-  val bookingId: String,
-  val dateOfBirth: LocalDate,
-  val youthOffender: Boolean,
-  val gender: String,
+  val prisonId: String?,
+  val prisonName: String?,
+  val bookNumber: String?,
+  val bookingId: String?,
+  val dateOfBirth: LocalDate?,
+  val youthOffender: Boolean?,
+  val gender: String?,
 )
 
 data class PrisonerIncentivesResponseDto(
-  val code: String,
-  val description: String,
+  val code: String?,
+  val description: String?,
   val dateTime: LocalDateTime,
   val nextReviewDate: LocalDate,
 )
@@ -51,7 +51,7 @@ fun BtPinPhoneBalanceResponse.toBtPinPhoneResponseDto() = BtPinPhoneResponseDto(
   isFn = reference.endsWith("_FN"),
 )
 
-fun PrisonerSearchDto.toPrisonerSearchResponseDto() = PrisonerSearchResponseDto(
+fun Prisoner.toPrisonerSearchResponseDto() = PrisonerSearchResponseDto(
   prisonerNumber = prisonerNumber,
   prisonId = prisonId,
   prisonName = prisonName,
@@ -62,9 +62,9 @@ fun PrisonerSearchDto.toPrisonerSearchResponseDto() = PrisonerSearchResponseDto(
   gender = gender,
 )
 
-fun IncentivesDto.toPrisonerIncentiveResponseDto() = PrisonerIncentivesResponseDto(
-  code = level.code,
-  description = level.description,
+fun CurrentIncentive.toPrisonerIncentiveResponseDto() = PrisonerIncentivesResponseDto(
+  code = level?.code,
+  description = level?.description,
   dateTime = dateTime,
   nextReviewDate = nextReviewDate,
 )

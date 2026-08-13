@@ -2,10 +2,10 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.ControlledNumber
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.CurrentIncentive
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.IncentiveLevel
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.Prisoner
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
@@ -21,7 +21,7 @@ object PinPhoneTestFixture {
   const val BOOKING_ID = "A1234BC"
   const val REFERENCE = "mark_FN"
 
-  fun prisonerSearchDto(prisonerNumber: String = PRISONER_NUMBER) = PrisonerSearchDto(
+  fun Prisoner(prisonerNumber: String = PRISONER_NUMBER) = Prisoner(
     prisonerNumber = prisonerNumber,
     prisonId = "MDI",
     prisonName = "Moorland (HMP & YOI)",
@@ -30,8 +30,8 @@ object PinPhoneTestFixture {
     dateOfBirth = LocalDate.of(1990, 1, 15),
     youthOffender = false,
     gender = "Female",
-    currentIncentive = IncentivesDto(
-      level = IncentivesLevelDto(
+    currentIncentive = CurrentIncentive(
+      level = IncentiveLevel(
         code = "STD",
         description = "Standard",
       ),

@@ -22,7 +22,7 @@ class PrisonerSearchMockServer : WireMockServer(WIREMOCK_PORT) {
           .withHeader("Content-Type", "application/json")
           .withBody(
             mapper.writeValueAsString(
-              PinPhoneTestFixture.prisonerSearchDto(),
+              PinPhoneTestFixture.Prisoner(),
             ),
           )
           .withStatus(200),

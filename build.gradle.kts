@@ -82,7 +82,16 @@ tasks.register("buildPrisonApiModel", GenerateTask::class) {
   globalProperties.set(mapOf("models" to ""))
 }
 
-val generatedProjectDirs = listOf("btpinphoneapi", "purchasePinPhoneUiApi", "prisonapi")
+tasks.register("buildPrisonerSearchApiModel", GenerateTask::class) {
+  generatorName.set("kotlin")
+  inputSpec.set("openapi-specs/prisoner-search-api.json")
+  outputDir.set("$buildDirectory/generated/prisonersearchapi")
+  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated")
+  configOptions.set(configValues)
+  globalProperties.set(mapOf("models" to ""))
+}
+
+val generatedProjectDirs = listOf("btpinphoneapi", "purchasePinPhoneUiApi", "prisonapi", "prisonersearchapi")
 
 kotlin {
   generatedProjectDirs.forEach { generatedProject ->
@@ -94,13 +103,13 @@ kotlin {
 
 tasks {
   withType<KotlinCompile> {
-    dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel")
+    dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel")
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
-  dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel")
+  dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel")
 }
 
 configure<KtlintExtension> {

@@ -73,7 +73,7 @@ class PinPhonePrisonerEnrichmentService(
         val activeAdjudications = tuple.t4.orElse(null)
         EnrichedPinPhonePrisonerDto(
           prisoner = prisoner.toPrisonerSearchResponseDto(),
-          incentives = prisoner.currentIncentive.toPrisonerIncentiveResponseDto(),
+          incentives = prisoner.currentIncentive?.toPrisonerIncentiveResponseDto(),
           prisonerBalance = tuple.t2.orElse(null)?.toBalanceResponseDto(),
           prisonerBtBalance = tuple.t3.orElse(null)?.toBtPinPhoneResponseDto(),
           hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
@@ -84,7 +84,7 @@ class PinPhonePrisonerEnrichmentService(
 
   data class EnrichedPinPhonePrisonerDto(
     val prisoner: PrisonerSearchResponseDto,
-    val incentives: PrisonerIncentivesResponseDto,
+    val incentives: PrisonerIncentivesResponseDto?,
     val prisonerBalance: BalanceResponseDto?,
     val prisonerBtBalance: BtPinPhoneResponseDto?,
     val hasActiveAdjudications: Boolean,

@@ -48,7 +48,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns fully enriched prisoner and has adjudications`() {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val adjudications = PinPhoneTestFixture.activePunishments()
@@ -88,7 +88,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns fully enriched prisoner does not have adjudications`() {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val prisonerBalance = PinPhoneTestFixture.balanceDto()
@@ -126,7 +126,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns partial enriched prisoner can't find booking`() {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val btPinPhoneBalance = PinPhoneTestFixture.btPinPhoneDto()
@@ -164,7 +164,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
     "finance-failure",
   )
   fun `getEnrichedPrisoner - handles service errors`(failingService: String) {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val prisonerBalance = PinPhoneTestFixture.balanceDto()
