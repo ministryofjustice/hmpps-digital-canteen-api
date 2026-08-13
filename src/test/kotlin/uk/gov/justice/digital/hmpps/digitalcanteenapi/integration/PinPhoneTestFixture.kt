@@ -6,11 +6,12 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicatio
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesLevelDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import kotlin.String
@@ -73,11 +74,11 @@ object PinPhoneTestFixture {
     ),
   )
 
-  fun balanceDto() = BalanceDto(
-    spends = 88.88,
-    cash = 0.0,
-    savings = 1.25,
-    damageObligations = 0.0,
+  fun balanceDto() = Account(
+    spends = BigDecimal(88.88),
+    cash = BigDecimal(0.0),
+    savings = BigDecimal(1.25),
+    damageObligations = BigDecimal(0.0),
     currency = "GBP",
   )
 

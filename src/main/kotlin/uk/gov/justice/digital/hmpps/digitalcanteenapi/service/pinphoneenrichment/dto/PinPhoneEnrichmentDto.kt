@@ -3,7 +3,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichmen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.IncentivesDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.dto.PrisonerSearchDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.BalanceDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
@@ -69,7 +69,7 @@ fun IncentivesDto.toPrisonerIncentiveResponseDto() = PrisonerIncentivesResponseD
   nextReviewDate = nextReviewDate,
 )
 
-fun BalanceDto.toBalanceResponseDto() = BalanceResponseDto(
+fun Account.toBalanceResponseDto() = BalanceResponseDto(
   spendsPence = spends.toPence(),
   cashPence = cash.toPence(),
   savingsPence = savings.toPence(),
@@ -78,7 +78,7 @@ fun BalanceDto.toBalanceResponseDto() = BalanceResponseDto(
 )
 
 @Suppress("MagicNumber")
-private fun Double.toPence(): Long = BigDecimal(this.toString())
+private fun BigDecimal.toPence(): Long = this
   .multiply(BigDecimal(100))
   .setScale(0, RoundingMode.HALF_UP)
   .longValueExact()

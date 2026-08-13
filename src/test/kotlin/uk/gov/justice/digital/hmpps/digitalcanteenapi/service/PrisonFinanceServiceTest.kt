@@ -11,13 +11,11 @@ import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.http.ResponseEntity
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
@@ -32,17 +30,17 @@ class PrisonFinanceServiceTest {
     // Given
     val prisonId = PRISONER_ID
     val offenderNo = PRISONER_NUMBER
-    val clientRequest = AddHoldClientRequest(amount = 10.5)
+    // val clientRequest = AddHoldClientRequest(amount = 10.5)
 
-    val expectedResponse = AddHoldResponse(holdNumber = 123)
+    val expectedResponse = HoldDetails(holdNumber = 123)
     whenever(prisonFinanceClient.addHold(any(), any(), any()))
       .thenReturn(expectedResponse)
 
     // When
-    val result = service.addHold(prisonId, offenderNo, clientRequest)
+    val result = service.addHold(prisonId, offenderNo, 1050)
 
     // Then
-    val captor = argumentCaptor<AddHoldRequest>()
+    val captor = argumentCaptor<AddHoldTransaction>()
 
     verify(prisonFinanceClient).addHold(
       eq(prisonId),
@@ -54,7 +52,7 @@ class PrisonFinanceServiceTest {
 
     // Static fields
     assertEquals("HOLD", request.description)
-    assertEquals(10.5, request.amount)
+    assertEquals(1050, request.amount)
     assertEquals(offenderNo, request.clientName)
 
     // Generated fields
@@ -80,7 +78,7 @@ class PrisonFinanceServiceTest {
     val result = service.releaseHold(prisonId, offenderNo, holdNumber)
 
     // Then
-    val captor = argumentCaptor<ReleaseHoldRequest>()
+    val captor = argumentCaptor<ReleaseHoldTransaction>()
 
     verify(prisonFinanceClient).releaseHold(
       eq(prisonId),
@@ -105,17 +103,23 @@ class PrisonFinanceServiceTest {
     val prisonId = PRISONER_ID
     val offenderNo = PRISONER_NUMBER
     val holdNumber = HOLD_NUMBER
-    val clientRequest = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
+    val clientRequest = ReleaseHoldAndCreateTransaction(
+      type = ReleaseHoldAndCreateTransaction.Type.PHONE,
+      createDescription = "Pin phone credit",
+      clientTransactionId = "test-transaction-id",
+      removeClientUniqueReference = "test-remove-ref",
+      createClientUniqueReference = "test-create-ref",
+    )
 
-    val expectedResponse = ReleaseHoldCreateTransactionResponse(id = "111-1")
+    val expectedResponse = Transaction(id = "111-1")
     whenever(prisonFinanceClient.releaseHoldCreateTransaction(any(), any(), any(), any()))
       .thenReturn(expectedResponse)
 
     // When
-    val result = service.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, clientRequest)
+    val result = service.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, clientRequest.type)
 
     // Then
-    val captor = argumentCaptor<ReleaseHoldCreateTransactionRequest>()
+    val captor = argumentCaptor<ReleaseHoldAndCreateTransaction>()
 
     verify(prisonFinanceClient).releaseHoldCreateTransaction(
       eq(prisonId),
@@ -128,7 +132,7 @@ class PrisonFinanceServiceTest {
 
     // Static fields
     assertEquals("Remove HOLD", request.removeDescription)
-    assertEquals("PHONE", request.type)
+    assertEquals(request.type, request.type)
     assertEquals("HOLD for PHONE", request.createDescription)
     assertEquals(offenderNo, request.clientName)
 

@@ -126,9 +126,9 @@
             "example": "A1234BC"
           },
           "amount": {
-            "type": "number",
-            "format": "double",
-            "example": 10.0
+            "type": "integer",
+            "format": "int64",
+            "example": 10120
           }
         }
       },
