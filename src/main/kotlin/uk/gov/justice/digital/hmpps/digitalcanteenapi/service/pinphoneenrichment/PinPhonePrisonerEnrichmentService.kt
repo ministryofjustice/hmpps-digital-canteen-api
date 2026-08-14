@@ -57,7 +57,7 @@ class PinPhonePrisonerEnrichmentService(
       .flatMap { bookingId -> prisonFinanceClient.getPrisonerBalance(bookingId) }
       .onErrorResume { Mono.empty() }
 
-    val reference = "${UUID.randomUUID()}-$prisonerNumber"
+    val reference = UUID.randomUUID().toString().replace("-", "").take(20)
     val btBalanceMono =
       btPinPhoneClient.getPrisonerBalance(BtPinPhoneBalanceRequest(reference, prisonerNumber))
         .onErrorResume { Mono.empty() }
