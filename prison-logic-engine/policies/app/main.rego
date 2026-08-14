@@ -20,4 +20,5 @@ response := {
     "creditLimitEnabled": credit_limit_enabled,
     "accountSource": allowed_fund_sources,
     "warnings": warning_messages
+    "errors": errors
 }
