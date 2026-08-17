@@ -13,6 +13,7 @@ import org.mockito.kotlin.whenever
 import reactor.core.publisher.Mono
 import reactor.test.StepVerifier
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
@@ -48,7 +49,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns fully enriched prisoner and has adjudications`() {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val adjudications = PinPhoneTestFixture.activePunishments()
@@ -81,14 +82,16 @@ class PinPhonePrisonerEnrichmentServiceTest {
         // adjudications
         Assertions.assertThat(enriched.hasActiveAdjudications).isTrue()
         Assertions.assertThat(enriched.activeAdjudications).hasSize(1)
-        Assertions.assertThat(enriched.activeAdjudications?.map { it.privilegeType }).containsExactly("CANTEEN")
+        Assertions.assertThat(enriched.activeAdjudications?.map { it.privilegeType }).containsExactly(
+          ActivePunishmentDto.PrivilegeType.CANTEEN,
+        )
       }
       .verifyComplete()
   }
 
   @Test
   fun `getEnrichedPrisoner - returns fully enriched prisoner does not have adjudications`() {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val prisonerBalance = PinPhoneTestFixture.balanceDto()
@@ -126,7 +129,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
 
   @Test
   fun `getEnrichedPrisoner - returns partial enriched prisoner can't find booking`() {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val btPinPhoneBalance = PinPhoneTestFixture.btPinPhoneDto()
@@ -164,7 +167,7 @@ class PinPhonePrisonerEnrichmentServiceTest {
     "finance-failure",
   )
   fun `getEnrichedPrisoner - handles service errors`(failingService: String) {
-    val prisoner = PinPhoneTestFixture.prisonerSearchDto()
+    val prisoner = PinPhoneTestFixture.Prisoner()
     val prisonerResponse = PinPhoneTestFixture.prisonerSearchResponseDto()
     val incentivesResponse = PinPhoneTestFixture.prisonerSearchIncentiveResponseDto()
     val prisonerBalance = PinPhoneTestFixture.balanceDto()

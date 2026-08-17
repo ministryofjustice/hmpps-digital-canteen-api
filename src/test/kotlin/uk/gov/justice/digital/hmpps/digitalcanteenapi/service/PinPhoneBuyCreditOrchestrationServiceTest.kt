@@ -21,18 +21,18 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Me
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Order
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
 import java.time.LocalDate
 
 class PinPhoneBuyCreditOrchestrationServiceTest {
@@ -58,7 +58,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   fun `processCheckout successfully processes payment`() {
     // Given
     val cartId = CART_ID
-    val amount = 10.0
+    val amount: Long = 100
     val prisonerSearchResponseDto = PrisonerSearchResponseDto(
       prisonerNumber = PRISONER_NUMBER,
       prisonId = PRISONER_ID,
@@ -82,13 +82,13 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenReturn(Mono.just(enrichedPrisoner))
 
     whenever(financeService.addHold(any(), any(), any()))
-      .thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
+      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.empty())
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
-      .thenReturn(ReleaseHoldCreateTransactionResponse(id = "tx123"))
+      .thenReturn(Transaction(id = "tx123"))
 
     whenever(medusaStoreClient.completeCart(any(), any()))
       .thenReturn(MedusaCompleteCartResponse(Order(id = "order123")))
@@ -115,21 +115,21 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   fun `processCheckout retries BT API and succeeds`() {
     // Given
     val cartId = CART_ID
-    val amount = 10.0
+    val amount: Long = 100
     val enrichedPrisoner = createEnrichedPrisoner()
 
     whenever(pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(PRISONER_NUMBER))
       .thenReturn(Mono.just(enrichedPrisoner))
 
     whenever(financeService.addHold(any(), any(), any()))
-      .thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
+      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.error(UpstreamException("BT failed")))
       .thenReturn(Mono.empty())
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
-      .thenReturn(ReleaseHoldCreateTransactionResponse(id = "tx123"))
+      .thenReturn(Transaction(id = "tx123"))
 
     whenever(medusaStoreClient.completeCart(any(), any()))
       .thenReturn(MedusaCompleteCartResponse(order = Order(id = "order123")))
@@ -148,17 +148,17 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   fun `processCheckout retries BT API and fails`() {
     // Given
     val cartId = CART_ID
-    val amount = 10.0
+    val amount: Long = 100
     val enrichedPrisoner = createEnrichedPrisoner()
     whenever(pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(PRISONER_NUMBER))
       .thenReturn(Mono.just(enrichedPrisoner))
-    whenever { financeService.addHold(any(), any(), any()) }.thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
+    whenever { financeService.addHold(any(), any(), any()) }.thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.error(UpstreamException("BT failed")))
       .thenReturn(Mono.error(UpstreamException("BT failed again")))
       .thenReturn(Mono.error(UpstreamException("BT Down")))
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
-      .thenReturn(ReleaseHoldCreateTransactionResponse(id = "tx123"))
+      .thenReturn(Transaction(id = "tx123"))
     whenever(medusaStoreClient.completeCart(any(), any()))
       .thenReturn(MedusaCompleteCartResponse(order = Order(id = "order123")))
     val result = service.processCheckout(PRISONER_NUMBER, amount, cartId)
@@ -174,14 +174,14 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   fun `processCheckout returns error and releases hold when transaction fails`() {
     // Given
     val cartId = CART_ID
-    val amount = 10.0
+    val amount: Long = 100
     val enrichedPrisoner = createEnrichedPrisoner()
 
     whenever(pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(PRISONER_NUMBER))
       .thenReturn(Mono.just(enrichedPrisoner))
 
     whenever(financeService.addHold(any(), any(), any()))
-      .thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
+      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.empty())
@@ -211,7 +211,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenReturn(Mono.just(enrichedPrisoner))
 
     whenever(financeService.addHold(any(), any(), any()))
-      .thenReturn(AddHoldResponse(holdNumber = HOLD_NUMBER))
+      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
     whenever(btPinPhoneClient.addCredit(any()))
       .thenReturn(Mono.empty())
@@ -220,7 +220,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       .thenThrow(UpstreamException("Upstream error"))
 
     // When
-    val result = service.processCheckout(PRISONER_NUMBER, 10.0, CART_ID)
+    val result = service.processCheckout(PRISONER_NUMBER, 100, CART_ID)
 
     // Then
     assertEquals("ERROR", result.status)
@@ -241,7 +241,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     // When / Then
     try {
-      service.processCheckout(PRISONER_NUMBER, 10.0, CART_ID)
+      service.processCheckout(PRISONER_NUMBER, 100, CART_ID)
     } catch (e: ResponseStatusException) {
       assertEquals(HttpStatus.NOT_FOUND, e.statusCode)
     }

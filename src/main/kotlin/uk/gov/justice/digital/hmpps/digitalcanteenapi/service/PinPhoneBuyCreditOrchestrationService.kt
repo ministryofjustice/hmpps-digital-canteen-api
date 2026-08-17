@@ -15,10 +15,9 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.Medusa
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.toMedusaCreateCartRequest
@@ -35,14 +34,14 @@ class PinPhoneBuyCreditOrchestrationService(
     private val log: Logger = LoggerFactory.getLogger("PinPhoneBuyCreditOrchestrationService")
   }
 
-  fun processCheckout(offenderNo: String, amount: Number, cartId: String): CompleteCartResponse {
+  fun processCheckout(offenderNo: String, amount: Long, cartId: String): CompleteCartResponse {
     val prisonId = pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(offenderNo).block()
       ?. also { log.info("Processing checkout for prisoner") }
       ?. prisoner
       ?. prisonId
       ?: throw ResponseStatusException(HttpStatus.NOT_FOUND, "Prisoner not found")
 
-    val holdResponse = financeService.addHold(prisonId, offenderNo, AddHoldClientRequest(amount))
+    val holdResponse = financeService.addHold(prisonId, offenderNo, amount)
     log.info("Hold added for prisoner {} with hold number {}", offenderNo, holdResponse.holdNumber)
 
     return try {
@@ -52,7 +51,7 @@ class PinPhoneBuyCreditOrchestrationService(
         prisonId,
         offenderNo,
         holdResponse.holdNumber,
-        ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE"),
+        ReleaseHoldAndCreateTransaction.Type.PHONE,
       )
       log.info("Transaction created for prisoner {} with transaction id {}", offenderNo, transactionResponse.id)
 

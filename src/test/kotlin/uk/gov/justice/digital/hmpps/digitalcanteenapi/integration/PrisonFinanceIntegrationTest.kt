@@ -1,8 +1,8 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
 import org.junit.jupiter.api.Test
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.HmppsAuthApiExtension
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonApiExtension
 
@@ -10,8 +10,12 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `addHold - successfully adds a hold`() {
-    val request = AddHoldClientRequest(
+    val request = AddHoldTransaction(
       amount = 1634,
+      clientTransactionId = "test-transaction-id",
+      clientUniqueReference = "test-unique-ref",
+      description = "HOLD",
+      clientName = OFFENDER_ID,
     )
 
     HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
@@ -29,8 +33,12 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `addHold - returns 400 when insufficient balance`() {
-    val request = AddHoldClientRequest(
+    val request = AddHoldTransaction(
       amount = 1000000,
+      clientTransactionId = "test-transaction-id",
+      clientUniqueReference = "test-unique-ref",
+      description = "HOLD",
+      clientName = OFFENDER_ID,
     )
     val errorMessage = "Insufficient funds"
 
@@ -93,7 +101,13 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `releaseHoldAndCreateTransaction - successfully releases a hold and creates a transaction`() {
-    val request = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
+    val request = ReleaseHoldAndCreateTransaction(
+      type = ReleaseHoldAndCreateTransaction.Type.PHONE,
+      createDescription = "Pin phone credit",
+      clientTransactionId = "test-transaction-id",
+      removeClientUniqueReference = "test-remove-ref",
+      createClientUniqueReference = "test-create-ref",
+    )
     HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
     PrisonApiExtension.Companion.prisonApi.stubRelaseHoldAndCreateTransaction(PRISONER_ID, OFFENDER_ID, HOLD_NUMBER)
 
@@ -114,7 +128,13 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
 
   @Test
   fun `releaseHoldAndCreateTransaction - returns 400 when request fails`() {
-    val request = ReleaseHoldCreateClientTransactionRequest(transactionType = "PHONE")
+    val request = ReleaseHoldAndCreateTransaction(
+      type = ReleaseHoldAndCreateTransaction.Type.PHONE,
+      createDescription = "Pin phone credit",
+      clientTransactionId = "test-transaction-id",
+      removeClientUniqueReference = "test-remove-ref",
+      createClientUniqueReference = "test-create-ref",
+    )
     val errorMessage = "Transaction creation failed"
     HmppsAuthApiExtension.Companion.hmppsAuth.stubGrantToken()
     PrisonApiExtension.Companion.prisonApi.stubRelaseHoldAndCreateTransactionFailure(

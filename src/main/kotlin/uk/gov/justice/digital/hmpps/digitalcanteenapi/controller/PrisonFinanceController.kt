@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonFinanceService
 
 @RestController
@@ -24,8 +24,8 @@ class PrisonFinanceController(
   fun addHold(
     @PathVariable prisonId: String,
     @PathVariable offenderNo: String,
-    @RequestBody request: AddHoldClientRequest,
-  ): AddHoldResponse = prisonFinanceService.addHold(prisonId, offenderNo, request)
+    @RequestBody request: AddHoldTransaction,
+  ): HoldDetails = prisonFinanceService.addHold(prisonId, offenderNo, request.amount)
 
   @PostMapping("/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}")
   fun releaseHold(
@@ -40,6 +40,6 @@ class PrisonFinanceController(
     @PathVariable prisonId: String,
     @PathVariable offenderNo: String,
     @PathVariable holdNumber: Number,
-    @RequestBody request: ReleaseHoldCreateClientTransactionRequest,
-  ): ReleaseHoldCreateTransactionResponse = prisonFinanceService.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, request)
+    @RequestBody request: ReleaseHoldAndCreateTransaction,
+  ): Transaction = prisonFinanceService.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, request.type)
 }

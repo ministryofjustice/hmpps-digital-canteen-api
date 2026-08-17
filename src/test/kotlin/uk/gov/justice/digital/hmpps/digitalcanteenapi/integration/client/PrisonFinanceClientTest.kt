@@ -9,15 +9,16 @@ import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.OFFENDER_BOOKING_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonApiMockServer
+import java.math.BigDecimal
 
 class PrisonFinanceClientTest {
   private lateinit var client: PrisonFinanceClient
@@ -35,9 +36,9 @@ class PrisonFinanceClientTest {
   @Test
   fun `addHold - successfully adds hold`() {
     server.stubAddHold(PRISONER_ID, PRISONER_NUMBER)
-    val request = AddHoldRequest(
+    val request = AddHoldTransaction(
       description = "HOLD",
-      amount = 10.5,
+      amount = 105,
       clientTransactionId = "trans1",
       clientName = PRISONER_NUMBER,
       clientUniqueReference = "ref1",
@@ -52,9 +53,9 @@ class PrisonFinanceClientTest {
   @Test
   fun `addHold - throws UpstreamException on failure`() {
     server.stubAddHoldFailure(PRISONER_ID, PRISONER_NUMBER, 400, "Insufficient funds")
-    val request = AddHoldRequest(
+    val request = AddHoldTransaction(
       description = "HOLD",
-      amount = 1000.0,
+      amount = 10000,
       clientTransactionId = "trans1",
       clientName = PRISONER_NUMBER,
       clientUniqueReference = "ref1",
@@ -69,7 +70,7 @@ class PrisonFinanceClientTest {
   @Test
   fun `releaseHold - successfully releases hold`() {
     server.stubReleaseHold(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER)
-    val request = ReleaseHoldRequest(
+    val request = ReleaseHoldTransaction(
       description = "Remove HOLD",
       clientTransactionId = "trans2",
       clientName = PRISONER_NUMBER,
@@ -84,7 +85,7 @@ class PrisonFinanceClientTest {
   @Test
   fun `releaseHold - throws UpstreamException on failure`() {
     server.stubReleaseHoldFailure(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, 404, "Hold not found")
-    val request = ReleaseHoldRequest(
+    val request = ReleaseHoldTransaction(
       description = "Remove HOLD",
       clientTransactionId = "trans2",
       clientName = PRISONER_NUMBER,
@@ -100,8 +101,8 @@ class PrisonFinanceClientTest {
   @Test
   fun `releaseHoleCreateTransaction - successfully releases hold and creates transaction`() {
     server.stubRelaseHoldAndCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER)
-    val request = ReleaseHoldCreateTransactionRequest(
-      type = "PHONE",
+    val request = ReleaseHoldAndCreateTransaction(
+      type = ReleaseHoldAndCreateTransaction.Type.PHONE,
       removeDescription = "Remove HOLD",
       createDescription = "HOLD for PHONE",
       clientTransactionId = "trans3",
@@ -125,8 +126,8 @@ class PrisonFinanceClientTest {
       500,
       "Internal Server Error",
     )
-    val request = ReleaseHoldCreateTransactionRequest(
-      type = "PHONE",
+    val request = ReleaseHoldAndCreateTransaction(
+      type = ReleaseHoldAndCreateTransaction.Type.PHONE,
       removeDescription = "Remove HOLD",
       createDescription = "HOLD for PHONE",
       clientTransactionId = "trans3",
@@ -148,8 +149,8 @@ class PrisonFinanceClientTest {
     val result = client.getPrisonerBalance(OFFENDER_BOOKING_ID).block()
 
     assertThat(result).isNotNull
-    assertThat(result?.spends).isEqualTo(12.22)
-    assertThat(result?.cash).isEqualTo(10.00)
+    assertThat(result?.spends).isEqualByComparingTo(BigDecimal("12.22"))
+    assertThat(result?.cash).isEqualByComparingTo(BigDecimal("10.00"))
   }
 
   @Test

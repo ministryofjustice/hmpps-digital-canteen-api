@@ -4,18 +4,18 @@ import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.PrisonerAdjudicationsClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicationsclient.dto.AdjudicationsPunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.BtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerIncentivesResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.PrisonerSearchResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toBtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerIncentiveResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.dto.toPrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerIncentivesResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toBalanceResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toBtPinPhoneResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toPrisonerIncentiveResponseDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toPrisonerSearchResponseDto
 import java.util.Optional
 import java.util.UUID
 
@@ -73,7 +73,7 @@ class PinPhonePrisonerEnrichmentService(
         val activeAdjudications = tuple.t4.orElse(null)
         EnrichedPinPhonePrisonerDto(
           prisoner = prisoner.toPrisonerSearchResponseDto(),
-          incentives = prisoner.currentIncentive.toPrisonerIncentiveResponseDto(),
+          incentives = prisoner.currentIncentive?.toPrisonerIncentiveResponseDto(),
           prisonerBalance = tuple.t2.orElse(null)?.toBalanceResponseDto(),
           prisonerBtBalance = tuple.t3.orElse(null)?.toBtPinPhoneResponseDto(),
           hasActiveAdjudications = !activeAdjudications.isNullOrEmpty(),
@@ -84,10 +84,10 @@ class PinPhonePrisonerEnrichmentService(
 
   data class EnrichedPinPhonePrisonerDto(
     val prisoner: PrisonerSearchResponseDto,
-    val incentives: PrisonerIncentivesResponseDto,
+    val incentives: PrisonerIncentivesResponseDto?,
     val prisonerBalance: BalanceResponseDto?,
     val prisonerBtBalance: BtPinPhoneResponseDto?,
     val hasActiveAdjudications: Boolean,
-    val activeAdjudications: List<AdjudicationsPunishmentDto>?,
+    val activeAdjudications: List<ActivePunishmentDto>?,
   )
 }

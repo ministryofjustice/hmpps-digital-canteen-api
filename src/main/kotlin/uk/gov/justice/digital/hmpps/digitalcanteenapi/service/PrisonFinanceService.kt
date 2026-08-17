@@ -3,13 +3,11 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldClientRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.AddHoldResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateClientTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldCreateTransactionResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.ReleaseHoldRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import java.util.UUID
 import kotlin.String
 
@@ -31,11 +29,11 @@ class PrisonFinanceService(
   /**
    * Adds a hold to the prisoner.
    */
-  fun addHold(prisonId: String, offenderNo: String, clientRequest: AddHoldClientRequest): AddHoldResponse {
+  fun addHold(prisonId: String, offenderNo: String, amount: Long): HoldDetails {
     val clientReference = generateClientReference()
-    val request = AddHoldRequest(
+    val request = AddHoldTransaction(
       description = HOLD_DESCRIPTION,
-      amount = clientRequest.amount,
+      amount = amount,
       clientTransactionId = clientReference.toClientTransactionId(),
       clientName = offenderNo,
       clientUniqueReference = clientReference.toClientUniqueReference(),
@@ -49,7 +47,7 @@ class PrisonFinanceService(
    */
   fun releaseHold(prisonId: String, offenderNo: String, holdNumber: Number): ResponseEntity<Void> {
     val clientReference = generateClientReference()
-    val request = ReleaseHoldRequest(
+    val request = ReleaseHoldTransaction(
       description = REMOVE_HOLD_DESCRIPTION,
       clientTransactionId = clientReference.toClientTransactionId(),
       clientName = offenderNo,
@@ -66,14 +64,14 @@ class PrisonFinanceService(
     prisonId: String,
     offenderNo: String,
     holdNumber: Number,
-    clientRequest: ReleaseHoldCreateClientTransactionRequest,
-  ): ReleaseHoldCreateTransactionResponse {
+    clientRequestType: ReleaseHoldAndCreateTransaction.Type,
+  ): Transaction {
     val createClientReference = generateClientReference()
     val removeClientReference = generateClientReference()
-    val request = ReleaseHoldCreateTransactionRequest(
-      type = clientRequest.transactionType,
+    val request = ReleaseHoldAndCreateTransaction(
+      type = clientRequestType,
       removeDescription = REMOVE_HOLD_DESCRIPTION,
-      createDescription = "$HOLD_DESCRIPTION for ${clientRequest.transactionType}",
+      createDescription = "$HOLD_DESCRIPTION for $clientRequestType",
       clientTransactionId = createClientReference.toClientTransactionId(),
       clientName = offenderNo,
       removeClientUniqueReference = removeClientReference.toClientUniqueReference(),

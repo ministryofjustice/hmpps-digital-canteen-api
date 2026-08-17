@@ -72,7 +72,36 @@ tasks.register("buildPurchasePinPhoneUiApiModel", GenerateTask::class) {
   configOptions.set(configValues)
   globalProperties.set(mapOf("models" to ""))
 }
-val generatedProjectDirs = listOf("btpinphoneapi", "purchasePinPhoneUiApi")
+
+tasks.register("buildPrisonApiModel", GenerateTask::class) {
+  generatorName.set("kotlin")
+  inputSpec.set("openapi-specs/prison-api.json")
+  outputDir.set("$buildDirectory/generated/prisonapi")
+  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated")
+  configOptions.set(configValues)
+  globalProperties.set(mapOf("models" to ""))
+}
+
+tasks.register("buildPrisonerSearchApiModel", GenerateTask::class) {
+  generatorName.set("kotlin")
+  inputSpec.set("openapi-specs/prisoner-search-api.json")
+  outputDir.set("$buildDirectory/generated/prisonersearchapi")
+  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated")
+  configOptions.set(configValues)
+  globalProperties.set(mapOf("models" to ""))
+}
+
+tasks.register("buildPrisonerAdjudicationsApiModel", GenerateTask::class) {
+  generatorName.set("kotlin")
+  inputSpec.set("openapi-specs/manage-adjudications-api.json")
+  outputDir.set("$buildDirectory/generated/prisoneradjudicationsapi")
+  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated")
+  configOptions.set(configValues)
+  globalProperties.set(mapOf("models" to ""))
+  skipValidateSpec.set(true)
+}
+
+val generatedProjectDirs = listOf("btpinphoneapi", "purchasePinPhoneUiApi", "prisonapi", "prisonersearchapi", "prisoneradjudicationsapi")
 
 kotlin {
   generatedProjectDirs.forEach { generatedProject ->
@@ -84,13 +113,13 @@ kotlin {
 
 tasks {
   withType<KotlinCompile> {
-    dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel")
+    dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel")
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
-  dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel")
+  dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel")
 }
 
 configure<KtlintExtension> {
