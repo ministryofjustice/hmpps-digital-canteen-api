@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
@@ -30,7 +31,8 @@ class PrisonFinanceClientTest {
     val mapper = JsonMapper.builder()
       .findAndAddModules()
       .build()
-    client = PrisonFinanceClient(webClient, mapper)
+    val webClientErrorHandler = WebClientErrorHandler(mapper)
+    client = PrisonFinanceClient(webClient, webClientErrorHandler)
   }
 
   @Test

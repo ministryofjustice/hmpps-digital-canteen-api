@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
@@ -30,7 +31,8 @@ class BtPinPhoneClientTest {
     val mapper = JsonMapper.builder()
       .findAndAddModules()
       .build()
-    client = BtPinPhoneClient(webClient, BT_CLIENT_ID, BT_CLIENT_SECRET, mapper)
+    val webClientErrorHandler = WebClientErrorHandler(mapper)
+    client = BtPinPhoneClient(webClient, BT_CLIENT_ID, BT_CLIENT_SECRET, webClientErrorHandler)
   }
 
   @Nested
@@ -79,7 +81,7 @@ class BtPinPhoneClientTest {
 
       assertThatThrownBy { client.getBtToken().block() }
         .isInstanceOf(UpstreamException::class.java)
-        .hasMessageContaining("Unable to parse error response from BT")
+        .hasMessageContaining("Unable to parse error response from server.")
     }
   }
 

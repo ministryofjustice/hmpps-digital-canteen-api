@@ -25,7 +25,7 @@ class PrisonerEnrichmentController(
   private val pinPhonePrisonerEnrichmentService: PinPhonePrisonerEnrichmentService,
 ) {
   @Operation(
-    summary = "Enriches prisoner with information from BT, Adjudication and Prison API",
+    summary = "Enriches prisoner with information from BT, and prison API for balance information",
     responses = [
       ApiResponse(responseCode = "200", description = "Enriched prisoner details returned successfully"),
       ApiResponse(responseCode = "404", description = "Prisoner not found"),

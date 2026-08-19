@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.Cr
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonerEnrichmentRulesEnginePoc
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 
 @RestController
@@ -29,6 +30,7 @@ class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneTestSupportClient: BtPinPhoneTestSupportClient,
   private val btPinPhoneClient: BtPinPhoneClient,
+  private val prisonerEnrichmentRulesEnginePoc: PrisonerEnrichmentRulesEnginePoc,
 ) {
 
   @Suppress("FunctionOnlyReturningConstant")
@@ -36,12 +38,14 @@ class TestController(
   @GetMapping("/test")
   fun testEndpoint(): String = "test"
 
+  // Product endpoints
   @PreAuthorize("permitAll()")
   @GetMapping("/product/{ean}")
   fun getProduct(
     @PathVariable ean: String,
   ): Mono<ProductDetailsResponse> = productEnrichmentInfoService.getProductEnrichmentDetails(ean)
 
+  // BT endpoints
   @PreAuthorize("permitAll()")
   @GetMapping("/test-bt-auth")
   fun testBtAuth() = btPinPhoneClient.getBtToken()
@@ -73,4 +77,11 @@ class TestController(
   @PreAuthorize("permitAll()")
   @PostMapping("/bt-test/relationships")
   fun getBtRelationships(): Mono<BtRelationshipsResponse> = btPinPhoneTestSupportClient.getRelationships()
+
+  // Prisoner Enrichment endpoints
+  @PreAuthorize("permitAll()")
+  @GetMapping("/prisoner-enrichment-poc/{prisonerNumber}")
+  fun getEnrichedPrisoner(
+    @PathVariable prisonerNumber: String,
+  ) = prisonerEnrichmentRulesEnginePoc.getEnrichedPrisoner(prisonerNumber)
 }

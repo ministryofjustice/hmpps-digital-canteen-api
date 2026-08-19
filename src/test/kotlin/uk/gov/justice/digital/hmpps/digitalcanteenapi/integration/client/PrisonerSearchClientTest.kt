@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
+import tools.jackson.databind.json.JsonMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonerSearchMockServer
@@ -18,7 +20,11 @@ class PrisonerSearchClientTest {
   fun resetMocks() {
     server.resetRequests()
     val webClient = WebClient.create("http://localhost:${server.port()}")
-    client = PrisonerSearchClient(webClient)
+    val mapper = JsonMapper.builder()
+      .findAndAddModules()
+      .build()
+    val webClientErrorHandler = WebClientErrorHandler(mapper)
+    client = PrisonerSearchClient(webClient, webClientErrorHandler)
   }
 
   @Test

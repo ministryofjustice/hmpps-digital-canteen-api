@@ -8,8 +8,7 @@ import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import reactor.core.publisher.Mono
-import tools.jackson.core.JacksonException
-import tools.jackson.databind.ObjectMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
@@ -17,12 +16,11 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.gener
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import uk.gov.justice.hmpps.kotlin.common.ErrorResponse
 
 @Component
 class PrisonFinanceClient(
   @Qualifier("prisonApiWebClient") private val prisonerApiClient: WebClient,
-  private val objectMapper: ObjectMapper,
+  private val errorHandler: WebClientErrorHandler,
 ) {
   companion object {
     val logger: Logger = LoggerFactory.getLogger(PrisonFinanceClient::class.java)
@@ -42,7 +40,7 @@ class PrisonFinanceClient(
         .bodyToMono(HoldDetails::class.java)
         .block()!!
     } catch (ex: WebClientResponseException) {
-      val error = handleError(ex)
+      val error = errorHandler.handleError(ex)
       logger.error("AddHold request failed for offenderNo: $offenderNo", error)
       throw UpstreamException(error.userMessage ?: "AddHold request failed")
     }
@@ -68,7 +66,7 @@ class PrisonFinanceClient(
         .toBodilessEntity()
         .block()!!
     } catch (ex: WebClientResponseException) {
-      val errorResponse = handleError(ex)
+      val errorResponse = errorHandler.handleError(ex)
       logger.error("ReleaseHold request failed for offenderNo: $offenderNo", errorResponse)
       throw UpstreamException(errorResponse.userMessage ?: "ReleaseHold request failed")
     }
@@ -94,7 +92,7 @@ class PrisonFinanceClient(
         .bodyToMono(Transaction::class.java)
         .block()!!
     } catch (ex: WebClientResponseException) {
-      val errorResponse = handleError(ex)
+      val errorResponse = errorHandler.handleError(ex)
       logger.error("ReleaseHoldCreateTransaction request failed for offenderNo: $offenderNo", errorResponse)
       throw UpstreamException(errorResponse.userMessage ?: "ReleaseHoldCreateTransaction request failed")
     }
@@ -107,22 +105,9 @@ class PrisonFinanceClient(
       .retrieve()
       .bodyToMono(Account::class.java)
       .onErrorMap(WebClientResponseException::class.java) { ex ->
-        val errorResponse = handleError(ex)
+        val errorResponse = errorHandler.handleError(ex)
         logger.error("GET Balance request failed for bookingId: $bookingId", errorResponse)
         UpstreamException(errorResponse.userMessage ?: "getPrisonerBalance request failed")
       }
-  }
-
-  private fun handleError(ex: WebClientResponseException): ErrorResponse = try {
-    objectMapper.readValue(ex.responseBodyAsString, ErrorResponse::class.java)
-  } catch (parseException: JacksonException) {
-    logger.error("Failed to parse error response body for status: ${ex.statusCode}", parseException)
-    ErrorResponse(
-      status = ex.statusCode.value(),
-      errorCode = "UNKNOWN",
-      userMessage = "Unable to parse error response from server.",
-      developerMessage = parseException.message ?: "Error parsing response body.",
-      moreInfo = "No additional information available.",
-    )
   }
 }

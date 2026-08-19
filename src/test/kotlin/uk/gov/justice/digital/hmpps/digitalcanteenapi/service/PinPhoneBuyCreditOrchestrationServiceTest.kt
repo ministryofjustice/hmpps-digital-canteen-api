@@ -71,11 +71,8 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     )
     val enrichedPrisoner = PinPhonePrisonerEnrichmentService.EnrichedPinPhonePrisonerDto(
       prisoner = prisonerSearchResponseDto,
-      incentives = mock(),
       prisonerBalance = null,
       prisonerBtBalance = null,
-      hasActiveAdjudications = false,
-      activeAdjudications = null,
     )
 
     whenever(pinPhonePrisonerEnrichmentService.getEnrichedPrisoner(PRISONER_NUMBER))
@@ -302,10 +299,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
       youthOffender = false,
       gender = "Male",
     ),
-    incentives = mock(),
     prisonerBalance = null,
     prisonerBtBalance = null,
-    hasActiveAdjudications = false,
-    activeAdjudications = null,
   )
 }
