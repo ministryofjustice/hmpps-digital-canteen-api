@@ -41,8 +41,8 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(btPinPhoneBalanceRequest)
       .retrieve()
       .bodyToMono<BtPinPhoneBalanceResponse>()
-      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
-        logger.error("BT response: ${ex.responseBodyAsString}")
+      .onErrorResume(WebClientResponseException::class.java) { ex ->
+        logger.error("BT response [${ex.statusCode}]: ${ex.responseBodyAsString}")
         Mono.error(ex)
       }
   }
@@ -55,8 +55,8 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(request)
       .retrieve()
       .bodyToMono(CreateAccountResponse::class.java)
-      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
-        logger.error("BT response: ${ex.responseBodyAsString}")
+      .onErrorResume(WebClientResponseException::class.java) { ex ->
+        logger.error("BT response [${ex.statusCode}]: ${ex.responseBodyAsString}")
         Mono.error(ex)
       }
   }
@@ -69,8 +69,8 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(request)
       .retrieve()
       .bodyToMono(CreateControlledNumberResponse::class.java)
-      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
-        logger.error("BT response: ${ex.responseBodyAsString}")
+      .onErrorResume(WebClientResponseException::class.java) { ex ->
+        logger.error("BT response [${ex.statusCode}]: ${ex.responseBodyAsString}")
         Mono.error(ex)
       }
   }
@@ -83,8 +83,8 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(emptyMap<String, Any>())
       .retrieve()
       .bodyToMono(BtRelationshipsResponse::class.java)
-      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
-        logger.error("BT response: ${ex.responseBodyAsString}")
+      .onErrorResume(WebClientResponseException::class.java) { ex ->
+        logger.error("BT response [${ex.statusCode}]: ${ex.responseBodyAsString}")
         Mono.error(ex)
       }
   }
@@ -97,8 +97,8 @@ class BtPinPhoneTestSupportClient(
       .bodyValue(request)
       .retrieve()
       .bodyToMono(CreditAccountResponse::class.java)
-      .onErrorResume(WebClientResponseException.BadRequest::class.java) { ex ->
-        logger.error("BT response: ${ex.responseBodyAsString}")
+      .onErrorResume(WebClientResponseException::class.java) { ex ->
+        logger.error("BT response [${ex.statusCode}]: ${ex.responseBodyAsString}")
         Mono.error(ex)
       }
   }
