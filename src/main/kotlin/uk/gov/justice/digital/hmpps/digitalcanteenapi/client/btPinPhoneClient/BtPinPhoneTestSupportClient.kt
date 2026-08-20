@@ -91,7 +91,7 @@ class BtPinPhoneTestSupportClient(
 
   fun accountCredit(request: CreditAccountRequest): Mono<CreditAccountResponse> = getBtToken().flatMap { token ->
     btPinPhoneWebClient
-      .put()
+      .post()
       .uri("/pcs/AccountCredit")
       .headers { it.setBearerAuth(token) }
       .bodyValue(request)
