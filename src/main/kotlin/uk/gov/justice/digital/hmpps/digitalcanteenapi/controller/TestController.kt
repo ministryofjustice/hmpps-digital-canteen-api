@@ -22,7 +22,6 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.Cr
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonerEnrichmentRulesEnginePoc
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 
 @RestController
@@ -32,7 +31,6 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneTestSupportClient: BtPinPhoneTestSupportClient,
-  private val prisonerEnrichmentRulesEnginePoc: PrisonerEnrichmentRulesEnginePoc,
 ) {
 
   // Product endpoints
@@ -79,11 +77,4 @@ class TestController(
   fun creditBtAccount(
     @RequestBody request: CreditAccountRequest,
   ): Mono<CreditAccountResponse> = btPinPhoneTestSupportClient.accountCredit(request)
-
-  // Prisoner Enrichment endpoints
-  @Operation(summary = "Get prisoner enrichment for rules engine POC")
-  @GetMapping("/prisoner-enrichment-poc/{prisonerNumber}")
-  fun getEnrichedPrisoner(
-    @PathVariable prisonerNumber: String,
-  ) = prisonerEnrichmentRulesEnginePoc.getEnrichedPrisoner(prisonerNumber)
 }
