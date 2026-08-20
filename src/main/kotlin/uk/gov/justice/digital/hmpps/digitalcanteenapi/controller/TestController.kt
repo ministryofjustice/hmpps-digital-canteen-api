@@ -74,8 +74,8 @@ class TestController(
   @PostMapping("/bt-test/relationships-test")
   fun getBtRelationships(): Mono<BtRelationshipsResponse> = btPinPhoneTestSupportClient.getRelationships()
 
-  @Operation(summary = "Add controlled number to BT account")
-  @PutMapping("/bt-test/account-credit-test")
+  @Operation(summary = "Add account credit to BT account")
+  @PostMapping("/bt-test/account-credit-test")
   fun creditBtAccount(
     @RequestBody request: CreditAccountRequest,
   ): Mono<CreditAccountResponse> = btPinPhoneTestSupportClient.accountCredit(request)
