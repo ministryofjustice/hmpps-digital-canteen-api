@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 
+import io.swagger.v3.oas.annotations.Operation
 import org.springframework.context.annotation.Profile
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
@@ -10,13 +11,14 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneTestSupportClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtRelationshipsResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateAccountRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateAccountResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateControlledNumberRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreateControlledNumberResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreditAccountRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreditAccountResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
@@ -25,61 +27,61 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 
 @RestController
 @RequestMapping("/api")
+@PreAuthorize("permitAll()")
 @Profile("dev", "test")
 class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneTestSupportClient: BtPinPhoneTestSupportClient,
-  private val btPinPhoneClient: BtPinPhoneClient,
   private val prisonerEnrichmentRulesEnginePoc: PrisonerEnrichmentRulesEnginePoc,
 ) {
 
-  @Suppress("FunctionOnlyReturningConstant")
-  @PreAuthorize("permitAll()")
-  @GetMapping("/test")
-  fun testEndpoint(): String = "test"
-
   // Product endpoints
-  @PreAuthorize("permitAll()")
   @GetMapping("/product/{ean}")
   fun getProduct(
     @PathVariable ean: String,
   ): Mono<ProductDetailsResponse> = productEnrichmentInfoService.getProductEnrichmentDetails(ean)
 
   // BT endpoints
-  @PreAuthorize("permitAll()")
+  @Operation(summary = "Get BT auth token")
   @GetMapping("/test-bt-auth")
-  fun testBtAuth() = btPinPhoneClient.getBtToken()
+  fun testBtAuth() = btPinPhoneTestSupportClient.getBtToken()
 
-  @PreAuthorize("permitAll()")
+  @Operation(summary = "Get balances for BT account")
   @GetMapping("/test-bt/{prisonerId}/{reference}")
   fun testBt(
     @PathVariable prisonerId: String,
     @PathVariable reference: String,
-  ): Mono<BtPinPhoneBalanceResponse> = btPinPhoneClient.getPrisonerBalance(
+  ): Mono<BtPinPhoneBalanceResponse> = btPinPhoneTestSupportClient.getPrisonerBalance(
     BtPinPhoneBalanceRequest(
       reference = reference,
       prisonerId = prisonerId,
     ),
   )
 
-  @PreAuthorize("permitAll()")
+  @Operation(summary = "Create BT account")
   @PutMapping("/bt-test/account")
   fun createBtAccount(
     @RequestBody request: CreateAccountRequest,
   ): Mono<CreateAccountResponse> = btPinPhoneTestSupportClient.createAccount(request)
 
-  @PreAuthorize("permitAll()")
+  @Operation(summary = "Add controlled number to BT account")
   @PutMapping("/bt-test/controlled-number")
   fun createBtControlledNumber(
     @RequestBody request: CreateControlledNumberRequest,
   ): Mono<CreateControlledNumberResponse> = btPinPhoneTestSupportClient.createControlledNumber(request)
 
-  @PreAuthorize("permitAll()")
+  @Operation(summary = "Get relationship types for BT")
   @PostMapping("/bt-test/relationships")
   fun getBtRelationships(): Mono<BtRelationshipsResponse> = btPinPhoneTestSupportClient.getRelationships()
 
+  @Operation(summary = "Add controlled number to BT account")
+  @PutMapping("/bt-test/controlled-number")
+  fun creditBtAccount(
+    @RequestBody request: CreditAccountRequest,
+  ): Mono<CreditAccountResponse> = btPinPhoneTestSupportClient.accountCredit(request)
+
   // Prisoner Enrichment endpoints
-  @PreAuthorize("permitAll()")
+  @Operation(summary = "Get prisoner enrichment for rules engine POC")
   @GetMapping("/prisoner-enrichment-poc/{prisonerNumber}")
   fun getEnrichedPrisoner(
     @PathVariable prisonerNumber: String,
