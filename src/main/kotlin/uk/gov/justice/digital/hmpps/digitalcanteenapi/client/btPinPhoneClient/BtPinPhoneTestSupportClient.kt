@@ -157,5 +157,7 @@ data class CreditAccountRequest(
 data class CreditAccountResponse(
   val reference: String,
   val prisonerId: String,
-  val amountPence: Int,
+  val creditLimitPence: Int,
+  val preBalancePence: Int,
+  val newBalancePence: Int,
 )
