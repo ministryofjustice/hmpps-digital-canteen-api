@@ -43,11 +43,11 @@ class TestController(
 
   // BT endpoints
   @Operation(summary = "Get BT auth token")
-  @GetMapping("/test-bt-auth")
+  @GetMapping("/bt-auth-test")
   fun testBtAuth() = btPinPhoneTestSupportClient.getBtToken()
 
   @Operation(summary = "Get balances for BT account")
-  @GetMapping("/test-bt/{prisonerId}/{reference}")
+  @GetMapping("/get-balances-test/{prisonerId}/{reference}")
   fun testBt(
     @PathVariable prisonerId: String,
     @PathVariable reference: String,
@@ -59,23 +59,23 @@ class TestController(
   )
 
   @Operation(summary = "Create BT account")
-  @PutMapping("/bt-test/account")
+  @PutMapping("/bt-test/account-test")
   fun createBtAccount(
     @RequestBody request: CreateAccountRequest,
   ): Mono<CreateAccountResponse> = btPinPhoneTestSupportClient.createAccount(request)
 
   @Operation(summary = "Add controlled number to BT account")
-  @PutMapping("/bt-test/controlled-number")
+  @PutMapping("/bt-test/controlled-number-test")
   fun createBtControlledNumber(
     @RequestBody request: CreateControlledNumberRequest,
   ): Mono<CreateControlledNumberResponse> = btPinPhoneTestSupportClient.createControlledNumber(request)
 
   @Operation(summary = "Get relationship types for BT")
-  @PostMapping("/bt-test/relationships")
+  @PostMapping("/bt-test/relationships-test")
   fun getBtRelationships(): Mono<BtRelationshipsResponse> = btPinPhoneTestSupportClient.getRelationships()
 
   @Operation(summary = "Add controlled number to BT account")
-  @PutMapping("/bt-test/controlled-number")
+  @PutMapping("/bt-test/account-credit-test")
   fun creditBtAccount(
     @RequestBody request: CreditAccountRequest,
   ): Mono<CreditAccountResponse> = btPinPhoneTestSupportClient.accountCredit(request)
