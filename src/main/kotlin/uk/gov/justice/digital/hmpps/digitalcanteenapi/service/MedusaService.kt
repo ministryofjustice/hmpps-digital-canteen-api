@@ -11,8 +11,6 @@ class MedusaService(
   private val medusaStoreClient: MedusaStoreClient,
   private val medusaAdminClient: MedusaAdminClient,
 ) {
-  fun testMedusaEndpointStore(): Mono<MedusaDto> = medusaStoreClient.medusaStoreTest()
-    .doOnError { e -> println("testMedusaServiceStore failed: ${e.message}") }
 
   fun testMedusaEndpointAdmin(): Mono<MedusaDto> = medusaAdminClient.medusaAdminTest()
     .doOnError { e -> println("testMedusaServiceAdmin failed: ${e.message}") }
