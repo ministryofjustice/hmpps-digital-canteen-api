@@ -14,7 +14,7 @@
       "post": {
         "operationId": "createPinPhoneCart",
         "summary": "Create a PIN phone cart",
-        "description": "Creates a new cart for a prisoner's PIN phone purchase.",
+        "description": "Creates a new cart for a prisoner's PIN phone purchase. If the prisoner has used the service before, the cart is linked to their existing customer record. Otherwise, a new customer and prisoner record are created and linked.",
         "requestBody": {
           "required": true,
           "content": {
@@ -36,8 +36,25 @@
               }
             }
           },
+          "404": {
+            "description": "Region not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
           "500": {
-            "description": "Internal server error"
+            "description": "Failed to create cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -52,7 +69,9 @@
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "The cart ID"
           }
         ],
@@ -82,30 +101,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "status"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 404
-                    },
-                    "errorCode": {
-                      "type": "string",
-                      "example": "VARIANT_NOT_FOUND"
-                    },
-                    "userMessage": {
-                      "type": "string",
-                      "example": "PIN Phone variant not found. Please check the SKU and try again."
-                    },
-                    "developerMessage": {
-                      "type": "string"
-                    },
-                    "moreInfo": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -115,29 +111,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "required": [
-                    "status"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": "integer",
-                      "example": 500
-                    },
-                    "errorCode": {
-                      "type": "string",
-                      "example": "ADD_TO_CART_FAILED"
-                    },
-                    "userMessage": {
-                      "type": "string"
-                    },
-                    "developerMessage": {
-                      "type": "string"
-                    },
-                    "moreInfo": {
-                      "type": "string"
-                    }
-                  }
+                  "$ref": "#/components/schemas/ErrorResponse"
                 }
               }
             }
@@ -232,7 +206,9 @@
       },
       "AddItemsRequest": {
         "type": "object",
-        "required": ["amount"],
+        "required": [
+          "amount"
+        ],
         "properties": {
           "amount": {
             "type": "integer",
@@ -291,7 +267,8 @@
             "properties": {
               "id": {
                 "type": "string",
-                "description": "The cart ID"
+                "description": "The cart ID",
+                "example": "cart_1234567890"
               }
             }
           }
@@ -318,15 +295,29 @@
       },
       "ErrorResponse": {
         "type": "object",
+        "required": [
+          "status"
+        ],
         "properties": {
-          "message": {
+          "status": {
+            "type": "integer",
+            "example": 500
+          },
+          "errorCode": {
             "type": "string"
           },
-          "error": {
+          "userMessage": {
+            "type": "string"
+          },
+          "developerMessage": {
+            "type": "string"
+          },
+          "moreInfo": {
             "type": "string"
           }
         }
       }
     }
+  }
   }
 }

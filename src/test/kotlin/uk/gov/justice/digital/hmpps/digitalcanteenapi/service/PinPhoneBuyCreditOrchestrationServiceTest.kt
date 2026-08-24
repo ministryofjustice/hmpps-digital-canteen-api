@@ -15,17 +15,17 @@ import org.springframework.http.HttpStatus
 import org.springframework.web.server.ResponseStatusException
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartMetadata
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponseCart
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCart
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCompleteCartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.Order
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
@@ -248,43 +248,45 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   fun `createCart successfully creates a cart`() {
     // Given
     val request = CreateCartRequest(
-      prisonId = PRISONER_ID,
-      offenderNo = PRISONER_NUMBER,
-      firstName = "John",
-      lastName = "Doe",
-    )
-    val medusaCart = MedusaCart(
-      id = CART_ID,
-      regionId = "region-1",
-      customerId = "customer-1",
-      currencyCode = "gbp",
-    )
-    val medusaResponse = MedusaCreateCartResponse(cart = medusaCart)
+      CartMetadata(
+        prisonId = PRISONER_ID,
+        offenderNo = PRISONER_NUMBER,
+        firstName = "John",
+        secondName = "Doe",
+      ),
 
+    )
+    val medusaCart = CartResponse(
+      CartResponseCart(
+        id = CART_ID,
+      ),
+    )
+    val medusaResponse = CartResponse(medusaCart.cart)
     whenever(medusaStoreClient.createCart(any())).thenReturn(medusaResponse)
 
     // When
     val result = service.createCart(request)
 
     // Then
-    assertEquals(CART_ID, result.body?.cartId)
+    assertEquals(CART_ID, result.body?.cart?.id)
     verify(medusaStoreClient).createCart(any())
   }
 
   @Test
-  fun `createCart throws CartCreationException when client fails`() {
-    // Given
-    val request = CreateCartRequest(
-      prisonId = PRISONER_ID,
-      offenderNo = PRISONER_NUMBER,
-      firstName = "John",
-      lastName = "Doe",
-    )
-    whenever(medusaStoreClient.createCart(any())).thenThrow(RuntimeException("Medusa failed"))
+  fun `createCart throws UpstreamException when client fails`() {
+    whenever(medusaStoreClient.createCart(any())).thenThrow(UpstreamException("Create cart failed"))
 
-    // When / Then
-    assertThrows(CartCreationException::class.java) {
-      service.createCart(request)
+    assertThrows(UpstreamException::class.java) {
+      service.createCart(
+        CreateCartRequest(
+          metadata = CartMetadata(
+            prisonId = PRISONER_ID,
+            offenderNo = PRISONER_NUMBER,
+            firstName = "John",
+            secondName = "Doe",
+          ),
+        ),
+      )
     }
   }
 

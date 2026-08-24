@@ -1,18 +1,18 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
-import jakarta.validation.Valid
-import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import org.springframework.http.MediaType
 import org.springframework.security.access.prepost.PreAuthorize
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
 
@@ -34,17 +34,11 @@ class MedusaController(private val medusaStoreClient: MedusaStoreClient) {
       ApiResponse(responseCode = "500", description = "Internal server error"),
     ],
   )
-  @PostMapping("/add-line-item", produces = [MediaType.APPLICATION_JSON_VALUE])
+  @PostMapping("/add-line-item/{cartId}", produces = [MediaType.APPLICATION_JSON_VALUE])
   fun addLineItem(
-    @Valid @RequestBody addItemsToCartRequest: AddItemsToCartRequest,
-  ): CartResponse = medusaStoreClient.addPinPhoneItemsToCart(addItemsToCartRequest)
+    @PathVariable
+    @Parameter(description = "The cart number", example = "cart_1234567890", required = true)
+    cartId: String,
+    @RequestBody addItemsRequest: AddItemsRequest,
+  ): CartResponse = medusaStoreClient.addPinPhoneItemsToCart(addItemsRequest, cartId)
 }
-
-data class AddItemsToCartRequest(
-  @field:NotNull(message = "amount is required")
-  val amount: Long,
-
-  @field:NotBlank(message = "cartId is required")
-  val cartId: String,
-)
-

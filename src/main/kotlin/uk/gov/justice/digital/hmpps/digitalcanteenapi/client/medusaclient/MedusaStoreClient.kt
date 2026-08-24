@@ -9,12 +9,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCompleteCartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.controller.AddItemsToCartRequest
 
 @Component
 class MedusaStoreClient(
@@ -26,34 +24,33 @@ class MedusaStoreClient(
     val logger: Logger = LoggerFactory.getLogger(MedusaStoreClient::class.java)
   }
 
-  fun createCart(cartRequest: MedusaCreateCartRequest): MedusaCreateCartResponse = medusaStoreClient
+  fun createCart(createCartRequest: CreateCartRequest): CartResponse = medusaStoreClient
     .post()
     .uri("/store/pin-phone/carts")
-    .bodyValue(cartRequest)
+    .bodyValue(createCartRequest)
     .retrieve()
-    .bodyToMono(MedusaCreateCartResponse::class.java)
+    .bodyToMono(CartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
-      println(ex)
       val errorResponse = errorHandler.handleError(ex)
       logger.error("Create cart failed: ${ex.responseBodyAsString}")
       UpstreamException(errorResponse.userMessage ?: "Create cart failed")
     }
     .block()!!
 
-  fun addPinPhoneItemsToCart(addItemsToCartRequest: AddItemsToCartRequest): CartResponse = medusaStoreClient
+  fun addPinPhoneItemsToCart(addItemsRequest: AddItemsRequest, cartId: String): CartResponse = medusaStoreClient
     .post()
-    .uri("/store/pin-phone/carts/${addItemsToCartRequest.cartId}/add-items")
-    .bodyValue(AddItemsRequest(amount = addItemsToCartRequest.amount))
+    .uri("/store/pin-phone/carts/$cartId/add-items")
+    .bodyValue(addItemsRequest)
     .retrieve()
     .bodyToMono(CartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
-      println(ex)
       val errorResponse = errorHandler.handleError(ex)
       logger.error("Add line item request failed: ${ex.responseBodyAsString}")
       UpstreamException(errorResponse.userMessage ?: "Add line item request failed")
     }
     .block()!!
 
+  //todo Moving towards a single medusaapi openapi spec, this will be updated as part of CRC-557
   fun completeCart(cartId: String, request: PaymentResult): MedusaCompleteCartResponse = medusaStoreClient
     .post()
     .uri("/store/pin-phone/carts/$cartId/complete")
@@ -61,7 +58,6 @@ class MedusaStoreClient(
     .retrieve()
     .bodyToMono(MedusaCompleteCartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
-      println(ex)
       val errorResponse = errorHandler.handleError(ex)
       logger.error("Cart completion failed: ${ex.responseBodyAsString}")
       UpstreamException(errorResponse.userMessage ?: "Cart completion failed")

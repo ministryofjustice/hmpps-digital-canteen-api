@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditOrchestrationService
 
 @RestController
@@ -37,7 +37,7 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     ],
   )
   @PostMapping("/carts", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CreateCartResponse> = pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Completes the cart and processes the checkout for PIN Phone credit purchase")
