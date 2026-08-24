@@ -22,6 +22,7 @@ class PrisonerSearchClient(
   }
 
   fun getPrisoner(prisonerNumber: String): Mono<Prisoner> = prisonerSearchClient.get()
+  fun getPrisoner(prisonerNumber: String): Mono<Prisoner> = prisonerSearchClient.get()
     .uri("/prisoner/{prisonerNumber}", prisonerNumber)
     .retrieve()
     .bodyToMono(Prisoner::class.java)
