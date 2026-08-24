@@ -50,7 +50,7 @@ class MedusaStoreClient(
     }
     .block()!!
 
-  //todo Moving towards a single medusaapi openapi spec, this will be updated as part of CRC-557
+  // todo Moving towards a single medusaapi openapi spec, this will be updated as part of CRC-557
   fun completeCart(cartId: String, request: PaymentResult): MedusaCompleteCartResponse = medusaStoreClient
     .post()
     .uri("/store/pin-phone/carts/$cartId/complete")
