@@ -3,6 +3,10 @@ info.app:
   version: 1.0
 
 spring:
+  jackson:
+    datatype:
+      enum:
+        READ_UNKNOWN_ENUM_VALUES_AS_NULL: true
   application:
     name: hmpps-digital-canteen-api
 

@@ -9,7 +9,6 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudicatio
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BalanceResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BtPinPhoneResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerIncentivesResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -49,13 +48,6 @@ object PinPhoneTestFixture {
     dateOfBirth = LocalDate.of(1990, 1, 15),
     youthOffender = false,
     gender = "Female",
-  )
-
-  fun prisonerSearchIncentiveResponseDto() = PrisonerIncentivesResponseDto(
-    code = "STD",
-    description = "Standard",
-    dateTime = LocalDateTime.of(2020, 1, 1, 15, 0),
-    nextReviewDate = LocalDate.of(2020, 2, 1),
   )
 
   fun activePunishments() = listOf(
