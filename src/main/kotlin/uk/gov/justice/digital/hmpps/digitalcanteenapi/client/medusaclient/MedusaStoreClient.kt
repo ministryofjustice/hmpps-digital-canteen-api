@@ -9,9 +9,9 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartOrderResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCompleteCartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 
 @Component
@@ -51,12 +51,12 @@ class MedusaStoreClient(
     .block()!!
 
   // todo Moving towards a single medusaapi openapi spec, this will be updated as part of CRC-557
-  fun completeCart(cartId: String, request: PaymentResult): MedusaCompleteCartResponse = medusaStoreClient
+  fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartOrderResponse = medusaStoreClient
     .post()
     .uri("/store/pin-phone/carts/$cartId/complete")
-    .bodyValue(mapOf<String, Any>("PaymentResult" to request))
+    .bodyValue(mapOf("PaymentRequest" to paymentRequest))
     .retrieve()
-    .bodyToMono(MedusaCompleteCartResponse::class.java)
+    .bodyToMono(CompleteCartOrderResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
       val errorResponse = errorHandler.handleError(ex)
       logger.error("Cart completion failed: ${ex.responseBodyAsString}")

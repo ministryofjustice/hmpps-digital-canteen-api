@@ -17,9 +17,9 @@ data class CartMetadata(
   val last_name: String,
 )
 
-data class MedusaCompleteCartResponse(
-  val order: Order? = null,
-)
+//data class MedusaCompleteCartResponse(
+//  val order: Order? = null,
+//)
 
 data class Order(
   val id: String,

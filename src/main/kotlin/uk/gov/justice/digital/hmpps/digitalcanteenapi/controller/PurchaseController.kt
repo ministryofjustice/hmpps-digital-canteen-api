@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartOrderResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditOrchestrationService
 
 @RestController
@@ -50,5 +50,5 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     ],
   )
   @PostMapping("/carts/{cartId}/checkout", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun completeCart(@PathVariable cartId: String, @RequestBody request: CompleteCartRequest): CompleteCartResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(request.offenderNo, request.amount, cartId)
+  fun completeCart(@PathVariable cartId: String, @RequestBody paymentRequest: PaymentRequest): CompleteCartOrderResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
 }
