@@ -11,16 +11,14 @@ import tools.jackson.module.kotlin.jacksonObjectMapper
 import tools.jackson.module.kotlin.readValue
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CompleteCartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated.CreateCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.CartCreationException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.toMedusaCreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment.PinPhonePrisonerEnrichmentService
 
 @Service
@@ -142,23 +140,10 @@ class PinPhoneBuyCreditOrchestrationService(
     )
   }
 
-  fun createCart(request: CreateCartRequest): ResponseEntity<CreateCartResponse> {
-    log.info("Creating cart for offender {}", request.offenderNo)
-    try {
-      val medusaRequest = request.toMedusaCreateCartRequest()
-      val response = medusaStoreClient.createCart(medusaRequest)
-
-      log.info("Successfully created cart for offender {}", response.cart.id)
-      return ResponseEntity.ok(
-        CreateCartResponse(
-          cartId = response.cart.id,
-        ),
-      )
-    } catch (ex: Exception) {
-      log.error("Failed to create cart for offender {}", request.offenderNo)
-      throw CartCreationException(
-        "Failed to create cart for offender ${request.offenderNo}",
-      )
-    }
+  fun createCart(request: CreateCartRequest): ResponseEntity<CartResponse> {
+    log.info("Creating cart for offender {}", request.metadata.offenderNo)
+    val response = medusaStoreClient.createCart(request)
+    log.info("Successfully created cart {}", response.cart?.id)
+    return ResponseEntity.ok(response)
   }
 }

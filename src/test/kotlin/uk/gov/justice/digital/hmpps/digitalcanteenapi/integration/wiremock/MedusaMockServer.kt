@@ -77,6 +77,24 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
+  fun stubAddLineItem(cartId: String = "test-cart-id"): StubMapping = stubFor(
+    post("/store/pin-phone/carts/$cartId/add-items")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            """
+          {
+            "cart": {
+              "id": "$cartId"
+            }
+          }
+          """,
+          )
+          .withStatus(200),
+      ),
+  )
+
   fun stubCompleteCart(cartId: String): StubMapping = stubFor(
     post("/store/pin-phone/carts/$cartId/complete")
       .willReturn(

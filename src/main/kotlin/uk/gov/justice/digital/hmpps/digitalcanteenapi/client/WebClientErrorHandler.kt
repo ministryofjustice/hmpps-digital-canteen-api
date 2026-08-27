@@ -22,6 +22,7 @@ class WebClientErrorHandler(private val objectMapper: ObjectMapper) {
       moreInfo = "No additional information available.",
     )
   }
+
   companion object {
     private val logger = LoggerFactory.getLogger(WebClientErrorHandler::class.java)
   }

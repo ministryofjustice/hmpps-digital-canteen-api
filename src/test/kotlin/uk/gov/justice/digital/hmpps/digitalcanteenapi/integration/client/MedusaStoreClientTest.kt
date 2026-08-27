@@ -6,9 +6,12 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
+import tools.jackson.databind.json.JsonMapper
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartMetadata
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.CartMetadata
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaCreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
@@ -20,38 +23,41 @@ class MedusaStoreClientTest {
   fun resetMocks() {
     server.resetRequests()
     val webClient = WebClient.create("http://localhost:${server.port()}")
-    client = MedusaStoreClient(webClient)
-  }
-
-  @Test
-  fun `getMedusaStoreTest- successfully returns store route request`() {
-    server.stubGetMedusaStoreTest()
-
-    val result = client.medusaStoreTest().block()
-
-    assertThat(result).isNotNull
-    with(result!!) {
-      assertThat(status).isEqualTo("successful call to medusa store")
-    }
+    val mapper = JsonMapper.builder()
+      .findAndAddModules()
+      .build()
+    val webClientErrorHandler = WebClientErrorHandler(mapper)
+    client = MedusaStoreClient(webClient, webClientErrorHandler)
   }
 
   @Test
   fun `createCart- successfully creates a cart`() {
     server.stubCreateCart()
-    val cartRequest = MedusaCreateCartRequest(
-      metadata = CartMetadata(
-        prison_id = "MDI",
-        offender_no = "A1234AA",
-        first_name = "John",
-        last_name = "Doe",
+    val cartRequest = CreateCartRequest(
+      CartMetadata(
+        prisonId = "MDI",
+        offenderNo = "A1234AA",
+        firstName = "John",
+        secondName = "Doe",
       ),
     )
 
     val result = client.createCart(cartRequest)
 
     assertThat(result).isNotNull
-    assertThat(result.cart.id).isEqualTo("test-cart-id")
-    assertThat(result.cart.currencyCode).isEqualTo("gbp")
+    assertThat(result.cart?.id).isEqualTo("test-cart-id")
+  }
+
+  @Test
+  fun `addPinPhoneItemsToCart - successfully adds line item`() {
+    val cartId = "test-cart-id"
+    server.stubAddLineItem(cartId)
+    val addItemsRequest = AddItemsRequest(amount = 500)
+
+    val result = client.addPinPhoneItemsToCart(addItemsRequest, cartId)
+
+    assertThat(result).isNotNull
+    assertThat(result.cart?.id).isEqualTo(cartId)
   }
 
   @Test
