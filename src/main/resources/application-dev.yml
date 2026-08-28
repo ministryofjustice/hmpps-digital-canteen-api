@@ -21,8 +21,8 @@ api:
     base-url: "https://world.openproductsfacts.org"
     timeout-ms: 20s
   prison-api:
-    base-url: http://localhost:8075
-#   "https://prison-api-dev.prison.service.justice.gov.uk"
+#    base-url: http://localhost:8075
+    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
     timeout-ms: 20s
   bt:
     base-url: http://localhost:8075
