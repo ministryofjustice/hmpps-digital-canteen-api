@@ -6,7 +6,6 @@ import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaAdminClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.MEDUSA_ADMIN_EMAIL
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.MEDUSA_ADMIN_PASSWORD
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer

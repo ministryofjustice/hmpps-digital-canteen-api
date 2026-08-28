@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartOrderResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PinPhoneBuyCreditOrchestrationService
@@ -37,7 +38,8 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     ],
   )
   @PostMapping("/carts", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> = pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
+  fun createCart(@RequestBody createCartRequest: CreateCartRequest): ResponseEntity<CartResponse> =
+    pinPhoneBuyCreditOrchestrationService.createCart(createCartRequest)
 
   @Suppress("MaxLineLength")
   @Operation(summary = "Completes the cart and processes the checkout for PIN Phone credit purchase")
@@ -50,5 +52,16 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
     ],
   )
   @PostMapping("/carts/{cartId}/checkout", produces = [MediaType.APPLICATION_JSON_VALUE])
-  fun completeCart(@PathVariable cartId: String, @RequestBody paymentRequest: PaymentRequest): CompleteCartOrderResponse = pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
+  fun completeCart(
+    @PathVariable cartId: String,
+    @RequestBody paymentRequest: PaymentRequest,
+  ): ResponseEntity<CompleteCartResponse> {
+    val response = pinPhoneBuyCreditOrchestrationService.processCheckout(paymentRequest, cartId)
+
+    return if (response.paymentSuccessful) {
+      ResponseEntity.ok(response)
+    } else {
+      ResponseEntity.status(HttpStatus.UNPROCESSABLE_CONTENT).body(response)
+    }
+  }
 }

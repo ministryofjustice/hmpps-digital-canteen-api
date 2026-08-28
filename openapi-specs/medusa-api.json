@@ -153,7 +153,7 @@
                 "schema": {
                   "oneOf": [
                     {
-                      "$ref": "#/components/schemas/CompleteCartOrderResponse"
+                      "$ref": "#/components/schemas/CompleteCartResponse"
                     }
                   ]
                 }
@@ -247,11 +247,26 @@
       },
       "PaymentRequest": {
         "type": "object",
+        "required": [
+          "amountPence",
+          "offenderNo",
+          "prisonId"
+        ],
         "properties": {
-          "offender_no": {
+          "amountPence": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Amount in pence as sent to the payment APIs"
+          },
+          "offenderNo": {
             "type": "string",
             "description": "The prisoner's offender number",
             "example": "A1234BC"
+          },
+          "prisonId": {
+            "type": "string",
+            "description": "The prisoner's prison number",
+            "example": "ASI"
           },
           "status": {
             "type": "string",
@@ -260,17 +275,12 @@
           },
           "transactionReference": {
             "type": "string",
-            "description": "Reference from the payment provider"
+            "description": "Transaction reference"
           },
           "holdNumber": {
             "type": "integer",
             "format": "int64",
             "description": "The finance hold number"
-          },
-          "amountPence": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Amount in pence as sent to the payment APIs"
           },
           "errorCode": {
             "type": "string",
@@ -297,12 +307,23 @@
           }
         }
       },
-      "CompleteCartOrderResponse": {
+      "CompleteCartResponse": {
         "type": "object",
+        "required": [
+          "paymentSuccessful"
+        ],
         "properties": {
-          "successful": {
+          "paymentSuccessful": {
             "type": "boolean",
-            "description": "Indicates successful cart completion"
+            "description": "Indicates successful payment"
+          },
+          "orderStatusRecorded": {
+            "type": "boolean",
+            "description": "Indicates whether medusa was able to complete cart and record order"
+          },
+          "orderId": {
+            "type": "string",
+            "description": "The order id within medusa"
           },
           "cartId": {
             "type": "string",

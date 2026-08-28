@@ -9,9 +9,10 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBuyCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtTokenRequest
@@ -72,6 +73,19 @@ class BtPinPhoneClient(
       }
   }
 
-  @Suppress("UnusedParameter")
-  fun addCredit(btPinPhoneBuyCreditRequest: BtPinPhoneBuyCreditRequest): Mono<Void> = Mono.empty()
+  fun addCredit(accountCreditRequest: AccountCreditRequest): Mono<AccountCreditResponse> = getBtToken().flatMap { btAuthResponse ->
+    btPinPhoneWebClient
+      .post()
+      .uri("/pcs/AccountCredit")
+      .headers { it.setBearerAuth(btAuthResponse.accessToken) }
+      .bodyValue(accountCreditRequest)
+      .retrieve()
+      .bodyToMono(AccountCreditResponse::class.java)
+      .onErrorMap(WebClientResponseException::class.java) { ex ->
+        val error = errorHandler.handleError(ex)
+        logger.error("BT add credit request failed for prisoner ${accountCreditRequest.prisonerId}: ${ex.responseBodyAsString}")
+        UpstreamException(error.userMessage ?: "Add credit failed")
+      }
+  }
+
 }
