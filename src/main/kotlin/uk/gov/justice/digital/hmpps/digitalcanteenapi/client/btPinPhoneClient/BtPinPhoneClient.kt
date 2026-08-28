@@ -87,5 +87,4 @@ class BtPinPhoneClient(
         UpstreamException(error.userMessage ?: "Add credit failed")
       }
   }
-
 }

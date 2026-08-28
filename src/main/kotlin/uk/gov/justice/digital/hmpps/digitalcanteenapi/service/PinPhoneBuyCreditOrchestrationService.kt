@@ -39,7 +39,25 @@ class PinPhoneBuyCreditOrchestrationService(
     val prisonId = requireNotNull(paymentRequest.prisonId) { "prisonId must not be null" }
 
     log.info("Starting checkout for cart {} prisoner {} amountPence {}", cartId, offenderNo, amountPence)
-    val holdResponse = financeService.addHold(prisonId, offenderNo, amountPence)
+
+    /**
+     * Attempts to add hold, if fails call medusa so failure is captured.
+     */
+    val holdResponse = try {
+      financeService.addHold(prisonId, offenderNo, amountPence)
+    } catch (e: UpstreamException) {
+      log.error("Failed to place hold for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
+      val medusaRequest = PaymentRequest(
+        amountPence = amountPence,
+        offenderNo = offenderNo,
+        prisonId = prisonId,
+        status = PaymentRequest.Status.ERROR,
+        errorCode = "HOLD_FAILED",
+        errorMessage = e.message,
+      )
+      return recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = false)
+    }
+
     log.info("Hold placed for prisoner {} holdNumber {}", offenderNo, holdResponse.holdNumber)
 
     return try {
@@ -62,7 +80,7 @@ class PinPhoneBuyCreditOrchestrationService(
         holdNumber = holdResponse.holdNumber,
       )
 
-      recordInMedusa(cartId+1, offenderNo, medusaRequest, paymentSuccessful = true)
+      recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = true)
     } catch (e: UpstreamException) {
       log.error("Checkout failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
       handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, amountPence, e.message)
@@ -119,6 +137,7 @@ class PinPhoneBuyCreditOrchestrationService(
       prisonId = prisonId,
       status = PaymentRequest.Status.ERROR,
       holdNumber = holdNumber,
+      errorCode = "PAYMENT_FAILURE",
       errorMessage = errorMessage,
     )
 
@@ -138,26 +157,29 @@ class PinPhoneBuyCreditOrchestrationService(
     offenderNo: String,
     request: PaymentRequest,
     paymentSuccessful: Boolean,
-  ): CompleteCartResponse {
-    return try {
-      val cartResponse = medusaStoreClient.completeCart(cartId, request)
-      log.info("Medusa recording complete for cart {} status {}", cartId, request.status)
-      CompleteCartResponse(
-        paymentSuccessful = paymentSuccessful,
-        orderStatusRecorded = true,
-        orderId = if (paymentSuccessful) cartResponse.orderId else null,
-        cartId = cartId,
-      )
-    } catch (e: Exception) {
-      log.error("Medusa recording failed for cart {} prisoner {} status {}: {}",
-        cartId, offenderNo, request.status, e.message)
-      CompleteCartResponse(
-        paymentSuccessful = paymentSuccessful,
-        orderStatusRecorded = false,
-        orderId = null,
-        cartId = cartId,
-      )
-    }
+  ): CompleteCartResponse = try {
+    val cartResponse = medusaStoreClient.completeCart(cartId, request)
+    log.info("Medusa recording complete for cart {} status {}", cartId, request.status)
+    CompleteCartResponse(
+      paymentSuccessful = paymentSuccessful,
+      orderStatusRecorded = true,
+      orderId = if (paymentSuccessful) cartResponse.orderId else null,
+      cartId = cartId,
+    )
+  } catch (e: Exception) {
+    log.error(
+      "Medusa recording failed for cart {} prisoner {} status {}: {}",
+      cartId,
+      offenderNo,
+      request.status,
+      e.message,
+    )
+    CompleteCartResponse(
+      paymentSuccessful = paymentSuccessful,
+      orderStatusRecorded = false,
+      orderId = null,
+      cartId = cartId,
+    )
   }
 
   fun createCart(request: CreateCartRequest): ResponseEntity<CartResponse> {
