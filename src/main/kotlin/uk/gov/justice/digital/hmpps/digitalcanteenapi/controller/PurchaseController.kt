@@ -45,8 +45,9 @@ class PurchaseController(private val pinPhoneBuyCreditOrchestrationService: PinP
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Purchase completed successfully"),
-      ApiResponse(responseCode = "404", description = "Prisoner not found"),
-      ApiResponse(responseCode = "400", description = "Bad request or upstream error"),
+      ApiResponse(responseCode = "404", description = "cart not found"),
+      ApiResponse(responseCode = "400", description = "Invalid request"),
+      ApiResponse(responseCode = "422", description = "Payment failed"),
       ApiResponse(responseCode = "500", description = "Internal server error"),
     ],
   )
