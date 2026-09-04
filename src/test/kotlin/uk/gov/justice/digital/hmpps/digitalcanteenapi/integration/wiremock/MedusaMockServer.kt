@@ -2,7 +2,6 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -10,7 +9,9 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import tools.jackson.databind.json.JsonMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.dto.MedusaDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponseCart
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
 
 class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -29,49 +30,17 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubGetMedusaAdminTest(): StubMapping {
-    stubGetAdminToken()
-    return stubFor(
-      get("/admin/request-from-api")
-        .willReturn(
-          aResponse()
-            .withHeader("Content-Type", "application/json")
-            .withBody(
-              mapper.writeValueAsString(
-                MedusaDto("successful call to medusa admin"),
-              ),
-            )
-            .withStatus(200),
-        ),
-    )
-  }
-
-  fun stubGetMedusaStoreTest(): StubMapping = stubFor(
-    get("/store/request-from-api")
-      .willReturn(
-        aResponse()
-          .withHeader("Content-Type", "application/json")
-          .withBody(mapper.writeValueAsString(MedusaDto("successful call to medusa store")))
-          .withStatus(200),
-      ),
-  )
-
   fun stubCreateCart(): StubMapping = stubFor(
     post("/store/pin-phone/carts")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(
-            """
-            {
-              "cart": {
-                "id": "test-cart-id",
-                "region_id": "test-region-id",
-                "customer_id": "test-customer-id",
-                "currency_code": "gbp"
-              }
-            }
-            """,
+            mapper.writeValueAsString(
+              CartResponse(
+                cart = CartResponseCart(id = "test-cart-id"),
+              ),
+            ),
           )
           .withStatus(200),
       ),
@@ -83,31 +52,30 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(
-            """
-          {
-            "cart": {
-              "id": "$cartId"
-            }
-          }
-          """,
+            mapper.writeValueAsString(
+              CartResponse(
+                cart = CartResponseCart(id = cartId),
+              ),
+            ),
           )
           .withStatus(200),
       ),
   )
 
-  fun stubCompleteCart(cartId: String): StubMapping = stubFor(
+  fun stubCompleteCart(cartId: String = "test-cart-id"): StubMapping = stubFor(
     post("/store/pin-phone/carts/$cartId/complete")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(
-            """
-            {
-              "order": {
-                "id": "test-order-id"
-              }
-            }
-            """,
+            mapper.writeValueAsString(
+              CompleteCartResponse(
+                paymentSuccessful = true,
+                orderStatusRecorded = true,
+                orderId = "test-order-id",
+                cartId = "test-cart-id",
+              ),
+            ),
           )
           .withStatus(200),
       ),
@@ -127,8 +95,9 @@ class MedusaApiExtension :
   override fun beforeEach(context: ExtensionContext) {
     medusaApi.resetAll()
     medusaApi.stubGetAdminToken()
-    medusaApi.stubGetMedusaAdminTest()
-    medusaApi.stubGetMedusaStoreTest()
+    medusaApi.stubCreateCart()
+    medusaApi.stubAddLineItem()
+    medusaApi.stubCompleteCart()
   }
 
   override fun afterAll(context: ExtensionContext): Unit = medusaApi.stop()

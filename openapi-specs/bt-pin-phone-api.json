@@ -122,9 +122,9 @@
         }
       }
     },
-    "/pcs/BuyCredit": {
+    "/pcs/AccountCredit": {
       "post": {
-        "operationId": "buyCredit",
+        "operationId": "accountCredit",
         "summary": "Purchase PIN phone credit for a prisoner",
         "description": "Adds credit to a prisoner's PIN phone account.",
         "security": [
@@ -137,19 +137,26 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/BtPinPhoneBuyCreditRequest"
+                "$ref": "#/components/schemas/AccountCreditRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Credit added successfully"
+            "description": "Credit added successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccountCreditResponse"
+                }
+              }
+            }
           },
           "400": {
             "description": "Invalid request — e.g. amount exceeds credit limit"
           },
-          "401": {
+          "403": {
             "description": "Unauthorised — token missing or expired"
           },
           "404": {
@@ -338,14 +345,13 @@
           }
         }
       },
-      "BtPinPhoneBuyCreditRequest": {
+      "AccountCreditRequest": {
         "type": "object",
         "description": "Request to add credit to a prisoner's PIN phone account",
         "required": [
           "reference",
           "prisonerId",
-          "amountPence",
-          "type"
+          "amountPence"
         ],
         "properties": {
           "reference": {
@@ -360,11 +366,42 @@
             "type": "integer",
             "format": "int32",
             "description": "The amount of credit to add in pence"
+          }
+        }
+      },
+      "AccountCreditResponse": {
+        "type": "object",
+        "description": "Response to add credit to a prisoner's PIN phone account",
+        "required": [
+          "reference",
+          "prisonerId",
+          "creditLimitPence",
+          "preBalancePence",
+          "newBalancePence"
+        ],
+        "properties": {
+          "reference": {
+            "type": "string",
+            "description": "A unique reference for this transaction"
           },
-          "type": {
+          "prisonerId": {
+            "type": "string",
+            "description": "The prisoner's identifier"
+          },
+          "creditLimitPence": {
             "type": "integer",
             "format": "int32",
-            "description": "The type of credit"
+            "description": "The amount of credit to add in pence"
+          },
+          "preBalancePence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The balance before"
+          },
+          "newBalancePence": {
+            "type": "integer",
+            "format": "int32",
+            "description": "The balance after"
           }
         }
       }
