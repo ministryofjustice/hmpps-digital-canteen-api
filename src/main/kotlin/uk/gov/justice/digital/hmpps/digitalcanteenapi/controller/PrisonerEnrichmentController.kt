@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichment
 )
 @RestController
 @Validated
-@PreAuthorize("permitAll()")
+@PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class PrisonerEnrichmentController(
   private val pinPhonePrisonerEnrichmentService: PinPhonePrisonerEnrichmentService,

@@ -15,7 +15,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonFinanceServi
 
 @RestController
 @RequestMapping("/api/finance")
-@PreAuthorize("permitAll()")
+@PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
 class PrisonFinanceController(
   private val prisonFinanceService: PrisonFinanceService,
 ) {

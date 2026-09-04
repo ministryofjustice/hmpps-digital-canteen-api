@@ -12,3 +12,6 @@ const val CART_ID = "cart_01KXGJ2H6MEWSHDYB2G7B5QW52"
 
 const val BT_CLIENT_ID = "bt_client"
 const val BT_CLIENT_SECRET = "bt_secret"
+
+// test role config
+const val ROLES = "ROLE_PIN_PHONE_CREDIT_API"

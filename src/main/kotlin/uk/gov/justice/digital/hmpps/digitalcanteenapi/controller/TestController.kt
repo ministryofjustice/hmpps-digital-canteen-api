@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 
 @RestController
 @RequestMapping("/api")
-@PreAuthorize("permitAll()")
+@PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
 @Profile("dev", "test")
 class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
