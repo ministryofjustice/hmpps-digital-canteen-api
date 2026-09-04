@@ -45,5 +45,28 @@ generic-service:
     groups:
       - internal
 
+  extraContainers:
+    - name: opa
+      image: openpolicyagent/opa:1.19.0
+
+      args:
+        - run
+        - --server
+        - --addr=0.0.0.0:8181
+
+      ports:
+        - name: opa
+          containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+
+        capabilities:
+          drop:
+            - ALL
+
+        seccompProfile:
+          type: RuntimeDefault
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api

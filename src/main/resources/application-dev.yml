@@ -30,3 +30,6 @@ bt:
   client:
     id: test-client-id
     secret: test-client-secret
+
+opa:
+  url: http://localhost:8181
