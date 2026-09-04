@@ -45,6 +45,25 @@ generic-service:
     groups:
       - internal
 
+  initContainers:
+    - name: copy-opa-files
+      image: my-app:latest
+
+      command:
+        - sh
+        - -c
+        - |
+          mkdir -p /shared-policies /shared-data
+          cp -R /policies/. /shared-policies/
+          cp -R /data/. /shared-data/
+
+      volumeMounts:
+        - name: opa-policies
+          mountPath: /shared-policies
+
+        - name: opa-data
+          mountPath: /shared-data
+
   extraContainers:
     - name: opa
       image: openpolicyagent/opa:1.19.0
@@ -53,6 +72,8 @@ generic-service:
         - run
         - --server
         - --addr=0.0.0.0:8181
+        - /policies
+        - /data
 
       ports:
         - name: opa
@@ -61,12 +82,24 @@ generic-service:
       securityContext:
         runAsNonRoot: true
         allowPrivilegeEscalation: false
-
         capabilities:
           drop:
             - ALL
-
         seccompProfile:
           type: RuntimeDefault
+
+      volumeMounts:
+        - name: opa-policies
+          mountPath: /policies
+
+        - name: opa-data
+          mountPath: /data
+
+  volumes:
+    - name: opa-policies
+      emptyDir: { }
+
+    - name: opa-data
+      emptyDir: { }
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api
