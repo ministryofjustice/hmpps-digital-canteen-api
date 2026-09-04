@@ -22,7 +22,7 @@ dependencies {
   }
   implementation("org.springdoc:springdoc-openapi-starter-common:3.1.0")
   constraints {
-    implementation("org.webjars:swagger-ui:5.32.11")
+    implementation("org.webjars:swagger-ui:5.32.2")
   }
 
   testImplementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter-test:2.5.0")
@@ -67,15 +67,6 @@ tasks.register("buildBtPinPhoneApiModel", GenerateTask::class) {
   globalProperties.set(mapOf("models" to ""))
 }
 
-tasks.register("buildPurchasePinPhoneUiApiModel", GenerateTask::class) {
-  generatorName.set("kotlin")
-  inputSpec.set("openapi-specs/purchase-pin-phone-ui-api.json")
-  outputDir.set("$buildDirectory/generated/purchasePinPhoneUiApi")
-  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.generated")
-  configOptions.set(configValues)
-  globalProperties.set(mapOf("models" to ""))
-}
-
 tasks.register("buildMedusaApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
   inputSpec.set("openapi-specs/medusa-api.json")
@@ -113,7 +104,7 @@ tasks.register("buildPrisonerAdjudicationsApiModel", GenerateTask::class) {
   skipValidateSpec.set(true)
 }
 
-val generatedProjectDirs = listOf("btpinphoneapi", "purchasePinPhoneUiApi", "prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi")
+val generatedProjectDirs = listOf("btpinphoneapi", "prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi")
 
 kotlin {
   generatedProjectDirs.forEach { generatedProject ->
@@ -125,13 +116,13 @@ kotlin {
 
 tasks {
   withType<KotlinCompile> {
-    dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
+    dependsOn("buildBtPinPhoneApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
-  dependsOn("buildBtPinPhoneApiModel", "buildPurchasePinPhoneUiApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
+  dependsOn("buildBtPinPhoneApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
 }
 
 configure<KtlintExtension> {

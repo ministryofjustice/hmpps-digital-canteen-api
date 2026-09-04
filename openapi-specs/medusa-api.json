@@ -123,12 +123,15 @@
       "post": {
         "operationId": "completePinPhoneCart",
         "summary": "Complete a PIN phone cart",
+        "description": "Completes a PIN phone cart by creating a payment collection, payment session with the BT payment result, and running the cart completion workflow.",
         "parameters": [
           {
             "in": "path",
             "name": "id",
             "required": true,
-            "schema": { "type": "string" },
+            "schema": {
+              "type": "string"
+            },
             "description": "The cart ID"
           }
         ],
@@ -137,24 +140,48 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/CompleteCartRequest"
+                "$ref": "#/components/schemas/PaymentRequest"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Cart completed or payment failure details returned",
+            "description": "Cart completed or payment failure recorded",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CompleteCartResponse"
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/CompleteCartResponse"
+                    }
+                  ]
                 }
               }
             }
           },
           "400": {
-            "description": "No cart items found",
+            "description": "Invalid request — missing or invalid payload, or empty cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Cart not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal error during payment collection or session creation",
             "content": {
               "application/json": {
                 "schema": {
@@ -218,23 +245,28 @@
           }
         }
       },
-      "CompleteCartRequest": {
+      "PaymentRequest": {
         "type": "object",
-        "required": ["PaymentResult"],
+        "required": [
+          "amountPence",
+          "offenderNo",
+          "prisonId"
+        ],
         "properties": {
-          "PaymentResult": {
-            "$ref": "#/components/schemas/PaymentResult"
-          }
-        }
-      },
-      "PaymentResult": {
-        "type": "object",
-        "required": ["offender_no", "status"],
-        "properties": {
-          "offender_no": {
+          "amountPence": {
+            "type": "integer",
+            "format": "int64",
+            "description": "Amount in pence as sent to the payment APIs"
+          },
+          "offenderNo": {
             "type": "string",
             "description": "The prisoner's offender number",
             "example": "A1234BC"
+          },
+          "prisonId": {
+            "type": "string",
+            "description": "The prisoner's prison number",
+            "example": "ASI"
           },
           "status": {
             "type": "string",
@@ -243,10 +275,11 @@
           },
           "transactionReference": {
             "type": "string",
-            "description": "Reference from the payment provider"
+            "description": "Transaction reference"
           },
           "holdNumber": {
             "type": "integer",
+            "format": "int64",
             "description": "The finance hold number"
           },
           "errorCode": {
@@ -276,20 +309,25 @@
       },
       "CompleteCartResponse": {
         "type": "object",
+        "required": [
+          "paymentSuccessful"
+        ],
         "properties": {
-          "order": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              }
-            }
+          "paymentSuccessful": {
+            "type": "boolean",
+            "description": "Indicates successful payment"
           },
-          "message": {
-            "type": "string"
+          "orderStatusRecorded": {
+            "type": "boolean",
+            "description": "Indicates whether medusa was able to complete cart and record order"
           },
-          "code": {
-            "type": "string"
+          "orderId": {
+            "type": "string",
+            "description": "The order id within medusa"
+          },
+          "cartId": {
+            "type": "string",
+            "description": "The cart ID"
           }
         }
       },
@@ -320,4 +358,3 @@
     }
   }
   }
-}

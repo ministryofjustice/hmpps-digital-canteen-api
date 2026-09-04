@@ -13,6 +13,7 @@ import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneControlledNumbersRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
@@ -191,6 +192,64 @@ class BtPinPhoneClientTest {
 
       assertThatThrownBy {
         client.getPrisonerContacts(BtPinPhoneControlledNumbersRequest("testReference", "xyz")).block()
+      }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("BT service error")
+    }
+  }
+
+  @Nested
+  inner class AddCredit {
+
+    @Test
+    fun `addBtCredit successfully returns BT balance and credit limit`() {
+      server.stubBtAddCredit()
+
+      val result = client.addCredit(AccountCreditRequest("testReference", "xyz", 100)).block()
+
+      assertThat(result).isNotNull
+      assertThat(result?.reference).isEqualTo("testReference")
+      assertThat(result?.prisonerId).isEqualTo("xyz123")
+      assertThat(result?.creditLimitPence).isEqualTo(5000)
+      assertThat(result?.preBalancePence).isEqualTo(1000)
+      assertThat(result?.newBalancePence).isEqualTo(1100)
+    }
+
+    @Test
+    fun `addBtCredit - throws UpstreamException on 404`() {
+      server.stubGetBtAuthToken()
+      server.stubFor(
+        post("/pcs/AccountCredit")
+          .willReturn(
+            aResponse()
+              .withStatus(404)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":404,"userMessage":"Prisoner not found"}"""),
+          ),
+      )
+
+      assertThatThrownBy {
+        client.addCredit(AccountCreditRequest("testReference", "xyz", 100)).block()
+      }
+        .isInstanceOf(UpstreamException::class.java)
+        .hasMessageContaining("Prisoner not found")
+    }
+
+    @Test
+    fun `addBtCredit - throws UpstreamException on 500`() {
+      server.stubBtAddCredit()
+      server.stubFor(
+        post("/pcs/AccountCredit")
+          .willReturn(
+            aResponse()
+              .withStatus(500)
+              .withHeader("Content-Type", "application/json")
+              .withBody("""{"status":500,"userMessage":"BT service error"}"""),
+          ),
+      )
+
+      assertThatThrownBy {
+        client.addCredit(AccountCreditRequest("testReference", "xyz", 100)).block()
       }
         .isInstanceOf(UpstreamException::class.java)
         .hasMessageContaining("BT service error")

@@ -11,9 +11,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandl
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartMetadata
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentResult
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.dto.PaymentStatus
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 
 class MedusaStoreClientTest {
@@ -64,19 +63,21 @@ class MedusaStoreClientTest {
   fun `completeCart- successfully completes a cart`() {
     val cartId = "test-cart-id"
     server.stubCompleteCart(cartId)
-    val paymentResult = PaymentResult(
-      offender_no = "A1234AA",
-      status = PaymentStatus.AUTHORIZED,
+    val paymentRequest = PaymentRequest(
+      amountPence = 1000,
+      offenderNo = "A1234AA",
+      prisonId = "XYZ",
+      status = PaymentRequest.Status.AUTHORIZED,
       transactionReference = "ref-123",
       holdNumber = 12345,
       errorCode = null,
       errorMessage = null,
     )
 
-    val result = client.completeCart(cartId, paymentResult)
+    val result = client.completeCart(cartId, paymentRequest)
 
     assertThat(result).isNotNull
-    assertThat(result.order?.id).isEqualTo("test-order-id")
+    assertThat(result.orderId).isEqualTo("test-order-id")
   }
 
   companion object {
