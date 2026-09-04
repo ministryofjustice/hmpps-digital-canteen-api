@@ -117,11 +117,9 @@ class WebClientConfiguration(
   )
 
   @Bean
-  fun opaWebClient(builder: WebClient.Builder): WebClient {
-    return builder
-      .baseUrl(opaBaseUri)
-      .build()
-  }
+  fun opaWebClient(builder: WebClient.Builder) = builder
+    .baseUrl(opaBaseUri)
+    .build()
 
   // todo: remove insecure cert (bt is currently on QA environment)
   @Bean
