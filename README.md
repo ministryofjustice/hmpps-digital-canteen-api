@@ -34,6 +34,7 @@ Ensure dependent services are running:
 
 
     CLIENT_ID=hmpps-digital-canteen-api-1
+
     CLIENT_SECRET={secret}
 
 2. Get Local medusa publishable key.
