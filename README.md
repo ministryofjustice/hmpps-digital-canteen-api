@@ -23,6 +23,11 @@ Documentation to create new service is located [here](https://tech-docs.hmpps.se
 
 ## Running application locally
 
+Ensure dependent services are running:
+
+1. Medusa:https://github.com/ministryofjustice/hmpps-digital-canteen-medusa-service
+2. UI: https://github.com/ministryofjustice/hmpps-digital-canteen-ui
+
 ### Running the application in Intellij
 
 1. Get client secrets from DEV namespace. Export or add to IntelliJ run configuration:
