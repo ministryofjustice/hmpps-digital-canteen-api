@@ -10,6 +10,5 @@ class OpaService(
   private val opaClient: OpaClient,
 ) {
 
-  fun evaluatePolicy(request: OpaRequest): OpaResponse =
-    opaClient.evaluate(request)
+  fun evaluatePolicy(request: OpaRequest): OpaResponse = opaClient.evaluate(request)
 }

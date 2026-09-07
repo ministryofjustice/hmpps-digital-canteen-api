@@ -8,7 +8,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.logicengine.request.OpaRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.logicengine.response.OpaResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.logicengine.OpaService
@@ -26,7 +29,7 @@ class OpaController(
 
   @Operation(
     summary = "Evaluate rules for PIN phone product",
-    description = "Evaluates business rules through OPA."
+    description = "Evaluates business rules through OPA.",
   )
   @ApiResponses(
     value = [
@@ -36,25 +39,22 @@ class OpaController(
         content = [
           Content(
             mediaType = "application/json",
-            schema = Schema(implementation = OpaResponse::class)
-          )
-        ]
+            schema = Schema(implementation = OpaResponse::class),
+          ),
+        ],
       ),
       ApiResponse(
         responseCode = "400",
-        description = "Invalid request payload"
+        description = "Invalid request payload",
       ),
       ApiResponse(
         responseCode = "500",
-        description = "OPA evaluation failed"
-      )
-    ]
+        description = "OPA evaluation failed",
+      ),
+    ],
   )
   @PostMapping("/evaluate")
   fun evaluate(
     @RequestBody request: OpaRequest,
-  ): ResponseEntity<OpaResponse> =
-    ResponseEntity.ok(
-      opaService.evaluatePolicy(request),
-    )
+  ): ResponseEntity<OpaResponse> = ResponseEntity.ok(opaService.evaluatePolicy(request))
 }
