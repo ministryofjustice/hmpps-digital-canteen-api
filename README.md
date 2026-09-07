@@ -25,7 +25,7 @@ Documentation to create new service is located [here](https://tech-docs.hmpps.se
 
 Ensure dependent services are running:
 
-1. Medusa:https://github.com/ministryofjustice/hmpps-digital-canteen-medusa-service
+1. Medusa: https://github.com/ministryofjustice/hmpps-digital-canteen-medusa-service
 2. UI: https://github.com/ministryofjustice/hmpps-digital-canteen-ui
 
 ### Running the application in Intellij
@@ -36,26 +36,26 @@ Ensure dependent services are running:
     CLIENT_ID=hmpps-digital-canteen-api-1
     CLIENT_SECRET={secret}
 
-2. Get Local medusa publishable key
+2. Get Local medusa publishable key.
 ```bash
 curl -s -X POST http://localhost:9000/auth/user/emailpass \
 -H "Content-Type: application/json" \
 -d '{"email": "admin@admin.com", "password": "supersecret"}'
 ```
 
-3. Get Publishable Key
+3. Get Publishable Key.
 ```bash
 curl -s "http://localhost:9000/admin/api-keys?type=publishable" \
 -H "Authorization: Bearer {token}"
 ```
 
-4. Export or add to intellij run configuration
+4. Export or add to intellij run configuration.
 
 
     API_MEDUSA_PUBLISHABLE_KEY={key}
 
 
-5. Spin up docker wiremock, as it is required for BT
+5. Spin up docker wiremock, as it is required for BT.
 
 Note: PrisonAPI and Prisoner Search can be ran against DEV, or wiremock, update application-dev.yml accordingly
 
@@ -71,7 +71,7 @@ Update docker compose
 
     CLIENT_SECRET
 
-2. Get Local medusa publishable key
+2. Get Local medusa publishable key.
 Get token 
 ```bash
 curl -s -X POST http://localhost:9000/auth/user/emailpass \
@@ -79,28 +79,28 @@ curl -s -X POST http://localhost:9000/auth/user/emailpass \
 -d '{"email": "admin@admin.com", "password": "supersecret"}'
 ```
 
-3. Get Publishable Key
+3. Get Publishable Key.
 ```bash
 curl -s "http://localhost:9000/admin/api-keys?type=publishable" \
 -H "Authorization: Bearer {token}"
 ```
 
-4. Use "token" in docker compose
+4. Use "token" in docker compose.
 
     API_MEDUSA_PUBLISHABLE_KEY
 
 The `Dockerfile` relies on the application being built first. Steps to build the docker image:
-5. Build the jar files
+5. Build the jar files.
 ```
 ./gradlew clean assemble
 ```
 
-6. Build the docker image with required arguments
+6. Build the docker image with required arguments.
 ```
 docker build --build-arg BUILD_NUMBER=$(ls build/libs/hmpps-digital-canteen-api-*.jar | sed -E 's/.*api-(.*)\.jar/\1/') \
   -t ghcr.io/ministryofjustice/hmpps-digital-canteen-api:local .
 ```
-7. Run the docker image, setting the auth url so that it starts up
+7. Run the docker image.
 ```
 docker compose up -d
 ```
