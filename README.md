@@ -33,7 +33,7 @@ Ensure dependent services are running:
 1. Get client secrets from DEV namespace. Export or add to IntelliJ run configuration:
 
 
-    CLIENT_ID=hmpps-digital-canteen-api-1
+    CLIENT_ID={id}
 
     CLIENT_SECRET={secret}
 
