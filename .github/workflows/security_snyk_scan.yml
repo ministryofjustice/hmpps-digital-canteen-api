@@ -3,7 +3,7 @@ name: Security Snyk dependency check
 on:
   workflow_dispatch:
   schedule:
-    - cron: "15 11 * * MON-FRI" # Every weekday at 11:15 am
+    - cron: "42 3 * * MON-FRI" # Every weekday
 
 jobs:
   security-snyk-check:
@@ -22,6 +22,5 @@ jobs:
       slack_include_summary: true
       snyk_policy_path: '' # Optional path to a custom Snyk policy file
     secrets:
-      HMPPS_SNYK_CLIENT_SECRET: ${{ secrets.HMPPS_SNYK_CLIENT_SECRET }}
-      HMPPS_SNYK_CLIENT_ID: ${{ secrets.HMPPS_SNYK_CLIENT_ID }}
+      HMPPS_SNYK_API_KEY: ${{ secrets.HMPPS_SNYK_API_KEY }}
       HMPPS_SRE_SLACK_BOT_TOKEN: ${{ secrets.HMPPS_SRE_SLACK_BOT_TOKEN }}
