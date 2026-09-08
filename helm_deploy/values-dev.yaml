@@ -29,8 +29,7 @@ generic-service:
             exec /opa run \
              --server \
              --addr=0.0.0.0:8181 \
-             /policies \
-             /data
+             /policies /data
           fi
           
           echo "Waiting for policies..."
