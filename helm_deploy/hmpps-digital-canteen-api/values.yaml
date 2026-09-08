@@ -45,7 +45,7 @@ generic-service:
     groups:
       - internal
 
-  initContainers:
+  extraInitContainers:
     - name: copy-opa-files
       image: my-app:latest
 
