@@ -3,13 +3,13 @@ import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 plugins {
-  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.6"
+  id("uk.gov.justice.hmpps.gradle-spring-boot") version "11.0.8"
   id("org.openapi.generator") version "7.24.0"
   kotlin("plugin.spring") version "2.4.10"
 }
 
 dependencies {
-  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.0")
+  implementation("uk.gov.justice.service.hmpps:hmpps-kotlin-spring-boot-starter:3.0.1")
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.1.0")
