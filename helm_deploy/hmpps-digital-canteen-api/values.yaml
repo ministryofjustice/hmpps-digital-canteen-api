@@ -46,11 +46,12 @@ generic-service:
       - internal
 
   volumeMounts:
-    - name: opa-policies
-      mountPath: /shared-policies
+    - name: policies
+      mountPath: /policies
 
-    - name: opa-data
-      mountPath: /shared-data
+    - name: data
+      mountPath: /data
+
 
   extraContainers:
     - name: opa
@@ -77,17 +78,17 @@ generic-service:
           type: RuntimeDefault
 
       volumeMounts:
-        - name: opa-policies
+        - name: policies
           mountPath: /policies
 
-        - name: opa-data
+        - name: data
           mountPath: /data
 
   volumes:
-    - name: opa-policies
+    - name: policies
       emptyDir: { }
 
-    - name: opa-data
+    - name: data
       emptyDir: { }
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api

@@ -7,24 +7,13 @@ generic-service:
   ingress:
     host: digital-canteen-dev.prison.service.justice.gov.uk
 
-  extraInitContainers:
-    - name: copy-opa-files
-      image: my-app:latest
+  volumeMounts:
+    - name: policies
+      mountPath: /policies
 
-      command:
-        - sh
-        - -c
-        - |
-          mkdir -p /shared-policies /shared-data
-          cp -R /policies/. /shared-policies/
-          cp -R /data/. /shared-data/
+    - name: data
+      mountPath: /data
 
-      volumeMounts:
-        - name: opa-policies
-          mountPath: /shared-policies
-
-        - name: opa-data
-          mountPath: /shared-data
 
   extraContainers:
     - name: opa
@@ -51,17 +40,17 @@ generic-service:
           type: RuntimeDefault
 
       volumeMounts:
-        - name: opa-policies
+        - name: policies
           mountPath: /policies
 
-        - name: opa-data
+        - name: data
           mountPath: /data
 
   volumes:
-    - name: opa-policies
+    - name: policies
       emptyDir: { }
 
-    - name: opa-data
+    - name: data
       emptyDir: { }
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
