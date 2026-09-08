@@ -1,0 +1,44 @@
+{
+  "prisons": {
+    "MSI": {
+      "features": [
+        "PHONE_CREDIT_LIMIT"
+      ],
+
+      "products": {
+        "BT_PIN_Phone": {
+          "BAS": {
+            "limit": 1000
+          },
+          "STD": {
+            "limit": 2500
+          },
+          "ENH": {
+            "limit": 5000
+          }
+        }
+      }
+    },
+
+    "LEI": {
+      "features": [
+        "PHONE_CREDIT_LIMIT",
+        "FOREIGN_NATIONAL_RULE"
+      ],
+
+      "products": {
+        "BT_PIN_Phone": {
+          "BAS": {
+            "limit": 2000
+          },
+          "STD": {
+            "limit": 3000
+          },
+          "ENH": {
+            "limit": 5000
+          }
+        }
+      }
+    }
+  }
+}
