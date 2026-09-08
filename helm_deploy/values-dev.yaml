@@ -23,18 +23,17 @@ generic-service:
         - -c
         - |
           while true; do
-          if [ -f /policies/policy.rego ]; then
-            echo "Policy file found, starting OPA..."
+           if find /policies -name "*.rego" | grep -q .; then
+            echo "Policies found, starting OPA..."
+
             exec /opa run \
-              --server \
-              --addr=0.0.0.0:8181 \
-              /policies \
-              /data
-          
-          break
+             --server \
+             --addr=0.0.0.0:8181 \
+             /policies \
+             /data
           fi
           
-          echo "Waiting for policy file to be created..."
+          echo "Waiting for policies..."
           sleep 5
           done
 
