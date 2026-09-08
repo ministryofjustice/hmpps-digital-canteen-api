@@ -56,13 +56,25 @@ generic-service:
   extraContainers:
     - name: opa
       image: openpolicyagent/opa:1.19.0
+      command:
+        - sh
+        - -c
+        - |
+          while true; do
+          if [ -f /policies/policy.rego ]; then
+            echo "Policy file found, starting OPA..."
+            exec /opa run \
+              --server \
+              --addr=0.0.0.0:8181 \
+              /policies \
+              /data
+  
+          break
+         fi
 
-      args:
-        - run
-        - --server
-        - --addr=0.0.0.0:8181
-        - /policies
-        - /data
+          echo "Waiting for policy file to be created..."
+          sleep 5
+         done
 
       ports:
         - name: opa
