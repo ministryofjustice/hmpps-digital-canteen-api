@@ -45,24 +45,12 @@ generic-service:
     groups:
       - internal
 
-  extraInitContainers:
-    - name: copy-opa-files
-      image: my-app:latest
+  volumeMounts:
+    - name: opa-policies
+      mountPath: /shared-policies
 
-      command:
-        - sh
-        - -c
-        - |
-          mkdir -p /shared-policies /shared-data
-          cp -R /policies/. /shared-policies/
-          cp -R /data/. /shared-data/
-
-      volumeMounts:
-        - name: opa-policies
-          mountPath: /shared-policies
-
-        - name: opa-data
-          mountPath: /shared-data
+    - name: opa-data
+      mountPath: /shared-data
 
   extraContainers:
     - name: opa
