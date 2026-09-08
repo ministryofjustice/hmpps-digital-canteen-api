@@ -61,17 +61,15 @@ generic-service:
         - -c
         - |
           while true; do
-           if find /policies -name "*.rego" | grep -q .; then
-            echo "Policies found, starting OPA..."
-  
-            exec /opa run \
-             --server \
-             --addr=0.0.0.0:8181 /policies /data
-         fi
-
-         echo "Waiting for policies..."
-         sleep 5
-         done
+            if find /policies -name "*.rego" | grep -q .; then
+              echo "Policies found, starting OPA..."
+          
+              exec /opa run --server --addr=0.0.0.0:8181 /policies /data
+            fi
+          
+            echo "Waiting for policies..."
+            sleep 5
+          done
 
       ports:
         - name: opa
