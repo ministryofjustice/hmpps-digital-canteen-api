@@ -6,8 +6,6 @@ ENV BUILD_NUMBER=${BUILD_NUMBER:-1_0_0}
 
 WORKDIR /builder
 COPY hmpps-digital-canteen-api-${BUILD_NUMBER}.jar app.jar
-COPY prison-logic-engine/policies ./policies
-COPY prison-logic-engine/data ./data
 
 RUN java -Djarmode=tools -jar app.jar extract --layers --destination extracted
 
@@ -24,7 +22,7 @@ COPY --from=builder --chown=appuser:appgroup /builder/extracted/dependencies/ ./
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/spring-boot-loader/ ./
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/snapshot-dependencies/ ./
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/application/ ./
-COPY --from=builder --chown=appuser:appgroup /builder/policies ./policies
-COPY --from=builder --chown=appuser:appgroup /builder/data ./data
+COPY  /prison-logic-engine/policies /policies
+COPY  /prison-logic-engine/data /data
 
 ENTRYPOINT ["java", "-XX:+ExitOnOutOfMemoryError", "-XX:+AlwaysActAsServerClassMachine", "-javaagent:agent.jar", "-jar", "app.jar"]
