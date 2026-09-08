@@ -9,7 +9,7 @@ data class Input(
   val currentBalance: Int? = null,
   val creditRequested: Int? = null,
   val creditLimit: Int? = null,
-  val prisoner: Prisoner,
+  val prisoner: Prisoner? = null,
   val incentives: Incentives? = null,
 )
 

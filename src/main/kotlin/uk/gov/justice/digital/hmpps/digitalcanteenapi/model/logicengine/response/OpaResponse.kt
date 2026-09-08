@@ -5,7 +5,7 @@ data class OpaResponse(
 )
 
 data class Result(
-  val valid: Boolean,
+  val hidden: Boolean,
   val decision: String,
   val provider: String? = null,
   val productId: String? = null,
@@ -14,8 +14,7 @@ data class Result(
   val creditLimitEnabled: Boolean = false,
   val creditLimit: Int = 0,
   val currentBalance: Int = 0,
-  val maximumCredit: Int = 0,
-
+  val maxAvailableCredit: Int = 0,
   val accountSource: List<String> = emptyList(),
   val warnings: List<String> = emptyList(),
   val errors: List<String> = emptyList(),

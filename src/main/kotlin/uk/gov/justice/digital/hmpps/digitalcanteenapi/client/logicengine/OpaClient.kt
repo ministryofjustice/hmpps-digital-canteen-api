@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.opa
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.logicengine
 
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
@@ -26,5 +26,6 @@ class OpaClient(
       logger.error("Rule evaluation failed: ${ex.responseBodyAsString}")
       UpstreamException(errorResponse.userMessage ?: "Rule evaluation failed")
     }
-    .block()!!
+    .block()
+    ?: throw IllegalStateException("OPA returned a null response")
 }
