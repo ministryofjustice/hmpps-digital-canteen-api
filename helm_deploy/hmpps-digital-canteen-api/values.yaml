@@ -54,12 +54,15 @@ generic-service:
   extraContainers:
     - name: opa
       image: openpolicyagent/opa:1.19.0
-
-      args:
         - run
         - --server
         - --addr=0.0.0.0:8181
-        - /policies
+        - /policies/decision.rego
+        - /policies/limits.rego
+        - /policies/main.rego
+        - /policies/rule_engine.rego
+        - /policies/visibility.rego
+        - /policies/warning.rego
 
       ports:
         - name: opa
@@ -98,11 +101,6 @@ generic-service:
         - name: opa-policies
           mountPath: /policies/warning.rego
           subPath: warning.rego
-
-
-
-
-
 
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api
