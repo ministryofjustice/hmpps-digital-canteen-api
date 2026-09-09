@@ -50,10 +50,6 @@ generic-service:
       configMap:
         name: opa-policies-app
 
-    - name: opa-policies-domain
-      configMap:
-        name: opa-policies-domain
-
     - name: opa-data
       configMap:
         name: opa-data
@@ -68,7 +64,6 @@ generic-service:
         - --addr=0.0.0.0:8181
         - /policies
         - /data
-        - /domain
 
       ports:
         - name: opa
@@ -86,9 +81,6 @@ generic-service:
       volumeMounts:
         - name: opa-policies-app
           mountPath: /policies
-
-        - name: opa-policies-domain
-          mountPath: /domain
 
         - name: opa-data
           mountPath: /data
