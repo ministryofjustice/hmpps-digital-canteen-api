@@ -21,9 +21,13 @@ generic-service:
       SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
 
   volumes:
-    - name: opa-policies
+    - name: opa-policies-app
       configMap:
         name: opa-policies
+
+    - name: opa-policies-domain
+      configMap:
+        name: opa-policies-domain
 
     - name: opa-data
       configMap:
@@ -38,6 +42,7 @@ generic-service:
         - --addr=0.0.0.0:8181
         - /policies
         - /data
+        - /domain
 
       ports:
         - name: opa
@@ -53,8 +58,10 @@ generic-service:
           type: RuntimeDefault
 
       volumeMounts:
-        - name: opa-policies
+        - name: opa-policies-app
           mountPath: /policies
+        - name: opa-policies-domain
+          mountPath: /domain
 
         - name: opa-data
           mountPath: /data

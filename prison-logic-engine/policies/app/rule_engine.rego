@@ -7,9 +7,4 @@ applicable_rules contains rule.ruleId if {
 
     rule := data.rules[_]
 
-    rule_applies(rule)
-
-    product_matches(rule)
-
-    condition_matches(rule)
 }
