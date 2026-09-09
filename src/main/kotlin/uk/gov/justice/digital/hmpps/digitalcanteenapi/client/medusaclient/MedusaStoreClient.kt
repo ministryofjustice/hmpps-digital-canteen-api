@@ -26,7 +26,7 @@ class MedusaStoreClient(
 
   fun createCart(createCartRequest: CreateCartRequest): CartResponse = medusaStoreClient
     .post()
-    .uri("/store/pin-phone/carts")
+    .uri("/internal/pin-phone/carts")
     .bodyValue(createCartRequest)
     .retrieve()
     .bodyToMono(CartResponse::class.java)
@@ -39,7 +39,7 @@ class MedusaStoreClient(
 
   fun addPinPhoneItemsToCart(addItemsRequest: AddItemsRequest, cartId: String): CartResponse = medusaStoreClient
     .post()
-    .uri("/store/pin-phone/carts/$cartId/add-items")
+    .uri("/internal/pin-phone/carts/$cartId/add-items")
     .bodyValue(addItemsRequest)
     .retrieve()
     .bodyToMono(CartResponse::class.java)
@@ -52,7 +52,7 @@ class MedusaStoreClient(
 
   fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartResponse = medusaStoreClient
     .post()
-    .uri("/store/pin-phone/carts/$cartId/complete")
+    .uri("/internal/pin-phone/carts/$cartId/complete")
     .bodyValue(mapOf("PaymentRequest" to paymentRequest))
     .retrieve()
     .bodyToMono(CompleteCartResponse::class.java)

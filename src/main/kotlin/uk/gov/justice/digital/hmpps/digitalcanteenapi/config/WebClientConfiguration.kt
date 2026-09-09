@@ -91,8 +91,12 @@ class WebClientConfiguration(
 
   @Bean
   @Suppress("MaxLineLength")
-  fun medusaStoreWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(medusaBaseUri)
-    .defaultHeader("x-publishable-api-key", medusaPublishableKey).build()
+  fun medusaStoreWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+    authorizedClientManager,
+    "hmpps-digital-canteen-api",
+    medusaBaseUri,
+    medusaTimeout,
+  )
 
   @Bean
   @Suppress("MaxLineLength")

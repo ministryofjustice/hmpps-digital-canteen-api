@@ -20,6 +20,9 @@ api:
   open-products-facts:
     base-url: "https://world.openproductsfacts.org"
     timeout-ms: 20s
+  medusa:
+    base-url: http://localhost:9000
+    timeout-ms: 20s
   prison-api:
 #    base-url: http://localhost:8075
     base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
