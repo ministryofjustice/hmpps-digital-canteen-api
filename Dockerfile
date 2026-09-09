@@ -23,6 +23,6 @@ COPY --from=builder --chown=appuser:appgroup /builder/extracted/spring-boot-load
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/snapshot-dependencies/ ./
 COPY --from=builder --chown=appuser:appgroup /builder/extracted/application/ ./
 COPY --chown=appuser:appgroup prison-logic-engine/policies/. policies/
-COPY --chown=appuser:appgroup prison-logic-engine/data/. data/
+COPY --chown=appuser:appgroup prison-logic-engine/data1/. data/
 
 ENTRYPOINT ["java", "-XX:+ExitOnOutOfMemoryError", "-XX:+AlwaysActAsServerClassMachine", "-javaagent:agent.jar", "-jar", "app.jar"]
