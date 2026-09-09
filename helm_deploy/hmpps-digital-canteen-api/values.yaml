@@ -77,6 +77,25 @@ generic-service:
       volumeMounts:
         - name: opa-policies
           mountPath: /policies
+          subPath: decision.rego
+        - name: opa-policies
+          mountPath: /policies
+          subPath: limits.rego
+        - name: opa-policies
+          mountPath: /policies
+          subPath: main.rego
+        - name: opa-policies
+          mountPath: /policies
+          subPath: rule_engine.rego
+        - name: opa-policies
+          mountPath: /policies
+          subPath: visibility.rego
+        - name: opa-policies
+          mountPath: /policies
+          subPath: warning.rego
+
+
+
 
 
 
