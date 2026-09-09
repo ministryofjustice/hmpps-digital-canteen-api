@@ -45,31 +45,16 @@ generic-service:
     groups:
       - internal
 
-  volumeMounts:
-    - name: policies
-      mountPath: /policies
-
-    - name: data
-      mountPath: /data
-
-
   extraContainers:
     - name: opa
       image: openpolicyagent/opa:1.19.0
-      command:
-        - sh
-        - -c
-        - |
-          while true; do
-            if find /policies -name "*.rego" | grep -q .; then
-              echo "Policies found, starting OPA..."
-          
-              exec /opa run --server --addr=0.0.0.0:8181 /policies /data
-            fi
-          
-            echo "Waiting for policies..."
-            sleep 5
-          done
+
+      args:
+        - run
+        - --server
+        - --addr=0.0.0.0:8181
+        - /policies
+        - /data
 
       ports:
         - name: opa
@@ -85,17 +70,12 @@ generic-service:
           type: RuntimeDefault
 
       volumeMounts:
-        - name: policies
+        - name: opa-policies
           mountPath: /policies
 
-        - name: data
+        - name: opa-data
           mountPath: /data
 
-  volumes:
-    - name: policies
-      emptyDir: { }
 
-    - name: data
-      emptyDir: { }
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api
