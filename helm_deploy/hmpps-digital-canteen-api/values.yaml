@@ -46,17 +46,10 @@ generic-service:
       - internal
 
   volumes:
-    - name: opa-policies-app
+    - name: opa-policies
       configMap:
-        name: opa-policies-app
+        name: opa-policies
 
-    - name: opa-policies-domain
-      configMap:
-        name: opa-policies-domain
-
-    - name: opa-data
-      configMap:
-        name: opa-data
 
   extraContainers:
     - name: opa
@@ -67,8 +60,6 @@ generic-service:
         - --server
         - --addr=0.0.0.0:8181
         - /policies
-        - /data
-        - /domain
 
       ports:
         - name: opa
@@ -84,14 +75,9 @@ generic-service:
           type: RuntimeDefault
 
       volumeMounts:
-        - name: opa-policies-app
+        - name: opa-policies
           mountPath: /policies
 
-        - name: opa-policies-domain
-          mountPath: /domain
-
-        - name: opa-data
-          mountPath: /data
 
 
 generic-prometheus-alerts:
