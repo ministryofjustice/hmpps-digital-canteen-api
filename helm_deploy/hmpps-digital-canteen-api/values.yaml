@@ -45,6 +45,15 @@ generic-service:
     groups:
       - internal
 
+  volumes:
+    - name: opa-policies
+      configMap:
+        name: opa-policies
+
+    - name: opa-data
+      configMap:
+        name: opa-data
+
   extraContainers:
     - name: opa
       image: openpolicyagent/opa:1.19.0
