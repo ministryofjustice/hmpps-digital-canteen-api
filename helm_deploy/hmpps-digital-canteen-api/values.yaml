@@ -79,28 +79,7 @@ generic-service:
 
       volumeMounts:
         - name: opa-policies
-          mountPath: /policies/decision.rego
-          subPath: decision.rego
-
-        - name: opa-policies
-          mountPath: /policies/limits.rego
-          subPath: limits.rego
-
-        - name: opa-policies
-          mountPath: /policies/main.rego
-          subPath: main.rego
-
-        - name: opa-policies
-          mountPath: /policies/rule_engine.rego
-          subPath: rule_engine.rego
-
-        - name: opa-policies
-          mountPath: /policies/visibility.rego
-          subPath: visibility.rego
-
-        - name: opa-policies
-          mountPath: /policies/warning.rego
-          subPath: warning.rego
+          mountPath: /policies
 
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api
