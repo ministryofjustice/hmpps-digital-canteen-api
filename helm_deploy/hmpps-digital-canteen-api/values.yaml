@@ -57,12 +57,12 @@ generic-service:
         - run
         - --server
         - --addr=0.0.0.0:8181
-        - /policies/decision.rego
-        - /policies/limits.rego
-        - /policies/main.rego
-        - /policies/rule_engine.rego
-        - /policies/visibility.rego
-        - /policies/warning.rego
+        - /opa-policies/decision.rego
+        - /opa-policies/limits.rego
+        - /opa-policies/main.rego
+        - /opa-policies/rule_engine.rego
+        - /opa-policies/visibility.rego
+        - /opa-policies/warning.rego
 
       ports:
         - name: opa
@@ -79,7 +79,7 @@ generic-service:
 
       volumeMounts:
         - name: opa-policies
-          mountPath: /policies
+          mountPath: /opa-policies
 
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api
