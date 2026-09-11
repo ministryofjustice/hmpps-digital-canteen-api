@@ -50,9 +50,15 @@ class DigitalCanteenApiExceptionHandler {
     ).also { log.debug("Forbidden (403) returned: {}", e.message) }
 
   @ExceptionHandler(UpstreamException::class)
-  fun handleUpstreamException(ex: UpstreamException): ResponseEntity<Map<String, String?>> = ResponseEntity
-    .badRequest()
-    .body(mapOf("message" to ex.message))
+  fun handleUpstreamException(ex: UpstreamException): ResponseEntity<ErrorResponse> = ResponseEntity
+    .status(BAD_REQUEST)
+    .body(
+      ErrorResponse(
+        status = BAD_REQUEST,
+        userMessage = ex.message ?: "Upstream service error",
+        developerMessage = ex.message,
+      ),
+    ).also { log.error("Upstream exception: {}", ex.message) }
 
   @ExceptionHandler(Exception::class)
   fun handleException(e: Exception): ResponseEntity<ErrorResponse> = ResponseEntity
