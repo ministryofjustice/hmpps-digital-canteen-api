@@ -7,6 +7,43 @@ generic-service:
   ingress:
     host: digital-canteen-dev.prison.service.justice.gov.uk
 
+  volumes:
+    - name: opa-policies
+      configMap:
+        name: opa-policies
+
+
+  extraContainers:
+    - name: opa
+      image: openpolicyagent/opa:1.19.0
+      args:
+        - run
+        - --server
+        - --addr=0.0.0.0:8181
+        - /opa-policies/decision.rego
+        - /opa-policies/limits.rego
+        - /opa-policies/main.rego
+        - /opa-policies/rule_engine.rego
+        - /opa-policies/visibility.rego
+        - /opa-policies/warnings.rego
+
+
+      ports:
+        - name: opa
+          containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      volumeMounts:
+        - name: opa-policies
+          mountPath: /opa-policies
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
     API_HMPPS_AUTH_BASE_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"

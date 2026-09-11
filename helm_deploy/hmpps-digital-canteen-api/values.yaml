@@ -45,5 +45,41 @@ generic-service:
     groups:
       - internal
 
+  volumes:
+    - name: opa-policies
+      configMap:
+        name: opa-policies
+
+
+  extraContainers:
+    - name: opa
+      image: openpolicyagent/opa:1.19.0
+        - run
+        - --server
+        - --addr=0.0.0.0:8181
+        - /opa-policies/decision.rego
+        - /opa-policies/limits.rego
+        - /opa-policies/main.rego
+        - /opa-policies/rule_engine.rego
+        - /opa-policies/visibility.rego
+        - /opa-policies/warnings.rego
+
+      ports:
+        - name: opa
+          containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+
+      volumeMounts:
+        - name: opa-policies
+          mountPath: /opa-policies
+
 generic-prometheus-alerts:
   targetApplication: hmpps-digital-canteen-api
