@@ -52,7 +52,7 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody()
-      .jsonPath("$.message").isEqualTo(errorMessage)
+      .jsonPath("$.userMessage").isEqualTo(errorMessage)
   }
 
   @Test
@@ -96,7 +96,7 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody()
-      .jsonPath("$.message").isEqualTo(errorMessage)
+      .jsonPath("$.userMessage").isEqualTo(errorMessage)
   }
 
   @Test
@@ -157,6 +157,6 @@ class PrisonFinanceIntegrationTest : IntegrationTestBase() {
       .exchange()
       .expectStatus().isBadRequest
       .expectBody()
-      .jsonPath("$.message").isEqualTo(errorMessage)
+      .jsonPath("$.userMessage").isEqualTo(errorMessage)
   }
 }
