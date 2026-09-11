@@ -256,7 +256,8 @@
           "amountPence": {
             "type": "integer",
             "format": "int64",
-            "description": "Amount in pence as sent to the payment APIs"
+            "description": "Amount in pence",
+            "example": 1000
           },
           "offenderNo": {
             "type": "string",
@@ -268,27 +269,55 @@
             "description": "The prisoner's prison number",
             "example": "ASI"
           },
-          "status": {
+          "paymentStatus": {
             "type": "string",
-            "enum": ["AUTHORIZED", "ERROR", "CANCELLED"],
-            "description": "Payment authorisation status"
+            "enum": [
+              "AUTHORIZED",
+              "ERROR"
+            ],
+            "description": "Payment authorisation status",
+            "example": "AUTHORIZED"
           },
-          "transactionReference": {
+          "financeTransactionReference": {
             "type": "string",
-            "description": "Transaction reference"
+            "description": "Transaction reference from release hold create transaction",
+            "example": "TXN-2024-00001"
           },
-          "holdNumber": {
+          "financeHoldNumber": {
             "type": "integer",
             "format": "int64",
-            "description": "The finance hold number"
+            "description": "The finance hold number",
+            "example": 12345
+          },
+          "btCreditLimitPence": {
+            "type": "integer",
+            "description": "BT credit limit in pence",
+            "example": 1000
+          },
+          "btPreBalancePence": {
+            "type": "integer",
+            "description": "BT balance pre balance change in pence",
+            "example": 1000
+          },
+          "btNewBalancePence": {
+            "type": "integer",
+            "description": "BT updated balance",
+            "example": 1000
           },
           "errorCode": {
             "type": "string",
-            "description": "Error code if payment failed"
+            "description": "Error code when payment failed",
+            "enum": [
+              "HOLD_FAILED",
+              "BT_PAYMENT_FAILED",
+              "RELEASE_HOLD_CREATE_TRANSACTION_FAILED",
+              "RELEASE_HOLD_FAILED"
+            ]
           },
           "errorMessage": {
             "type": "string",
-            "description": "Error message if payment failed"
+            "description": "Error message if payment failed",
+            "example": "Insufficient funds on prisoner account"
           }
         }
       },

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
@@ -51,8 +52,8 @@ class PinPhoneBuyCreditOrchestrationService(
         amountPence = amountPence,
         offenderNo = offenderNo,
         prisonId = prisonId,
-        status = PaymentRequest.Status.ERROR,
-        errorCode = "HOLD_FAILED",
+        paymentStatus = PaymentRequest.PaymentStatus.ERROR,
+        errorCode = PaymentRequest.ErrorCode.HOLD_FAILED,
         errorMessage = e.message,
       )
       return recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = false)
@@ -60,37 +61,47 @@ class PinPhoneBuyCreditOrchestrationService(
 
     log.info("Hold placed for prisoner {} holdNumber {}", offenderNo, holdResponse.holdNumber)
 
-    return try {
+    val btResponse = try {
       callBtApiWithRetry(offenderNo, amountPence.toInt())
+    } catch (e: UpstreamException) {
+      log.error("BT payment failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
+      val errorCode = PaymentRequest.ErrorCode.BT_PAYMENT_FAILED
+      return handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, amountPence, errorCode, e.message)
+    }
 
-      val transactionResponse = financeService.releaseHoldAndCreateTransaction(
+    val transactionResponse = try {
+      financeService.releaseHoldAndCreateTransaction(
         prisonId,
         offenderNo,
         holdResponse.holdNumber,
         ReleaseHoldAndCreateTransaction.Type.PHONE,
       )
-      log.info("Transaction created for prisoner prisoner {} transactionId {}", offenderNo, transactionResponse.id)
-
-      val medusaRequest = PaymentRequest(
-        amountPence = paymentRequest.amountPence,
-        offenderNo = paymentRequest.offenderNo,
-        prisonId = paymentRequest.prisonId,
-        status = PaymentRequest.Status.AUTHORIZED,
-        transactionReference = transactionResponse.id,
-        holdNumber = holdResponse.holdNumber,
-      )
-
-      recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = true)
     } catch (e: UpstreamException) {
-      log.error("Checkout failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
-      handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, amountPence, e.message)
+      log.error("Release hold/transaction failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
+      val errorcode = PaymentRequest.ErrorCode.RELEASE_HOLD_CREATE_TRANSACTION_FAILED
+      return handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, amountPence, errorcode, e.message)
     }
+
+    log.info("Transaction created for prisoner {} transactionId {}", offenderNo, transactionResponse.id)
+
+    val medusaRequest = PaymentRequest(
+      amountPence = paymentRequest.amountPence,
+      offenderNo = paymentRequest.offenderNo,
+      prisonId = paymentRequest.prisonId,
+      paymentStatus = PaymentRequest.PaymentStatus.AUTHORIZED,
+      financeTransactionReference = transactionResponse.id,
+      financeHoldNumber = holdResponse.holdNumber,
+      btCreditLimitPence = btResponse.creditLimitPence,
+      btPreBalancePence = btResponse.preBalancePence,
+      btNewBalancePence = btResponse.newBalancePence,
+    )
+    return recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = true)
   }
 
   /**
    * Attempts to add credit via the BT API, retrying up to 3 times.
    */
-  private fun callBtApiWithRetry(offenderNo: String, amountPence: Int) {
+  private fun callBtApiWithRetry(offenderNo: String, amountPence: Int): AccountCreditResponse {
     var lastException: Exception? = null
     for (attempt in 1..MAX_BT_ATTEMPTS) {
       try {
@@ -100,9 +111,10 @@ class PinPhoneBuyCreditOrchestrationService(
           prisonerId = offenderNo,
           amountPence = amountPence,
         )
-        btPinPhoneClient.addCredit(request).block()
+        val response = btPinPhoneClient.addCredit(request).block()
+          ?: throw RuntimeException("BT API returned null response")
         log.info("BT credit added for prisoner {} on attempt {}", offenderNo, attempt)
-        return
+        return response
       } catch (e: UpstreamException) {
         log.warn("Failed to add credit to BT for prisoner {} on attempt {}: {}", offenderNo, attempt, e.message)
         lastException = e
@@ -122,6 +134,7 @@ class PinPhoneBuyCreditOrchestrationService(
     holdNumber: Long,
     cartId: String,
     amountPence: Long,
+    errorCode: PaymentRequest.ErrorCode,
     errorMessage: String?,
   ): CompleteCartResponse {
     try {
@@ -129,15 +142,26 @@ class PinPhoneBuyCreditOrchestrationService(
       log.info("Hold released for prisoner {} holdNumber {}", offenderNo, holdNumber)
     } catch (e: UpstreamException) {
       log.error("Failed to release hold for prisoner {} holdNumber {}: {}", offenderNo, holdNumber, e.message)
+      val request = PaymentRequest(
+        amountPence = amountPence,
+        offenderNo = offenderNo,
+        prisonId = prisonId,
+        paymentStatus = PaymentRequest.PaymentStatus.ERROR,
+        financeHoldNumber = holdNumber,
+        errorCode = PaymentRequest.ErrorCode.RELEASE_HOLD_FAILED,
+        errorMessage = errorMessage,
+      )
+
+      return recordInMedusa(cartId, offenderNo, request, paymentSuccessful = false)
     }
 
     val request = PaymentRequest(
       amountPence = amountPence,
       offenderNo = offenderNo,
       prisonId = prisonId,
-      status = PaymentRequest.Status.ERROR,
-      holdNumber = holdNumber,
-      errorCode = "PAYMENT_FAILURE",
+      paymentStatus = PaymentRequest.PaymentStatus.ERROR,
+      financeHoldNumber = holdNumber,
+      errorCode = errorCode,
       errorMessage = errorMessage,
     )
 
@@ -159,7 +183,7 @@ class PinPhoneBuyCreditOrchestrationService(
     paymentSuccessful: Boolean,
   ): CompleteCartResponse = try {
     val cartResponse = medusaStoreClient.completeCart(cartId, request)
-    log.info("Medusa recording complete for cart {} status {}", cartId, request.status)
+    log.info("Medusa recording complete for cart {} status {}", cartId, request.paymentStatus)
     CompleteCartResponse(
       paymentSuccessful = paymentSuccessful,
       orderStatusRecorded = true,
@@ -171,7 +195,7 @@ class PinPhoneBuyCreditOrchestrationService(
       "Medusa recording failed for cart {} prisoner {} status {}: {}",
       cartId,
       offenderNo,
-      request.status,
+      request.paymentStatus,
       e.message,
     )
     CompleteCartResponse(
