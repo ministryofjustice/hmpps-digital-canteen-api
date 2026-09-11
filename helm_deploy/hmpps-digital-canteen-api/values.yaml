@@ -62,7 +62,7 @@ generic-service:
         - /opa-policies/main.rego
         - /opa-policies/rule_engine.rego
         - /opa-policies/visibility.rego
-        - /opa-policies/warning.rego
+        - /opa-policies/warnings.rego
 
       ports:
         - name: opa
