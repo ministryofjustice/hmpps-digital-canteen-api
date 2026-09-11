@@ -142,6 +142,17 @@ class PinPhoneBuyCreditOrchestrationService(
       log.info("Hold released for prisoner {} holdNumber {}", offenderNo, holdNumber)
     } catch (e: UpstreamException) {
       log.error("Failed to release hold for prisoner {} holdNumber {}: {}", offenderNo, holdNumber, e.message)
+      val request = PaymentRequest(
+        amountPence = amountPence,
+        offenderNo = offenderNo,
+        prisonId = prisonId,
+        paymentStatus = PaymentRequest.PaymentStatus.ERROR,
+        financeHoldNumber = holdNumber,
+        errorCode = PaymentRequest.ErrorCode.RELEASE_HOLD_FAILED,
+        errorMessage = errorMessage,
+      )
+
+      return recordInMedusa(cartId, offenderNo, request, paymentSuccessful = false)
     }
 
     val request = PaymentRequest(

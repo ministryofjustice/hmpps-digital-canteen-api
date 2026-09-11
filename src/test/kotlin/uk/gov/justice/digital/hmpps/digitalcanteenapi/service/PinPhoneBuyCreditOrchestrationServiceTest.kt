@@ -227,6 +227,35 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
   }
 
   @Test
+  fun `processCheckout returns error when releases hold fails`() {
+    // Given
+    val cartId = CART_ID
+    val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
+
+    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
+      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
+
+    whenever(btPinPhoneClient.addCredit(any()))
+      .thenReturn(Mono.error(UpstreamException("BT failed")))
+
+    whenever(financeService.releaseHold(any(), any(), any()))
+      .thenThrow(UpstreamException("Release failed"))
+
+    // When
+    val result = service.processCheckout(paymentRequest, cartId)
+    // Then
+    assertEquals(false, result.paymentSuccessful)
+    assertEquals(true, result.orderStatusRecorded)
+    assertEquals(null, result.orderId)
+    assertEquals(cartId, result.cartId)
+
+    val paymentResultCaptor = argumentCaptor<PaymentRequest>()
+    verify(medusaStoreClient).completeCart(eq(cartId), paymentResultCaptor.capture())
+    assertEquals(PaymentRequest.PaymentStatus.ERROR, paymentResultCaptor.firstValue.paymentStatus)
+    assertEquals(PaymentRequest.ErrorCode.RELEASE_HOLD_FAILED, paymentResultCaptor.firstValue.errorCode)
+  }
+
+  @Test
   fun `processCheckout returns error and releases hold when upstream error occurs`() {
     // Given
     val cartId = CART_ID
