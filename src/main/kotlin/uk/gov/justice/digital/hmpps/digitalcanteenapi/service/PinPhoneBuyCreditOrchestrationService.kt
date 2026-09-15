@@ -91,6 +91,7 @@ class PinPhoneBuyCreditOrchestrationService(
       paymentStatus = PaymentRequest.PaymentStatus.AUTHORIZED,
       financeTransactionReference = transactionResponse.id,
       financeHoldNumber = holdResponse.holdNumber,
+      btCreditReference = btResponse.reference,
       btCreditLimitPence = btResponse.creditLimitPence,
       btPreBalancePence = btResponse.preBalancePence,
       btNewBalancePence = btResponse.newBalancePence,
