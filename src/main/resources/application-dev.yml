@@ -6,7 +6,17 @@ api:
     base-url: "https://health-and-medication-api-dev.hmpps.service.justice.gov.uk"
     timeout-ms: 20s
   prisoner-search:
-    base-url: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    base-url: http://localhost:8075
+#    base-url: "https://prisoner-search-dev.prison.service.justice.gov.uk"
+    timeout-ms: 20s
+  prison-api:
+    base-url: http://localhost:8075
+#    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
+    timeout-ms: 20s
+  bt:
+    base-url: http://localhost:8075
+  medusa:
+    base-url: http://localhost:9000
     timeout-ms: 20s
   prisoner-adjudications:
     base-url: "https://manage-adjudications-api-dev.hmpps.service.justice.gov.uk"
@@ -20,12 +30,7 @@ api:
   open-products-facts:
     base-url: "https://world.openproductsfacts.org"
     timeout-ms: 20s
-  prison-api:
-#    base-url: http://localhost:8075
-    base-url: "https://prison-api-dev.prison.service.justice.gov.uk"
-    timeout-ms: 20s
-  bt:
-    base-url: http://localhost:8075
+
 
 bt:
   client:
