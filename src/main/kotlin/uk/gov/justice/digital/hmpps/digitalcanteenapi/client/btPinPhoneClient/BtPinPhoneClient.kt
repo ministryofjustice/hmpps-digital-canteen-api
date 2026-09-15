@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import org.springframework.web.reactive.function.client.bodyToMono
 import reactor.core.publisher.Mono
@@ -41,6 +42,10 @@ class BtPinPhoneClient(
       val error = errorHandler.handleError(ex)
       logger.error("BT auth token request failed: ${error.userMessage}")
       UpstreamException(error.userMessage ?: "Auth token request failed")
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Get BT token has failed due to connection issue", ex)
+      UpstreamException("BT service is currently unavailable")
     }
 
   fun getPrisonerBalance(btPinPhoneBalanceRequest: BtPinPhoneBalanceRequest): Mono<BtPinPhoneBalanceResponse> = getBtToken().flatMap { btAuthResponse ->
