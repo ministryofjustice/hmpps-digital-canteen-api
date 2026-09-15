@@ -33,7 +33,13 @@ generic-service:
         - run
         - --server
         - --addr=0.0.0.0:8181
-        - /policies
+        - /opa-policies/decision.rego
+        - /opa-policies/limits.rego
+        - /opa-policies/main.rego
+        - /opa-policies/rule_engine.rego
+        - /opa-policies/visibility.rego
+        - /opa-policies/warnings.rego
+
 
       ports:
         - name: opa
@@ -50,9 +56,7 @@ generic-service:
 
       volumeMounts:
         - name: opa-policies
-          mountPath: /policies
-
-
+          mountPath: /opa-policies
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
     API_HMPPS_AUTH_BASE_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
