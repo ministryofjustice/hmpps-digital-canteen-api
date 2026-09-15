@@ -20,6 +20,31 @@ generic-service:
       SecRuleUpdateActionById 959100 "t:none,deny,status:406,logdata:%{SERVER_NAME}"
       SecAction "id:900000,phase:1,nolog,pass,t:none,setvar:tx.paranoia_level=2"
 
+
+  extraContainers:
+    - name: opa
+      image: openpolicyagent/opa:1.19.0
+
+      args:
+        - run
+        - --server
+        - --addr=0.0.0.0:8181
+
+      ports:
+        - name: opa
+          containerPort: 8181
+
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+
+        capabilities:
+          drop:
+            - ALL
+
+        seccompProfile:
+          type: RuntimeDefault
+
   env:
     APPLICATIONINSIGHTS_CONFIGURATION_FILE: "applicationinsights.dev.json"
     API_HMPPS_AUTH_BASE_URL: "https://sign-in-dev.hmpps.service.justice.gov.uk/auth"
@@ -40,3 +65,4 @@ generic-service:
 # See https://user-guide.cloud-platform.service.justice.gov.uk/documentation/monitoring-an-app/how-to-create-alarms.html#creating-your-own-custom-alerts
 generic-prometheus-alerts:
   alertSeverity: n/a
+
