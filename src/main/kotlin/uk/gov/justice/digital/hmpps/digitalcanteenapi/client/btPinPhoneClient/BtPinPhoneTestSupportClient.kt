@@ -49,7 +49,7 @@ class BtPinPhoneTestSupportClient(
 
   fun createAccount(request: CreateAccountRequest): Mono<CreateAccountResponse> = getBtToken().flatMap { token ->
     btPinPhoneWebClient
-      .put()
+      .post()
       .uri("/pcs/Account")
       .headers { it.setBearerAuth(token) }
       .bodyValue(request)
@@ -63,7 +63,7 @@ class BtPinPhoneTestSupportClient(
 
   fun createControlledNumber(request: CreateControlledNumberRequest): Mono<CreateControlledNumberResponse> = getBtToken().flatMap { token ->
     btPinPhoneWebClient
-      .put()
+      .post()
       .uri("/pcs/ControlledNumber")
       .headers { it.setBearerAuth(token) }
       .bodyValue(request)

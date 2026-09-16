@@ -6,7 +6,6 @@ import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -57,13 +56,13 @@ class TestController(
   )
 
   @Operation(summary = "Create BT account")
-  @PutMapping("/bt-test/account-test")
+  @PostMapping("/bt-test/account-test")
   fun createBtAccount(
     @RequestBody request: CreateAccountRequest,
   ): Mono<CreateAccountResponse> = btPinPhoneTestSupportClient.createAccount(request)
 
   @Operation(summary = "Add controlled number to BT account")
-  @PutMapping("/bt-test/controlled-number-test")
+  @PostMapping("/bt-test/controlled-number-test")
   fun createBtControlledNumber(
     @RequestBody request: CreateControlledNumberRequest,
   ): Mono<CreateControlledNumberResponse> = btPinPhoneTestSupportClient.createControlledNumber(request)
