@@ -45,6 +45,8 @@ class WebClientConfiguration(
 
   @param:Value("\${api.bt.base-url}") val btPinPhoneBaseUri: String,
 
+  @param:Value("\${opa.url}") val opaBaseUri: String,
+
   private val builder: WebClient.Builder,
 ) {
   @Bean
@@ -113,6 +115,11 @@ class WebClientConfiguration(
     prisonApiBaseUri,
     prisonApiTimeout,
   )
+
+  @Bean
+  fun opaWebClient(builder: WebClient.Builder) = builder
+    .baseUrl(opaBaseUri)
+    .build()
 
   // todo: remove insecure cert (bt is currently on QA environment)
   @Bean
