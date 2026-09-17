@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
+import org.springframework.web.reactive.function.client.WebClientRequestException
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
@@ -31,9 +32,17 @@ class MedusaStoreClient(
     .retrieve()
     .bodyToMono(CartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
-      val errorResponse = errorHandler.handleError(ex)
-      logger.error("Create cart failed: ${ex.responseBodyAsString}")
-      UpstreamException(errorResponse.userMessage ?: "Create cart failed")
+      if (ex.statusCode.is5xxServerError) {
+        UpstreamException("Medusa service is currently unavailable")
+      } else {
+        val errorResponse = errorHandler.handleError(ex)
+        logger.error("Create cart failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "Create cart failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Create cart failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
 
@@ -44,9 +53,17 @@ class MedusaStoreClient(
     .retrieve()
     .bodyToMono(CartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
-      val errorResponse = errorHandler.handleError(ex)
-      logger.error("Add line item request failed: ${ex.responseBodyAsString}")
-      UpstreamException(errorResponse.userMessage ?: "Add line item request failed")
+      if (ex.statusCode.is5xxServerError) {
+        UpstreamException("Medusa service is currently unavailable")
+      } else {
+        val errorResponse = errorHandler.handleError(ex)
+        logger.error("Add line item request failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "Add line item request failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Add line item failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
 
@@ -57,9 +74,17 @@ class MedusaStoreClient(
     .retrieve()
     .bodyToMono(CompleteCartResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
-      val errorResponse = errorHandler.handleError(ex)
-      logger.error("Cart completion failed: ${ex.responseBodyAsString}")
-      UpstreamException(errorResponse.userMessage ?: "Cart completion failed")
+      if (ex.statusCode.is5xxServerError) {
+        UpstreamException("Medusa service is currently unavailable")
+      } else {
+        val errorResponse = errorHandler.handleError(ex)
+        logger.error("Cart completion failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "Cart completion failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Cart completion failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
 }

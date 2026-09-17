@@ -17,7 +17,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
 
 @RestController
-@PreAuthorize("permitAll()")
+@PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
 @RequestMapping("/api")
 @Tag(
   name = "Pin Phone",

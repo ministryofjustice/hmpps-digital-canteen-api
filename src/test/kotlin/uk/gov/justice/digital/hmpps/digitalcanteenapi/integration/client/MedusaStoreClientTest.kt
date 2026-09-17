@@ -5,6 +5,7 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
@@ -13,6 +14,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 
 class MedusaStoreClientTest {
@@ -67,9 +69,12 @@ class MedusaStoreClientTest {
       amountPence = 1000,
       offenderNo = "A1234AA",
       prisonId = "XYZ",
-      status = PaymentRequest.Status.AUTHORIZED,
-      transactionReference = "ref-123",
-      holdNumber = 12345,
+      paymentStatus = PaymentRequest.PaymentStatus.AUTHORIZED,
+      financeTransactionReference = "ref-123",
+      financeHoldNumber = 12345,
+      btCreditLimitPence = 50000,
+      btPreBalancePence = 1000,
+      btNewBalancePence = 2000,
       errorCode = null,
       errorMessage = null,
     )
@@ -78,6 +83,28 @@ class MedusaStoreClientTest {
 
     assertThat(result).isNotNull
     assertThat(result.orderId).isEqualTo("test-order-id")
+  }
+
+  @Test
+  fun `createCart - returns custom error message when medusa is down`() {
+    // simulate "service down"
+    server.stop()
+    try {
+      val cartRequest = CreateCartRequest(
+        CartMetadata(
+          prisonId = "MDI",
+          offenderNo = "A1234AA",
+          firstName = "John",
+          secondName = "Doe",
+        ),
+      )
+      val exception = assertThrows<UpstreamException> {
+        client.createCart(cartRequest)
+      }
+      assertThat(exception.message).contains("Medusa service is currently unavailable")
+    } finally {
+      server.start()
+    }
   }
 
   companion object {
