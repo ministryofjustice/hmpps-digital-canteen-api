@@ -91,7 +91,7 @@ class WebClientConfiguration(
 
   @Bean
   @Suppress("MaxLineLength")
-  fun medusaStoreWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
+  fun medusaInternalWebClient(authorizedClientManager: OAuth2AuthorizedClientManager) = builder.authorisedWebClient(
     authorizedClientManager,
     "hmpps-digital-canteen-api",
     medusaBaseUri,

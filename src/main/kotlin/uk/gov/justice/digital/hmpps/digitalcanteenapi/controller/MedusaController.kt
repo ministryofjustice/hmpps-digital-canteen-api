@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
 
 @RestController
 @PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
@@ -23,7 +23,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.Medusa
   name = "Pin Phone",
   description = "Pin Phone medusa endpoints",
 )
-class MedusaController(private val medusaStoreClient: MedusaStoreClient) {
+class MedusaController(private val medusaStoreClient: MedusaInternalClient) {
 
   @Operation(summary = "Add pin phone product to Medusa cart")
   @ApiResponses(
