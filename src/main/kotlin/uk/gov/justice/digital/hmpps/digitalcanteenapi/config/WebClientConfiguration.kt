@@ -37,7 +37,6 @@ class WebClientConfiguration(
   @param:Value("\${api.open-products-facts.timeout-ms:20s}") val openProductsFactsTimeout: Duration,
 
   @param:Value("\${api.medusa.base-url}") val medusaBaseUri: String,
-  @param:Value("\${api.medusa.publishable-key}") val medusaPublishableKey: String,
   @param:Value("\${api.medusa.timeout-ms:20s}") val medusaTimeout: Duration,
 
   @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
