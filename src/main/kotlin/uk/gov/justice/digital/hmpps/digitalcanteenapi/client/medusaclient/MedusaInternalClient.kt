@@ -14,20 +14,21 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
+import kotlin.jvm.java
 
 @Component
-class MedusaStoreClient(
-  @Qualifier("medusaStoreWebClient") private val medusaStoreClient: WebClient,
+class MedusaInternalClient(
+  @Qualifier("medusaInternalWebClient") private val medusaInternalClient: WebClient,
   private val errorHandler: WebClientErrorHandler,
 ) {
 
   companion object {
-    val logger: Logger = LoggerFactory.getLogger(MedusaStoreClient::class.java)
+    val logger: Logger = LoggerFactory.getLogger(MedusaInternalClient::class.java)
   }
 
-  fun createCart(createCartRequest: CreateCartRequest): CartResponse = medusaStoreClient
+  fun createCart(createCartRequest: CreateCartRequest): CartResponse = medusaInternalClient
     .post()
-    .uri("/store/pin-phone/carts")
+    .uri("/internal/pin-phone/carts")
     .bodyValue(createCartRequest)
     .retrieve()
     .bodyToMono(CartResponse::class.java)
@@ -46,9 +47,9 @@ class MedusaStoreClient(
     }
     .block()!!
 
-  fun addPinPhoneItemsToCart(addItemsRequest: AddItemsRequest, cartId: String): CartResponse = medusaStoreClient
+  fun addPinPhoneItemsToCart(addItemsRequest: AddItemsRequest, cartId: String): CartResponse = medusaInternalClient
     .post()
-    .uri("/store/pin-phone/carts/$cartId/add-items")
+    .uri("/internal/pin-phone/carts/$cartId/add-items")
     .bodyValue(addItemsRequest)
     .retrieve()
     .bodyToMono(CartResponse::class.java)
@@ -67,9 +68,9 @@ class MedusaStoreClient(
     }
     .block()!!
 
-  fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartResponse = medusaStoreClient
+  fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartResponse = medusaInternalClient
     .post()
-    .uri("/store/pin-phone/carts/$cartId/complete")
+    .uri("/internal/pin-phone/carts/$cartId/complete")
     .bodyValue(mapOf("PaymentRequest" to paymentRequest))
     .retrieve()
     .bodyToMono(CompleteCartResponse::class.java)

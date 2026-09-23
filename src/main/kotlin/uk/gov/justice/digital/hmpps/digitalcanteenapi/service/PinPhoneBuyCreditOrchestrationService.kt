@@ -11,7 +11,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import java.util.UUID
@@ -19,7 +19,7 @@ import java.util.UUID
 @Service
 class PinPhoneBuyCreditOrchestrationService(
   private val financeService: PrisonFinanceService,
-  private val medusaStoreClient: MedusaStoreClient,
+  private val medusaStoreClient: MedusaInternalClient,
   private val btPinPhoneClient: BtPinPhoneClient,
 ) {
   companion object {

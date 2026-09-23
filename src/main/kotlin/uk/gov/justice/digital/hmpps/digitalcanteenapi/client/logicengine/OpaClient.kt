@@ -1,11 +1,12 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.logicengine
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Component
 import org.springframework.web.reactive.function.client.WebClient
 import org.springframework.web.reactive.function.client.WebClientResponseException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient.Companion.logger
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.logicengine.request.OpaRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.logicengine.response.OpaResponse
@@ -15,6 +16,10 @@ class OpaClient(
   @Qualifier("opaWebClient") private val opaClient: WebClient,
   private val errorHandler: WebClientErrorHandler,
 ) {
+
+  companion object {
+    val logger: Logger = LoggerFactory.getLogger(OpaClient::class.java)
+  }
 
   fun evaluate(request: OpaRequest) = opaClient.post()
     .uri("/v1/data/app/main/response")

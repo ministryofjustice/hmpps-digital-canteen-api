@@ -23,8 +23,6 @@ services:
       - BT_CLIENT_ID=test-client-id
       - BT_CLIENT_SECRET=test-client-secret
       - API_MEDUSA_BASE_URL=http://host.docker.internal:9000
-#       Will need to retrieve this from Local Medusa
-      - API_MEDUSA_PUBLISHABLE_KEY=
 
 #     Use DEV test prisoner
 

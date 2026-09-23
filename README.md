@@ -37,26 +37,7 @@ Ensure dependent services are running:
 
     CLIENT_SECRET={secret}
 
-2. Get Local medusa publishable key.
-```bash
-curl -s -X POST http://localhost:9000/auth/user/emailpass \
--H "Content-Type: application/json" \
--d '{"email": "admin@admin.com", "password": "supersecret"}'
-```
-
-3. Get Publishable Key.
-```bash
-curl -s "http://localhost:9000/admin/api-keys?type=publishable" \
--H "Authorization: Bearer {token}"
-```
-
-4. Export or add to intellij run configuration.
-
-
-    API_MEDUSA_PUBLISHABLE_KEY={key}
-
-
-5. Spin up docker wiremock, as it is required for BT.
+2. Spin up docker wiremock, as it is required for BT.
 
 Note: PrisonAPI and Prisoner Search can be ran against DEV, or wiremock, update application-dev.yml accordingly
 
@@ -70,38 +51,23 @@ Note: PrisonAPI and Prisoner Search can be ran against DEV, or wiremock, update 
 1. Get client secrets from DEV namespace.
 Update docker compose 
 
-    CLIENT_SECRET
+       CLIENT_ID={id}
+    
+       CLIENT_SECRET={secret}
 
-2. Get Local medusa publishable key.
-Get token 
-```bash
-curl -s -X POST http://localhost:9000/auth/user/emailpass \
--H "Content-Type: application/json" \
--d '{"email": "admin@admin.com", "password": "supersecret"}'
-```
-
-3. Get Publishable Key.
-```bash
-curl -s "http://localhost:9000/admin/api-keys?type=publishable" \
--H "Authorization: Bearer {token}"
-```
-
-4. Use "token" in docker compose.
-
-    API_MEDUSA_PUBLISHABLE_KEY
 
 The `Dockerfile` relies on the application being built first. Steps to build the docker image:
-5. Build the jar files.
+2. Build the jar files.
 ```
 ./gradlew clean assemble
 ```
 
-6. Build the docker image with required arguments.
+3. Build the docker image with required arguments.
 ```
 docker build --build-arg BUILD_NUMBER=$(ls build/libs/hmpps-digital-canteen-api-*.jar | sed -E 's/.*api-(.*)\.jar/\1/') \
   -t ghcr.io/ministryofjustice/hmpps-digital-canteen-api:local .
 ```
-7. Run the docker image.
+4. Run the docker image.
 ```
 docker compose up -d
 ```
