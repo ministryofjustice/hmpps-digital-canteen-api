@@ -57,7 +57,7 @@ generic-service:
       args:
         - run
         - --server
-        - --addr=0.0.0.0:8181
+        - --addr=127.0.0.1:8181
         - /opa-policies/decision.rego
         - /opa-policies/limits.rego
         - /opa-policies/main.rego
