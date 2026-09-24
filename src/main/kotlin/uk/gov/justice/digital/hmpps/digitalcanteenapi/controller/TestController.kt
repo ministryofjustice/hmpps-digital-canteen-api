@@ -2,11 +2,11 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.controller
 
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.context.annotation.Profile
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -21,7 +21,12 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.Cr
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.CreditAccountResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.AddHoldTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.productenrichment.dto.ProductDetailsResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.PrisonFinanceService
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentInfoService
 
 @RestController
@@ -31,6 +36,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductEnrichmentI
 class TestController(
   private val productEnrichmentInfoService: ProductEnrichmentInfoService,
   private val btPinPhoneTestSupportClient: BtPinPhoneTestSupportClient,
+  private val prisonFinanceService: PrisonFinanceService,
 ) {
 
   // Product endpoints
@@ -57,13 +63,13 @@ class TestController(
   )
 
   @Operation(summary = "Create BT account")
-  @PutMapping("/bt-test/account-test")
+  @PostMapping("/bt-test/account-test")
   fun createBtAccount(
     @RequestBody request: CreateAccountRequest,
   ): Mono<CreateAccountResponse> = btPinPhoneTestSupportClient.createAccount(request)
 
   @Operation(summary = "Add controlled number to BT account")
-  @PutMapping("/bt-test/controlled-number-test")
+  @PostMapping("/bt-test/controlled-number-test")
   fun createBtControlledNumber(
     @RequestBody request: CreateControlledNumberRequest,
   ): Mono<CreateControlledNumberResponse> = btPinPhoneTestSupportClient.createControlledNumber(request)
@@ -77,4 +83,27 @@ class TestController(
   fun creditBtAccount(
     @RequestBody request: CreditAccountRequest,
   ): Mono<CreditAccountResponse> = btPinPhoneTestSupportClient.accountCredit(request)
+
+  // prison finance endpoints
+  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/addHold")
+  fun addHold(
+    @PathVariable prisonId: String,
+    @PathVariable offenderNo: String,
+    @RequestBody request: AddHoldTransaction,
+  ): HoldDetails = prisonFinanceService.addHold(prisonId, offenderNo, request.amount)
+
+  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHold/{holdNumber}")
+  fun releaseHold(
+    @PathVariable prisonId: String,
+    @PathVariable offenderNo: String,
+    @PathVariable holdNumber: Number,
+  ): ResponseEntity<Void> = prisonFinanceService.releaseHold(prisonId, offenderNo, holdNumber)
+
+  @PostMapping("/finance/prisons/{prisonId}/offenders/{offenderNo}/releaseHoldCreateTransaction/{holdNumber}")
+  fun releaseHoldAndCreateTransaction(
+    @PathVariable prisonId: String,
+    @PathVariable offenderNo: String,
+    @PathVariable holdNumber: Number,
+    @RequestBody request: ReleaseHoldAndCreateTransaction,
+  ): Transaction = prisonFinanceService.releaseHoldAndCreateTransaction(prisonId, offenderNo, holdNumber, request.type)
 }
