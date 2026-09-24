@@ -20,7 +20,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.HoldDetails
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
@@ -32,7 +32,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBE
 class PinPhoneBuyCreditOrchestrationServiceTest {
 
   private val financeService: PrisonFinanceService = mock()
-  private val medusaStoreClient: MedusaStoreClient = mock()
+  private val medusaStoreClient: MedusaInternalClient = mock()
   private val btPinPhoneClient: BtPinPhoneClient = mock()
 
   private lateinit var service: PinPhoneBuyCreditOrchestrationService

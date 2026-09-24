@@ -36,7 +36,6 @@ generic-service:
       COOKIE_SECRET: "cookie-secret"
       ADMIN_EMAIL: "admin-email"
       ADMIN_PASSWORD: "admin-password"
-      API_MEDUSA_PUBLISHABLE_KEY: "publishable-api-key"
     bt-client-creds:
       BT_CLIENT_ID: 'BT_CLIENT_ID'
       BT_CLIENT_SECRET: 'BT_CLIENT_SECRET'
@@ -58,7 +57,7 @@ generic-service:
       args:
         - run
         - --server
-        - --addr=0.0.0.0:8181
+        - --addr=127.0.0.1:8181
         - /opa-policies/decision.rego
         - /opa-policies/limits.rego
         - /opa-policies/main.rego

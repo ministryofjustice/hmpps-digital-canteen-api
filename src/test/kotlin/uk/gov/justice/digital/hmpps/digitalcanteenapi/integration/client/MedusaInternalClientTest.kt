@@ -13,12 +13,12 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartMetadata
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.PaymentRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaStoreClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 
-class MedusaStoreClientTest {
-  private lateinit var client: MedusaStoreClient
+class MedusaInternalClientTest {
+  private lateinit var client: MedusaInternalClient
 
   @BeforeEach
   fun resetMocks() {
@@ -28,7 +28,7 @@ class MedusaStoreClientTest {
       .findAndAddModules()
       .build()
     val webClientErrorHandler = WebClientErrorHandler(mapper)
-    client = MedusaStoreClient(webClient, webClientErrorHandler)
+    client = MedusaInternalClient(webClient, webClientErrorHandler)
   }
 
   @Test
