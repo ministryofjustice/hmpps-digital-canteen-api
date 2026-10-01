@@ -2,6 +2,8 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.client
 
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import io.micrometer.core.instrument.MeterRegistry
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.AfterAll
@@ -24,6 +26,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.BtMoc
 
 class BtPinPhoneClientTest {
   private lateinit var client: BtPinPhoneClient
+  private lateinit var meterRegistry: MeterRegistry
 
   @BeforeEach
   fun resetMocks() {
@@ -33,7 +36,8 @@ class BtPinPhoneClientTest {
       .findAndAddModules()
       .build()
     val webClientErrorHandler = WebClientErrorHandler(mapper)
-    client = BtPinPhoneClient(webClient, BT_CLIENT_ID, BT_CLIENT_SECRET, webClientErrorHandler)
+    meterRegistry = SimpleMeterRegistry()
+    client = BtPinPhoneClient(webClient, BT_CLIENT_ID, BT_CLIENT_SECRET, webClientErrorHandler, meterRegistry)
   }
 
   @Nested
@@ -66,6 +70,8 @@ class BtPinPhoneClientTest {
       assertThatThrownBy { client.getBtToken().block() }
         .isInstanceOf(UpstreamException::class.java)
         .hasMessageContaining("Invalid credentials")
+
+      assertThat(meterRegistry.counter("bt_endpoint_access_failed_total").count()).isEqualTo(1.0)
     }
 
     @Test
