@@ -60,8 +60,10 @@ management:
   endpoints:
     web:
       base-path: /
+      path-mapping:
+          prometheus: 'metrics'
       exposure:
-        include: 'info, health, prometheus'
+          include: 'info, health, prometheus'
   endpoint:
     health:
       cache:
