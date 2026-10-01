@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient
 
+import io.micrometer.core.instrument.MeterRegistry
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.beans.factory.annotation.Value
@@ -26,11 +27,14 @@ class BtPinPhoneClient(
   @Value("\${bt.client.id}") private val clientId: String,
   @Value("\${bt.client.secret}") private val clientSecret: String,
   private val errorHandler: WebClientErrorHandler,
+  private val meterRegistry: MeterRegistry,
 ) {
 
   companion object {
     private val logger = LoggerFactory.getLogger(BtPinPhoneClient::class.java)
   }
+
+  private val btFailureCounter = meterRegistry.counter("bt_endpoint_access_failed_total")
 
   fun getBtToken(): Mono<BtTokenResponse> = btPinPhoneWebClient
     .post()
@@ -38,7 +42,8 @@ class BtPinPhoneClient(
     .bodyValue(BtTokenRequest(clientId = clientId, clientSecret = clientSecret))
     .retrieve()
     .bodyToMono<BtTokenResponse>()
-    .onErrorMap(WebClientResponseException::class.java) { ex ->
+    .doOnError { btFailureCounter.increment() }
+    .onErrorMap(WebClientResponseException::class.java) { ex: WebClientResponseException ->
       val error = errorHandler.handleError(ex)
       logger.error("BT auth token request failed: ${error.userMessage}")
       UpstreamException(error.userMessage ?: "Auth token request failed")
@@ -56,7 +61,8 @@ class BtPinPhoneClient(
       .bodyValue(btPinPhoneBalanceRequest)
       .retrieve()
       .bodyToMono<BtPinPhoneBalanceResponse>()
-      .onErrorMap(WebClientResponseException::class.java) { ex ->
+      .doOnError { btFailureCounter.increment() }
+      .onErrorMap(WebClientResponseException::class.java) { ex: WebClientResponseException ->
         val error = errorHandler.handleError(ex)
         logger.error("BT balance request failed for prisoner ${btPinPhoneBalanceRequest.prisonerId}: ${ex.responseBodyAsString}")
         UpstreamException(error.userMessage ?: "Balance request failed")
@@ -71,7 +77,8 @@ class BtPinPhoneClient(
       .bodyValue(btPinPhoneControlledNumbersRequest)
       .retrieve()
       .bodyToMono<BtPinPhoneControlledNumbersResponse>()
-      .onErrorMap(WebClientResponseException::class.java) { ex ->
+      .doOnError { btFailureCounter.increment() }
+      .onErrorMap(WebClientResponseException::class.java) { ex: WebClientResponseException ->
         val error = errorHandler.handleError(ex)
         logger.error("BT contacts request failed for prisoner ${btPinPhoneControlledNumbersRequest.prisonerId}: ${ex.responseBodyAsString}")
         UpstreamException(error.userMessage ?: "Contacts request failed")
@@ -86,7 +93,8 @@ class BtPinPhoneClient(
       .bodyValue(accountCreditRequest)
       .retrieve()
       .bodyToMono(AccountCreditResponse::class.java)
-      .onErrorMap(WebClientResponseException::class.java) { ex ->
+      .doOnError { btFailureCounter.increment() }
+      .onErrorMap(WebClientResponseException::class.java) { ex: WebClientResponseException ->
         val error = errorHandler.handleError(ex)
         logger.error("BT add credit request failed for prisoner ${accountCreditRequest.prisonerId}: ${ex.responseBodyAsString}")
         UpstreamException(error.userMessage ?: "Add credit failed")
