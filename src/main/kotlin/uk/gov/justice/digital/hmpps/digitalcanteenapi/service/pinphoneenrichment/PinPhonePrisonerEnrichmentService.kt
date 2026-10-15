@@ -2,17 +2,13 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.pinphoneenrichmen
 
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonersearchclient.PrisonerSearchClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toBalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toBtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.toPrisonerSearchResponseDto
-import java.util.UUID
+import java.util.*
 
 /**
  * Service responsible for enriching prisoner data with additional information from multiple sources.
@@ -27,7 +23,6 @@ import java.util.UUID
 @Service
 class PinPhonePrisonerEnrichmentService(
   private val prisonerSearchClient: PrisonerSearchClient,
-  private val btPinPhoneClient: BtPinPhoneClient,
   private val prisonFinanceClient: PrisonFinanceClient,
 ) {
 
@@ -43,16 +38,11 @@ class PinPhonePrisonerEnrichmentService(
     val balanceMono = bookingIdMono
       .flatMap { bookingId -> prisonFinanceClient.getPrisonerBalance(bookingId) }
 
-    val reference = UUID.randomUUID().toString().replace("-", "").take(20)
-    val btBalanceMono =
-      btPinPhoneClient.getPrisonerBalance(BtPinPhoneBalanceRequest(reference, prisonerNumber))
-
-    return Mono.zip(prisonerMono, balanceMono, btBalanceMono)
+    return Mono.zip(prisonerMono, balanceMono)
       .map { tuple ->
         EnrichedPinPhonePrisonerDto(
           prisoner = tuple.t1.toPrisonerSearchResponseDto(),
           prisonerBalance = tuple.t2.toBalanceResponseDto(),
-          prisonerBtBalance = tuple.t3.toBtPinPhoneResponseDto(),
         )
       }
   }
@@ -60,6 +50,5 @@ class PinPhonePrisonerEnrichmentService(
   data class EnrichedPinPhonePrisonerDto(
     val prisoner: PrisonerSearchResponseDto,
     val prisonerBalance: BalanceResponseDto?,
-    val prisonerBtBalance: BtPinPhoneResponseDto?,
   )
 }
