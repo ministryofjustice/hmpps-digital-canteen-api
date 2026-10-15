@@ -4,9 +4,6 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateCartRequest
@@ -14,13 +11,11 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldAndCreateTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import java.util.UUID
 
 @Service
 class PinPhoneBuyCreditOrchestrationService(
   private val financeService: PrisonFinanceService,
   private val medusaStoreClient: MedusaInternalClient,
-  private val btPinPhoneClient: BtPinPhoneClient,
 ) {
   companion object {
     private const val MAX_BT_ATTEMPTS = 3
@@ -61,14 +56,6 @@ class PinPhoneBuyCreditOrchestrationService(
 
     log.info("Hold placed for prisoner {} holdNumber {}", offenderNo, holdResponse.holdNumber)
 
-    val btResponse = try {
-      callBtApiWithRetry(offenderNo, amountPence.toInt())
-    } catch (e: UpstreamException) {
-      log.error("BT payment failed for cart {} prisoner {}: {}", cartId, offenderNo, e.message)
-      val errorCode = PaymentRequest.ErrorCode.BT_PAYMENT_FAILED
-      return handleCheckoutError(prisonId, offenderNo, holdResponse.holdNumber, cartId, amountPence, errorCode, e.message)
-    }
-
     val transactionResponse = try {
       financeService.releaseHoldAndCreateTransaction(
         prisonId,
@@ -91,37 +78,8 @@ class PinPhoneBuyCreditOrchestrationService(
       paymentStatus = PaymentRequest.PaymentStatus.AUTHORIZED,
       financeTransactionReference = transactionResponse.id,
       financeHoldNumber = holdResponse.holdNumber,
-      btCreditReference = btResponse.reference,
-      btCreditLimitPence = btResponse.creditLimitPence,
-      btPreBalancePence = btResponse.preBalancePence,
-      btNewBalancePence = btResponse.newBalancePence,
     )
     return recordInMedusa(cartId, offenderNo, medusaRequest, paymentSuccessful = true)
-  }
-
-  /**
-   * Attempts to add credit via the BT API, retrying up to 3 times.
-   */
-  private fun callBtApiWithRetry(offenderNo: String, amountPence: Int): AccountCreditResponse {
-    var lastException: Exception? = null
-    for (attempt in 1..MAX_BT_ATTEMPTS) {
-      try {
-        val reference = UUID.randomUUID().toString().replace("-", "").take(20)
-        val request = AccountCreditRequest(
-          reference = reference,
-          prisonerId = offenderNo,
-          amountPence = amountPence,
-        )
-        val response = btPinPhoneClient.addCredit(request).block()
-          ?: throw RuntimeException("BT API returned null response")
-        log.info("BT credit added for prisoner {} on attempt {}", offenderNo, attempt)
-        return response
-      } catch (e: UpstreamException) {
-        log.warn("Failed to add credit to BT for prisoner {} on attempt {}: {}", offenderNo, attempt, e.message)
-        lastException = e
-      }
-    }
-    throw lastException ?: RuntimeException("BT API call failed after $MAX_BT_ATTEMPTS attempts")
   }
 
   /**

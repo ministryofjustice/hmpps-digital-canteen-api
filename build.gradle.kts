@@ -58,15 +58,6 @@ val configValues = mapOf(
 
 val buildDirectory: Directory = layout.buildDirectory.get()
 
-tasks.register("buildBtPinPhoneApiModel", GenerateTask::class) {
-  generatorName.set("kotlin")
-  inputSpec.set("openapi-specs/bt-pin-phone-api.json")
-  outputDir.set("$buildDirectory/generated/btpinphoneapi")
-  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated")
-  configOptions.set(configValues)
-  globalProperties.set(mapOf("models" to ""))
-}
-
 tasks.register("buildMedusaApiModel", GenerateTask::class) {
   generatorName.set("kotlin")
   inputSpec.set("openapi-specs/medusa-api.json")
@@ -104,7 +95,7 @@ tasks.register("buildPrisonerAdjudicationsApiModel", GenerateTask::class) {
   skipValidateSpec.set(true)
 }
 
-val generatedProjectDirs = listOf("btpinphoneapi", "prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi")
+val generatedProjectDirs = listOf("prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi")
 
 kotlin {
   generatedProjectDirs.forEach { generatedProject ->
@@ -116,13 +107,13 @@ kotlin {
 
 tasks {
   withType<KotlinCompile> {
-    dependsOn("buildBtPinPhoneApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
+    dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
-  dependsOn("buildBtPinPhoneApiModel", "buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
+  dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
 }
 
 configure<KtlintExtension> {
