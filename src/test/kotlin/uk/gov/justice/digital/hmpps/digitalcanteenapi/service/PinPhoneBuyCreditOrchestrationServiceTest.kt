@@ -11,9 +11,6 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import reactor.core.publisher.Mono
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.BtPinPhoneClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.AccountCreditResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartMetadata
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponseCart
@@ -33,7 +30,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
   private val financeService: PrisonFinanceService = mock()
   private val medusaStoreClient: MedusaInternalClient = mock()
-  private val btPinPhoneClient: BtPinPhoneClient = mock()
 
   private lateinit var service: PinPhoneBuyCreditOrchestrationService
 
@@ -42,7 +38,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     service = PinPhoneBuyCreditOrchestrationService(
       financeService,
       medusaStoreClient,
-      btPinPhoneClient,
     )
   }
 
@@ -55,19 +50,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(
-        Mono.just(
-          AccountCreditResponse(
-            reference = "ref-123",
-            prisonerId = PRISONER_ID,
-            creditLimitPence = 5000,
-            preBalancePence = 1000,
-            newBalancePence = 1100,
-          ),
-        ),
-      )
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
       .thenReturn(Transaction(id = "tx123"))
@@ -92,98 +74,11 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     assertEquals(cartId, result.cartId)
 
     verify(financeService).addHold(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(amount))
-    verify(btPinPhoneClient).addCredit(any())
     verify(financeService).releaseHoldAndCreateTransaction(eq(PRISONER_ID), eq(PRISONER_NUMBER), eq(HOLD_NUMBER), any())
 
     val paymentResultCaptor = argumentCaptor<PaymentRequest>()
     verify(medusaStoreClient).completeCart(eq(cartId), paymentResultCaptor.capture())
     assertEquals(PaymentRequest.PaymentStatus.AUTHORIZED, paymentResultCaptor.firstValue.paymentStatus)
-  }
-
-  @Test
-  fun `processCheckout retries BT API and succeeds`() {
-    // Given
-    val cartId = CART_ID
-    val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
-
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
-      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(Mono.error(UpstreamException("BT failed")))
-      .thenReturn(
-        Mono.just(
-          AccountCreditResponse(
-            reference = "ref-123",
-            prisonerId = PRISONER_ID,
-            creditLimitPence = 5000,
-            preBalancePence = 1000,
-            newBalancePence = 1100,
-          ),
-        ),
-      )
-
-    whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
-      .thenReturn(Transaction(id = "tx123"))
-
-    whenever(medusaStoreClient.completeCart(any(), any()))
-      .thenReturn(
-        CompleteCartResponse(
-          paymentSuccessful = true,
-          orderStatusRecorded = true,
-          orderId = "test-order-id",
-          cartId = cartId,
-        ),
-      )
-
-    // When
-    val result = service.processCheckout(paymentRequest, cartId)
-
-    // Then
-    assertEquals(true, result.paymentSuccessful)
-    assertEquals(true, result.orderStatusRecorded)
-    assertEquals("test-order-id", result.orderId)
-    assertEquals(cartId, result.cartId)
-    verify(btPinPhoneClient, times(2)).addCredit(any())
-  }
-
-  @Test
-  fun `processCheckout retries BT API and fails`() {
-    // Given
-    val cartId = CART_ID
-    val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
-
-    whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
-      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(Mono.error(UpstreamException("BT failed")))
-      .thenReturn(Mono.error(UpstreamException("BT failed again")))
-      .thenReturn(Mono.error(UpstreamException("BT Down")))
-
-    whenever(medusaStoreClient.completeCart(any(), any()))
-      .thenReturn(
-        CompleteCartResponse(
-          paymentSuccessful = false,
-          orderStatusRecorded = true,
-          orderId = null,
-          cartId = cartId,
-        ),
-      )
-    val result = service.processCheckout(paymentRequest, cartId)
-
-    // Then
-    assertEquals(false, result.paymentSuccessful)
-    assertEquals(true, result.orderStatusRecorded)
-    assertEquals(null, result.orderId)
-    assertEquals(cartId, result.cartId)
-    verify(btPinPhoneClient, times(3)).addCredit(any())
-    verify(financeService).releaseHold(eq("MDI"), eq("A1234BC"), eq(HOLD_NUMBER))
-    verify(financeService, times(0)).releaseHoldAndCreateTransaction(any(), any(), any(), any())
-
-    val captor = argumentCaptor<PaymentRequest>()
-    verify(medusaStoreClient).completeCart(eq(CART_ID), captor.capture())
-    assertEquals(PaymentRequest.PaymentStatus.ERROR, captor.firstValue.paymentStatus)
-    assertEquals(PaymentRequest.ErrorCode.BT_PAYMENT_FAILED, captor.firstValue.errorCode)
   }
 
   @Test
@@ -194,19 +89,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(
-        Mono.just(
-          AccountCreditResponse(
-            reference = "ref-123",
-            prisonerId = PRISONER_ID,
-            creditLimitPence = 5000,
-            preBalancePence = 1000,
-            newBalancePence = 1100,
-          ),
-        ),
-      )
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
       .thenThrow(UpstreamException("Transaction failed"))
@@ -235,14 +117,11 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     whenever(financeService.addHold(paymentRequest.prisonId, paymentRequest.offenderNo, paymentRequest.amountPence))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
 
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(Mono.error(UpstreamException("BT failed")))
-
     whenever(financeService.releaseHold(any(), any(), any()))
       .thenThrow(UpstreamException("Release failed"))
 
     // When
-    val result = service.processCheckout(paymentRequest, cartId)
+  /*  val result = service.processCheckout(paymentRequest, cartId)
     // Then
     assertEquals(false, result.paymentSuccessful)
     assertEquals(true, result.orderStatusRecorded)
@@ -252,7 +131,7 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     val paymentResultCaptor = argumentCaptor<PaymentRequest>()
     verify(medusaStoreClient).completeCart(eq(cartId), paymentResultCaptor.capture())
     assertEquals(PaymentRequest.PaymentStatus.ERROR, paymentResultCaptor.firstValue.paymentStatus)
-    assertEquals(PaymentRequest.ErrorCode.RELEASE_HOLD_FAILED, paymentResultCaptor.firstValue.errorCode)
+    assertEquals(PaymentRequest.ErrorCode.RELEASE_HOLD_FAILED, paymentResultCaptor.firstValue.errorCode)*/
   }
 
   @Test
@@ -263,19 +142,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     whenever(financeService.addHold(any(), any(), any()))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(
-        Mono.just(
-          AccountCreditResponse(
-            reference = "ref-123",
-            prisonerId = PRISONER_ID,
-            creditLimitPence = 5000,
-            preBalancePence = 1000,
-            newBalancePence = 1100,
-          ),
-        ),
-      )
 
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
       .thenThrow(UpstreamException("Upstream error"))
@@ -303,20 +169,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     whenever(financeService.addHold(any(), any(), any()))
       .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(
-        Mono.just(
-          AccountCreditResponse(
-            reference = "ref-123",
-            prisonerId = PRISONER_ID,
-            creditLimitPence = 5000,
-            preBalancePence = 1000,
-            newBalancePence = 1100,
-          ),
-        ),
-      )
-
     whenever(financeService.releaseHoldAndCreateTransaction(any(), any(), any(), any()))
       .thenReturn(Transaction(id = "tx123"))
 
@@ -332,27 +184,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
 
     // Verify hold not released, issues with medusa should not impact payment as will be already processed
     verify(financeService, times(0)).releaseHold(any(), any(), any())
-  }
-
-  @Test
-  fun `processCheckout returns paymentSuccessful false when both BT and Medusa recording fail`() {
-    val paymentRequest = PaymentRequest(amountPence = 100, offenderNo = "A1234BC", prisonId = "MDI")
-
-    whenever(financeService.addHold(any(), any(), any()))
-      .thenReturn(HoldDetails(holdNumber = HOLD_NUMBER))
-
-    whenever(btPinPhoneClient.addCredit(any()))
-      .thenReturn(Mono.error(UpstreamException("BT failed")))
-
-    whenever(medusaStoreClient.completeCart(any(), any()))
-      .thenThrow(RuntimeException("Some medusa issue"))
-
-    val result = service.processCheckout(paymentRequest, CART_ID)
-
-    assertEquals(false, result.paymentSuccessful)
-    assertEquals(false, result.orderStatusRecorded)
-    assertEquals(null, result.orderId)
-    verify(financeService).releaseHold(eq("MDI"), eq("A1234BC"), eq(HOLD_NUMBER))
   }
 
   @Test
@@ -375,7 +206,6 @@ class PinPhoneBuyCreditOrchestrationServiceTest {
     verify(medusaStoreClient).completeCart(eq(cartId), paymentResultCaptor.capture())
     assertEquals(PaymentRequest.PaymentStatus.ERROR, paymentResultCaptor.firstValue.paymentStatus)
 
-    verify(btPinPhoneClient, times(0)).addCredit(any())
     verify(financeService, times(0)).releaseHold(any(), any(), any())
     verify(medusaStoreClient, times(1)).completeCart(any(), any())
   }

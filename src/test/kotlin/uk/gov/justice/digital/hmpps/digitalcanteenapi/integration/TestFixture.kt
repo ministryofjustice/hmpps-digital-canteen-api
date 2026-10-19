@@ -1,21 +1,17 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration
 
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.BtPinPhoneBalanceResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.btPinPhoneClient.generated.ControlledNumber
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.CurrentIncentive
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.IncentiveLevel
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonerSearch.generated.Prisoner
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisoneradjudications.generated.ActivePunishmentDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Account
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BalanceResponseDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.BtPinPhoneResponseDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.prisonerenrichment.PrisonerSearchResponseDto
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
-import kotlin.String
 
-object PinPhoneTestFixture {
+object TestFixture {
   const val PRISONER_NUMBER = "A1234BC"
   const val BOOKING_ID = "A1234BC"
   const val REFERENCE = "mark_FN"
@@ -80,83 +76,5 @@ object PinPhoneTestFixture {
     savingsPence = 125,
     damageObligationsPence = 0,
     currency = "GBP",
-  )
-
-  fun btPinPhoneDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneBalanceResponse(
-    reference = REFERENCE,
-    prisonerId = prisonerNumber,
-    balancePence = 1288,
-    creditLimitPence = 5000,
-  )
-
-  fun btPinPhoneResponseDto(prisonerNumber: String = PRISONER_NUMBER) = BtPinPhoneResponseDto(
-    reference = REFERENCE,
-    prisonerId = prisonerNumber,
-    balancePence = 1288,
-    creditLimitPence = 5000,
-    isFn = REFERENCE.endsWith("_FN"),
-  )
-
-  var contactList = listOf(
-    ControlledNumber(
-      id = 162439,
-      name = "John Doe",
-      phoneNumber = "07700900351",
-      controlStatus = true,
-      callAllowed = true,
-      legal = true,
-      allowMonitor = false,
-      alert = true,
-      override = true,
-      relationshipId = 2,
-    ),
-    ControlledNumber(
-      id = 162440,
-      name = "Jane Smith",
-      phoneNumber = "07700900352",
-      controlStatus = true,
-      callAllowed = true,
-      legal = true,
-      allowMonitor = false,
-      alert = true,
-      override = true,
-      relationshipId = 1,
-    ),
-    ControlledNumber(
-      id = 162441,
-      name = "Robert Brown",
-      phoneNumber = "07700900353",
-      controlStatus = true,
-      callAllowed = true,
-      legal = false,
-      allowMonitor = true,
-      alert = false,
-      override = false,
-      relationshipId = 25,
-    ),
-    ControlledNumber(
-      id = 162442,
-      name = "Sarah Williams",
-      phoneNumber = "07700900354",
-      controlStatus = true,
-      callAllowed = true,
-      legal = true,
-      allowMonitor = false,
-      alert = true,
-      override = true,
-      relationshipId = 28,
-    ),
-    ControlledNumber(
-      id = 162443,
-      name = "Michael Jones",
-      phoneNumber = "07700900355",
-      controlStatus = true,
-      callAllowed = false,
-      legal = false,
-      allowMonitor = true,
-      alert = true,
-      override = false,
-      relationshipId = 5,
-    ),
   )
 }
