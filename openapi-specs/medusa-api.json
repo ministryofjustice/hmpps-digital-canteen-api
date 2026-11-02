@@ -9,359 +9,138 @@
       "email": "feedback@digital.justice.gov.uk"
     }
   },
-  "paths": {
-    "/internal/pin-phone/carts": {
-      "post": {
-        "operationId": "createPinPhoneCart",
-        "summary": "Create a PIN phone cart",
-        "description": "Creates a new cart for a prisoner's PIN phone purchase. If the prisoner has used the service before, the cart is linked to their existing customer record. Otherwise, a new customer and prisoner record are created and linked.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateCartRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Cart created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Region not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to create cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/internal/pin-phone/carts/{id}/add-items": {
-      "post": {
-        "operationId": "addPinPhoneToCart",
-        "summary": "Add PIN phone credit to cart",
-        "description": "Adds a PIN phone credit item to the specified cart with the given amount.",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The cart ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/AddItemsRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Item added to cart successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/CartResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "PIN Phone variant not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Failed to add pin phone to cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/internal/pin-phone/carts/{id}/complete": {
-      "post": {
-        "operationId": "completePinPhoneCart",
-        "summary": "Complete a PIN phone cart",
-        "description": "Completes a PIN phone cart by creating a payment collection, payment session with the BT payment result, and running the cart completion workflow.",
-        "parameters": [
-          {
-            "in": "path",
-            "name": "id",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "description": "The cart ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/PaymentRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Cart completed or payment failure recorded",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "oneOf": [
-                    {
-                      "$ref": "#/components/schemas/CompleteCartResponse"
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid request — missing or invalid payload, or empty cart",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Cart not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          },
-          "500": {
-            "description": "Internal error during payment collection or session creation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ErrorResponse"
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  },
   "components": {
     "schemas": {
-      "CreateCartRequest": {
+      "CreateMedusaUserRequest": {
         "type": "object",
-        "required": ["metadata"],
+        "required": [
+          "metadata"
+        ],
         "properties": {
           "metadata": {
-            "$ref": "#/components/schemas/CartMetadata"
+            "$ref": "#/components/schemas/CreateMedusaUserMetaData"
           }
         }
       },
-      "CartMetadata": {
+      "CreateMedusaUserMetaData": {
         "type": "object",
-        "required": ["prison_id", "offender_no", "first_name", "second_name"],
+        "required": [
+          "prisonId",
+          "offenderNo"
+        ],
         "properties": {
-          "prison_id": {
+          "prisonId": {
             "type": "string",
             "description": "The prison identifier",
             "example": "MDI"
           },
-          "offender_no": {
+          "offenderNo": {
             "type": "string",
             "description": "The prisoner's offender number",
             "example": "A1234BC"
-          },
-          "first_name": {
-            "type": "string",
-            "description": "Prisoner's first name",
-            "example": "John"
-          },
-          "second_name": {
-            "type": "string",
-            "description": "Prisoner's last name",
-            "example": "Smith"
           }
         }
       },
-      "AddItemsRequest": {
+      "AddLineItemsRequest": {
         "type": "object",
         "required": [
-          "amount"
+          "metadata"
         ],
         "properties": {
-          "amount": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Amount in pence",
-            "example": 1000
+          "metadata": {
+            "$ref": "#/components/schemas/AddLineItemsRequestMetadata"
           }
         }
       },
-      "PaymentRequest": {
+      "AddLineItemsRequestMetadata": {
         "type": "object",
         "required": [
-          "amountPence",
+          "prisonId",
           "offenderNo",
-          "prisonId"
+          "productVariantId"
         ],
         "properties": {
-          "amountPence": {
-            "type": "integer",
-            "format": "int64",
-            "description": "Amount in pence",
-            "example": 1000
+          "prisonId": {
+            "type": "string",
+            "description": "The prison identifier",
+            "example": "MDI"
           },
           "offenderNo": {
             "type": "string",
             "description": "The prisoner's offender number",
             "example": "A1234BC"
           },
-          "prisonId": {
-            "type": "string",
-            "description": "The prisoner's prison number",
-            "example": "ASI"
-          },
-          "paymentStatus": {
-            "type": "string",
-            "enum": [
-              "AUTHORIZED",
-              "ERROR"
-            ],
-            "description": "Payment authorisation status",
-            "example": "AUTHORIZED"
-          },
-          "financeTransactionReference": {
-            "type": "string",
-            "description": "Transaction reference from release hold create transaction",
-            "example": "TXN-2024-00001"
-          },
-          "financeHoldNumber": {
-            "type": "integer",
-            "format": "int64",
-            "description": "The finance hold number",
-            "example": 12345
-          },
-          "btCreditReference": {
-            "type": "string",
-            "description": "BT add credit reference",
-            "example": "TXN-2024-00001"
-          },
-          "btCreditLimitPence": {
-            "type": "integer",
-            "description": "BT credit limit in pence",
-            "example": 1000
-          },
-          "btPreBalancePence": {
-            "type": "integer",
-            "description": "BT balance pre balance change in pence",
-            "example": 1000
-          },
-          "btNewBalancePence": {
-            "type": "integer",
-            "description": "BT updated balance",
-            "example": 1000
-          },
-          "errorCode": {
-            "type": "string",
-            "description": "Error code when payment failed",
-            "enum": [
-              "HOLD_FAILED",
-              "BT_PAYMENT_FAILED",
-              "RELEASE_HOLD_CREATE_TRANSACTION_FAILED",
-              "RELEASE_HOLD_FAILED"
-            ]
-          },
-          "errorMessage": {
-            "type": "string",
-            "description": "Error message if payment failed",
-            "example": "Insufficient funds on prisoner account"
-          }
-        }
-      },
-      "CartResponse": {
-        "type": "object",
-        "properties": {
-          "cart": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string",
-                "description": "The cart ID",
-                "example": "cart_1234567890"
-              }
-            }
-          }
-        }
-      },
-      "CompleteCartResponse": {
-        "type": "object",
-        "required": [
-          "paymentSuccessful"
-        ],
-        "properties": {
-          "paymentSuccessful": {
-            "type": "boolean",
-            "description": "Indicates successful payment"
-          },
-          "orderStatusRecorded": {
-            "type": "boolean",
-            "description": "Indicates whether medusa was able to complete cart and record order"
-          },
-          "orderId": {
-            "type": "string",
-            "description": "The order id within medusa"
-          },
           "cartId": {
             "type": "string",
-            "description": "The cart ID"
+            "description": "ID of medusa cart",
+            "example": "123456"
+          },
+          "productVariantId": {
+            "type": "string",
+            "description": "The variant Id of the product to add to cart",
+            "example": "var_1234"
+          }
+        }
+      },
+      "AddLineItemsResponse": {
+        "type": "object",
+        "required": [
+          "cartId"
+        ],
+        "properties": {
+          "cartId": {
+            "type": "string",
+            "description": "ID of medusa cart",
+            "example": "123456"
+          }
+        }
+      },
+      "RemoveLineItemsRequest": {
+        "type": "object",
+        "required": [
+          "metadata"
+        ],
+        "properties": {
+          "metadata": {
+            "$ref": "#/components/schemas/RemoveLineItemsRequestMetadata"
+          }
+        }
+      },
+      "RemoveLineItemsRequestMetadata": {
+        "type": "object",
+        "required": [
+          "cartId",
+          "lineItemId",
+          "quantity"
+        ],
+        "properties": {
+          "cartId": {
+            "type": "string",
+            "description": "ID of medusa cart",
+            "example": "123456"
+          },
+          "lineItemId": {
+            "type": "string",
+            "description": "The ID of the line item to remove from the cart",
+            "example": "var_1234"
+          },
+          "quantity": {
+            "type": "string",
+            "description": "The new quantity of the line item, when quantity hits 0, delete item from basket",
+            "example": "var_1234"
+          }
+        }
+      },
+      "RemoveLineItemsResponse": {
+        "type": "object",
+        "required": [
+          "cartId"
+        ],
+        "properties": {
+          "cartId": {
+            "type": "string",
+            "description": "ID of medusa cart",
+            "example": "123456"
           }
         }
       },
@@ -390,5 +169,118 @@
         }
       }
     }
-  }
-  }
+  },
+  "paths": {
+    "/internal/canteen/create-user": {
+      "post": {
+        "operationId": "createMedusaUser",
+        "summary": "Create a Medusa User",
+        "description": "Creates a Medusa user for a prisoner. Linking prisoner to customer\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateMedusaUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Failed to create Medusa user"
+          },
+          "500": {
+            "description": "Failed to create cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/canteen/carts/remove-line-item": {
+      "post": {
+        "operationId": "removeLineItem",
+        "summary": "Remove line Item",
+        "description": "Removes a line item from the medusa cart\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveLineItemsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Items successfully removed from cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RemoveLineItemsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to create cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/canteen/carts/add-line-item": {
+      "post": {
+        "operationId": "addLineItem",
+        "summary": "Add item to existing cart, or create new cart and add item",
+        "description": "Where a medusa cart already exists, add the product variant to the cart. If no cart exists, create a new cart and add the product variant.\n",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddLineItemsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Items successfully added to cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AddLineItemsResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to add line items to cart",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "tags": []
+}
