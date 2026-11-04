@@ -12,10 +12,12 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandl
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddLineItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddLineItemsResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateMedusaUserRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.GetBasketRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.GetBasketResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.controller.MedusaController
 import kotlin.jvm.java
 
 @Component
@@ -51,12 +53,12 @@ class MedusaInternalClient(
     }
     .block()!!
 
-  fun getBasket(getBasketRequest: MedusaController.GetBasketRequest): Any = medusaInternalClient
+  fun getBasket(getBasketRequest: GetBasketRequest): GetBasketResponse = medusaInternalClient
     .post()
-    .uri("/internal/canteen/get-basket")
+    .uri("/internal/canteen/carts/get-basket")
     .bodyValue(getBasketRequest)
     .retrieve()
-    .bodyToMono(Any::class.java)
+    .bodyToMono(GetBasketResponse::class.java)
     .onErrorMap(WebClientResponseException::class.java) { ex ->
       if (ex.statusCode.is5xxServerError) {
         UpstreamException("Medusa service is currently unavailable")
@@ -104,76 +106,36 @@ class MedusaInternalClient(
         UpstreamException("Medusa service is currently unavailable")
       } else {
         val errorResponse = errorHandler.handleError(ex)
-        logger.error("Add line items failed: ${ex.responseBodyAsString}")
+        logger.error("Remove line items failed: ${ex.responseBodyAsString}")
         UpstreamException(errorResponse.userMessage ?: "Add line items failed")
       }
     }
     .onErrorMap(WebClientRequestException::class.java) { ex ->
-      logger.error("Add line items failed due to connection issue", ex)
+      logger.error("Remove line items failed due to connection issue", ex)
       UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
 
-//  fun createCart(createCartRequest: CreateCartRequest): CartResponse = medusaInternalClient
-//    .post()
-//    .uri("/internal/pin-phone/carts")
-//    .bodyValue(createCartRequest)
-//    .retrieve()
-//    .bodyToMono(CartResponse::class.java)
-//    .onErrorMap(WebClientResponseException::class.java) { ex ->
-//      if (ex.statusCode.is5xxServerError) {
-//        UpstreamException("Medusa service is currently unavailable")
-//      } else {
-//        val errorResponse = errorHandler.handleError(ex)
-//        logger.error("Create cart failed: ${ex.responseBodyAsString}")
-//        UpstreamException(errorResponse.userMessage ?: "Create cart failed")
-//      }
-//    }
-//    .onErrorMap(WebClientRequestException::class.java) { ex ->
-//      logger.error("Create cart failed due to connection issue", ex)
-//      UpstreamException("Medusa service is currently unavailable")
-//    }
-//    .block()!!
-//
-//  fun addPinPhoneItemsToCart(addItemsRequest: AddItemsRequest, cartId: String): CartResponse = medusaInternalClient
-//    .post()
-//    .uri("/internal/pin-phone/carts/$cartId/add-items")
-//    .bodyValue(addItemsRequest)
-//    .retrieve()
-//    .bodyToMono(CartResponse::class.java)
-//    .onErrorMap(WebClientResponseException::class.java) { ex ->
-//      if (ex.statusCode.is5xxServerError) {
-//        UpstreamException("Medusa service is currently unavailable")
-//      } else {
-//        val errorResponse = errorHandler.handleError(ex)
-//        logger.error("Add line item request failed: ${ex.responseBodyAsString}")
-//        UpstreamException(errorResponse.userMessage ?: "Add line item request failed")
-//      }
-//    }
-//    .onErrorMap(WebClientRequestException::class.java) { ex ->
-//      logger.error("Add line item failed due to connection issue", ex)
-//      UpstreamException("Medusa service is currently unavailable")
-//    }
-//    .block()!!
-//
-//  fun completeCart(cartId: String, paymentRequest: PaymentRequest): CompleteCartResponse = medusaInternalClient
-//    .post()
-//    .uri("/internal/pin-phone/carts/$cartId/complete")
-//    .bodyValue(mapOf("PaymentRequest" to paymentRequest))
-//    .retrieve()
-//    .bodyToMono(CompleteCartResponse::class.java)
-//    .onErrorMap(WebClientResponseException::class.java) { ex ->
-//      if (ex.statusCode.is5xxServerError) {
-//        UpstreamException("Medusa service is currently unavailable")
-//      } else {
-//        val errorResponse = errorHandler.handleError(ex)
-//        logger.error("Cart completion failed: ${ex.responseBodyAsString}")
-//        UpstreamException(errorResponse.userMessage ?: "Cart completion failed")
-//      }
-//    }
-//    .onErrorMap(WebClientRequestException::class.java) { ex ->
-//      logger.error("Cart completion failed due to connection issue", ex)
-//      UpstreamException("Medusa service is currently unavailable")
-//    }
-//    .block()!!
+  fun removeBasket(removeBasketRequest: RemoveBasketRequest): ResponseEntity<Map<String, String>> = medusaInternalClient
+    .post()
+    .uri("/internal/canteen/carts/remove-basket")
+    .bodyValue(removeBasketRequest)
+    .retrieve()
+    .toBodilessEntity()
+    .map { ResponseEntity.ok(mapOf("status" to "success")) }
+    .onErrorMap(WebClientResponseException::class.java) { ex ->
+      val errorResponse = errorHandler.handleError(ex)
+      if (ex.statusCode.is5xxServerError) {
+        logger.error("Medusa service is currently unavailable")
+        UpstreamException(errorResponse.userMessage ?: "Medusa service is currently unavailable")
+      } else {
+        logger.error("Medusa basket removal failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "Create medusa user failed")
+      }
+    }
+    .onErrorMap(WebClientRequestException::class.java) { ex ->
+      logger.error("Medusa basket removal failed due to connection issue", ex)
+      UpstreamException("Medusa service is currently unavailable")
+    }
+    .block()!!
 }

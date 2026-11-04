@@ -17,8 +17,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.gener
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.ReleaseHoldTransaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.generated.Transaction
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISON_ID
 
 class PrisonFinanceServiceTest {
 
@@ -28,7 +28,7 @@ class PrisonFinanceServiceTest {
   @Test
   fun `addHold builds request correctly and calls client`() {
     // Given
-    val prisonId = PRISONER_ID
+    val prisonId = PRISON_ID
     val offenderNo = PRISONER_NUMBER
     // val clientRequest = AddHoldClientRequest(amount = 10.5)
 
@@ -66,7 +66,7 @@ class PrisonFinanceServiceTest {
   @Test
   fun `releaseHold builds request correctly and calls client`() {
     // Given
-    val prisonId = PRISONER_ID
+    val prisonId = PRISON_ID
     val offenderNo = PRISONER_NUMBER
     val holdNumber = HOLD_NUMBER
 
@@ -100,7 +100,7 @@ class PrisonFinanceServiceTest {
   @Test
   fun `releaseHoldCreateTransaction builds request correctly and calls client`() {
     // Given
-    val prisonId = PRISONER_ID
+    val prisonId = PRISON_ID
     val offenderNo = PRISONER_NUMBER
     val holdNumber = HOLD_NUMBER
     val clientRequest = ReleaseHoldAndCreateTransaction(
