@@ -16,8 +16,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.gener
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.HOLD_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.OFFENDER_BOOKING_ID
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISON_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.PrisonApiMockServer
 import java.math.BigDecimal
 
@@ -37,7 +37,7 @@ class PrisonFinanceClientTest {
 
   @Test
   fun `addHold - successfully adds hold`() {
-    server.stubAddHold(PRISONER_ID, PRISONER_NUMBER)
+    server.stubAddHold(PRISON_ID, PRISONER_NUMBER)
     val request = AddHoldTransaction(
       description = "HOLD",
       amount = 105,
@@ -46,7 +46,7 @@ class PrisonFinanceClientTest {
       clientUniqueReference = "ref1",
     )
 
-    val result = client.addHold(PRISONER_ID, PRISONER_NUMBER, request)
+    val result = client.addHold(PRISON_ID, PRISONER_NUMBER, request)
 
     assertThat(result).isNotNull
     assertThat(result.holdNumber).isEqualTo(12345)
@@ -54,7 +54,7 @@ class PrisonFinanceClientTest {
 
   @Test
   fun `addHold - throws UpstreamException on failure`() {
-    server.stubAddHoldFailure(PRISONER_ID, PRISONER_NUMBER, 400, "Insufficient funds")
+    server.stubAddHoldFailure(PRISON_ID, PRISONER_NUMBER, 400, "Insufficient funds")
     val request = AddHoldTransaction(
       description = "HOLD",
       amount = 10000,
@@ -64,14 +64,14 @@ class PrisonFinanceClientTest {
     )
 
     assertThatThrownBy {
-      client.addHold(PRISONER_ID, PRISONER_NUMBER, request)
+      client.addHold(PRISON_ID, PRISONER_NUMBER, request)
     }.isInstanceOf(UpstreamException::class.java)
       .hasMessage("Insufficient funds")
   }
 
   @Test
   fun `releaseHold - successfully releases hold`() {
-    server.stubReleaseHold(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER)
+    server.stubReleaseHold(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER)
     val request = ReleaseHoldTransaction(
       description = "Remove HOLD",
       clientTransactionId = "trans2",
@@ -79,14 +79,14 @@ class PrisonFinanceClientTest {
       clientUniqueReference = "ref2",
     )
 
-    val result = client.releaseHold(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+    val result = client.releaseHold(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
 
     assertThat(result.statusCode.value()).isEqualTo(201)
   }
 
   @Test
   fun `releaseHold - throws UpstreamException on failure`() {
-    server.stubReleaseHoldFailure(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, 404, "Hold not found")
+    server.stubReleaseHoldFailure(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER, 404, "Hold not found")
     val request = ReleaseHoldTransaction(
       description = "Remove HOLD",
       clientTransactionId = "trans2",
@@ -95,14 +95,14 @@ class PrisonFinanceClientTest {
     )
 
     assertThatThrownBy {
-      client.releaseHold(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+      client.releaseHold(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
     }.isInstanceOf(UpstreamException::class.java)
       .hasMessage("Hold not found")
   }
 
   @Test
   fun `releaseHoleCreateTransaction - successfully releases hold and creates transaction`() {
-    server.stubRelaseHoldAndCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER)
+    server.stubRelaseHoldAndCreateTransaction(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER)
     val request = ReleaseHoldAndCreateTransaction(
       type = ReleaseHoldAndCreateTransaction.Type.PHONE,
       removeDescription = "Remove HOLD",
@@ -113,7 +113,7 @@ class PrisonFinanceClientTest {
       createClientUniqueReference = "ref-cre",
     )
 
-    val result = client.releaseHoldCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+    val result = client.releaseHoldCreateTransaction(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
 
     assertThat(result).isNotNull
     assertThat(result.id).isEqualTo("468198331-1")
@@ -122,7 +122,7 @@ class PrisonFinanceClientTest {
   @Test
   fun `releaseHoleCreateTransaction - throws UpstreamException on failure`() {
     server.stubRelaseHoldAndCreateTransactionFailure(
-      PRISONER_ID,
+      PRISON_ID,
       PRISONER_NUMBER,
       HOLD_NUMBER,
       500,
@@ -139,7 +139,7 @@ class PrisonFinanceClientTest {
     )
 
     assertThatThrownBy {
-      client.releaseHoldCreateTransaction(PRISONER_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
+      client.releaseHoldCreateTransaction(PRISON_ID, PRISONER_NUMBER, HOLD_NUMBER, request)
     }.isInstanceOf(UpstreamException::class.java)
       .hasMessage("Internal Server Error")
   }

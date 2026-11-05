@@ -9,9 +9,7 @@ import org.junit.jupiter.api.extension.BeforeAllCallback
 import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import tools.jackson.databind.json.JsonMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CartResponseCart
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CompleteCartResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 
 class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
@@ -30,15 +28,49 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubCreateCart(): StubMapping = stubFor(
-    post("/internal/pin-phone/carts")
+  fun stubCreateMedusaUser(): StubMapping = stubFor(
+    post("/internal/canteen/create-user")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(200),
+      ),
+  )
+
+  fun stubAddLineItem(): StubMapping = stubFor(
+    post("/internal/canteen/carts/add-line-item")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(mapper.writeValueAsString(mapOf("cartId" to CART_ID)))
+          .withStatus(200),
+      ),
+  )
+
+  fun stubGetBasket(
+    items: List<Map<String, Any>> = listOf(
+      mapOf(
+        "lineItemId" to "cali_01M6GHP27VFW7096R5AQ0G5EHT",
+        "variantId" to "variant_01M6E4F0KWV67V7JV3TN7DMAM7",
+        "title" to "Cheeeeeeseeee",
+        "quantity" to 3,
+        "unitPrice" to 11,
+        "lineTotal" to 33,
+        "allItemsTotal" to 33,
+      ),
+    ),
+    itemCount: Int = 3,
+  ): StubMapping = stubFor(
+    post("/internal/canteen/carts/get-basket")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(
             mapper.writeValueAsString(
-              CartResponse(
-                cart = CartResponseCart(id = "test-cart-id"),
+              mapOf(
+                "cartId" to CART_ID,
+                "items" to items,
+                "itemCount" to itemCount,
               ),
             ),
           )
@@ -46,15 +78,17 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubAddLineItem(cartId: String = "test-cart-id"): StubMapping = stubFor(
-    post("/internal/pin-phone/carts/$cartId/add-items")
+  fun stubGetBasketEmpty(): StubMapping = stubFor(
+    post("/internal/canteen/carts/get-basket")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
           .withBody(
             mapper.writeValueAsString(
-              CartResponse(
-                cart = CartResponseCart(id = cartId),
+              mapOf(
+                "cartId" to null,
+                "items" to emptyList<Any>(),
+                "itemCount" to 0,
               ),
             ),
           )
@@ -62,21 +96,20 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
-  fun stubCompleteCart(cartId: String = "test-cart-id"): StubMapping = stubFor(
-    post("/internal/pin-phone/carts/$cartId/complete")
+  fun stubRemoveLineItem(): StubMapping = stubFor(
+    post("/internal/canteen/carts/remove-line-item")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")
-          .withBody(
-            mapper.writeValueAsString(
-              CompleteCartResponse(
-                paymentSuccessful = true,
-                orderStatusRecorded = true,
-                orderId = "test-order-id",
-                cartId = "test-cart-id",
-              ),
-            ),
-          )
+          .withBody(mapper.writeValueAsString(mapOf("cartId" to CART_ID)))
+          .withStatus(200),
+      ),
+  )
+
+  fun stubRemoveBasket(): StubMapping = stubFor(
+    post("/internal/canteen/carts/remove-basket")
+      .willReturn(
+        aResponse()
           .withStatus(200),
       ),
   )
@@ -95,9 +128,12 @@ class MedusaApiExtension :
   override fun beforeEach(context: ExtensionContext) {
     medusaApi.resetAll()
     medusaApi.stubGetAdminToken()
-    medusaApi.stubCreateCart()
     medusaApi.stubAddLineItem()
-    medusaApi.stubCompleteCart()
+    medusaApi.stubCreateMedusaUser()
+    medusaApi.stubGetBasket()
+    medusaApi.stubGetBasketEmpty()
+    medusaApi.stubRemoveLineItem()
+    medusaApi.stubRemoveBasket()
   }
 
   override fun afterAll(context: ExtensionContext): Unit = medusaApi.stop()
