@@ -34,7 +34,7 @@ class WebClientConfiguration(
 
   @param:Value("\${api.medusa.base-url}") val medusaBaseUri: String,
   @param:Value("\${api.medusa.timeout-ms:20s}") val medusaTimeout: Duration,
-  @param:Value("\${api.medusa.admin-api-token}") val medusaAdminApiToken: String,
+  @param:Value("\${api.medusa.admin-api-key}") val medusaAdminApiToken: String,
 
   @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
   @param:Value("\${api.prison-api.timeout-ms:20s}") val prisonApiTimeout: Duration,

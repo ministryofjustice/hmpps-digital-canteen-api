@@ -36,7 +36,7 @@ generic-service:
       COOKIE_SECRET: "cookie-secret"
       ADMIN_EMAIL: "admin-email"
       ADMIN_PASSWORD: "admin-password"
-      MEDUSA_ADMIN_API_TOKEN: 'MEDUSA_ADMIN_API_TOKEN'
+      ADMIN_API_KEY: 'admin-api-key'
 
   allowlist:
     groups:

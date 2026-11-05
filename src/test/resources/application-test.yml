@@ -24,7 +24,7 @@ api:
     base-url: http://localhost:8098
   medusa:
     base-url: http://localhost:8097
-    admin-api-token: test-pk
+    admin-api-key: test-pk
     timeout-ms: 5s
   bt:
     base-url: http://localhost:8099
