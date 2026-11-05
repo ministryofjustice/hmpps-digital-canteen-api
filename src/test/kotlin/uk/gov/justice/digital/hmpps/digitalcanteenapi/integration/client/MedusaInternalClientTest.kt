@@ -25,6 +25,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISON_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
+import java.math.BigDecimal
 
 class MedusaInternalClientTest {
   private lateinit var client: MedusaInternalClient
@@ -90,7 +91,7 @@ class MedusaInternalClientTest {
     assertThat(result.cartId).isEqualTo(CART_ID)
     assertThat(result.items).hasSize(1)
     assertThat(result.items?.get(0)?.title).isEqualTo("Cheeeeeeseeee")
-    assertThat(result.itemCount).isEqualTo(3)
+    assertThat(result.itemCount).isEqualTo(BigDecimal.valueOf(3))
   }
 
   @Test
@@ -107,7 +108,7 @@ class MedusaInternalClientTest {
 
     assertThat(result.cartId).isNull()
     assertThat(result.items).isEmpty()
-    assertThat(result.itemCount).isEqualTo(0)
+    assertThat(result.itemCount).isEqualTo(BigDecimal.valueOf(0))
   }
 
   @Test
