@@ -2,6 +2,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -78,6 +79,39 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
             ),
           )
           .withStatus(200),
+      ),
+  )
+
+  fun stubGetProducts(responseBody: String): StubMapping = stubFor(
+    get("/admin/products")
+      .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader("Content-Type", "application/json")
+          .withBody(responseBody),
+      ),
+  )
+
+  fun stubBatchProducts(responseBody: String): StubMapping = stubFor(
+    post("/admin/products/batch")
+      .willReturn(
+        aResponse()
+          .withStatus(200)
+          .withHeader("Content-Type", "application/json")
+          .withBody(responseBody),
+      ),
+  )
+
+  fun stubGetProductsWithStatus(
+    status: Int,
+    responseBody: String,
+  ): StubMapping = stubFor(
+    get("/admin/products")
+      .willReturn(
+        aResponse()
+          .withStatus(status)
+          .withHeader("Content-Type", "application/json")
+          .withBody(responseBody),
       ),
   )
 }

@@ -1,0 +1,330 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Medusa Product Batch API",
+    "version": "1.0.0",
+    "description": "Batch create, update and delete products in Medusa"
+  },
+  "paths": {
+    "/admin/products/batch": {
+      "post": {
+        "summary": "Batch synchronize products",
+        "operationId": "batchProducts",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ProductBatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Products processed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProductBatchResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ProductBatchRequest": {
+        "type": "object",
+        "properties": {
+          "create": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CreateProduct"
+            }
+          },
+          "update": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UpdateProduct"
+            }
+          },
+          "delete": {
+            "type": "array",
+            "description": "List of Medusa product IDs to delete",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "prod_01JABC123XYZ",
+              "prod_01JDEF456XYZ"
+            ]
+          }
+        }
+      },
+      "CreateProduct": {
+        "type": "object",
+        "required": [
+          "title",
+          "handle",
+          "status",
+          "options",
+          "variants"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Postage Stamp"
+          },
+          "handle": {
+            "type": "string",
+            "example": "275133"
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true,
+            "example": "1p Postage Stamp"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "example": "1p Postage Stamp Sheet 25s"
+          },
+          "status": {
+            "type": "string",
+            "example": "published"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductOption"
+            }
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductVariant"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ProductMetadata"
+          }
+        }
+      },
+      "UpdateProduct": {
+        "type": "object",
+        "required": [
+          "id",
+          "variants"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "example": "prod_01JABC123XYZ"
+          },
+          "title": {
+            "type": "string",
+            "example": "1p Postage Stamp"
+          },
+          "handle": {
+            "type": "string",
+            "example": "275133"
+          },
+          "subtitle": {
+            "type": "string",
+            "nullable": true,
+            "example": "1p Postage Stamp"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true,
+            "example": "1p Postage Stamp Sheet 25s"
+          },
+          "status": {
+            "type": "string",
+            "example": "published"
+          },
+          "variants": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductVariant1"
+            }
+          },
+          "metadata": {
+            "$ref": "#/components/schemas/ProductMetadata"
+          }
+        }
+      },
+      "ProductOption": {
+        "type": "object",
+        "required": [
+          "title",
+          "values"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Size"
+          },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "Default"
+            ]
+          }
+        }
+      },
+      "ProductVariant": {
+        "type": "object",
+        "required": [
+          "title",
+          "options",
+          "prices"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Default"
+          },
+          "options": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            },
+            "example": {
+              "Default": "Default"
+            }
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Price"
+            }
+          }
+        }
+      },
+      "ProductVariant1": {
+        "type": "object",
+        "required": [
+          "title",
+          "prices"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Default"
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Price"
+            }
+          }
+        }
+      },
+      "Price": {
+        "type": "object",
+        "required": [
+          "currency_code",
+          "amount"
+        ],
+        "properties": {
+          "currency_code": {
+            "type": "string",
+            "example": "gbp"
+          },
+          "amount": {
+            "type": "integer",
+            "format": "int32",
+            "example": 1099,
+            "description": "Price in minor currency units. £10.99 = 1099"
+          }
+        }
+      },
+      "ProductMetadata": {
+        "type": "object",
+        "properties": {
+          "icCode": {
+            "type": "string",
+            "example": "275133"
+          },
+          "lplOrderingCode": {
+            "type": "string",
+            "example": "M275133"
+          },
+          "eanBarcode": {
+            "type": "string",
+            "example": "5014721234567"
+          },
+          "selectionCategory": {
+            "type": "string",
+            "example": "STAMPS"
+          }
+        }
+      },
+      "ProductBatchResponse": {
+        "type": "object",
+        "required": [
+          "created",
+          "updated",
+          "deleted"
+        ],
+        "properties": {
+          "created": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductReference"
+            }
+          },
+          "updated": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ProductReference"
+            }
+          },
+          "deleted": {
+            "$ref": "#/components/schemas/DeletedResponse"
+          }
+        }
+      },
+      "ProductReference": {
+        "type": "object",
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "DeletedResponse": {
+        "type": "object",
+        "required": [
+          "ids",
+          "deleted"
+        ],
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "deleted": {
+            "type": "boolean"
+          }
+        }
+      }
+    }
+  }
+}
