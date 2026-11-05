@@ -56,6 +56,7 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
         "quantity" to 3,
         "unitPrice" to 11,
         "lineTotal" to 33,
+        "allItemsTotal" to 33,
       ),
     ),
     itemCount: Int = 3,

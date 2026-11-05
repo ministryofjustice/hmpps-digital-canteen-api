@@ -88,6 +88,11 @@
             "type": "integer",
             "description": "Total quantity of all items",
             "example": 5
+          },
+          "allItemsTotal": {
+            "type": "integer",
+            "description": "Total value of all itemsin basket",
+            "example": 50
           }
         }
       },
@@ -385,7 +390,7 @@
     },
     "/internal/canteen/carts/get-basket": {
       "post": {
-        "operationId": "getMedusabasket",
+        "operationId": "getMedusaBasket",
         "summary": "Get the medusa basket and details, if it exists",
         "description": "Get the medusa basket and details, if it exists\n",
         "requestBody": {
