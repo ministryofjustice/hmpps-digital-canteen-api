@@ -36,6 +36,7 @@ generic-service:
       COOKIE_SECRET: "cookie-secret"
       ADMIN_EMAIL: "admin-email"
       ADMIN_PASSWORD: "admin-password"
+      ADMIN_API_KEY: 'admin-api-key'
 
   allowlist:
     groups:

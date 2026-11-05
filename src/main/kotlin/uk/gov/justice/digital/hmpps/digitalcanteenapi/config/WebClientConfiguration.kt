@@ -34,6 +34,7 @@ class WebClientConfiguration(
 
   @param:Value("\${api.medusa.base-url}") val medusaBaseUri: String,
   @param:Value("\${api.medusa.timeout-ms:20s}") val medusaTimeout: Duration,
+  @param:Value("\${api.medusa.admin-api-key}") val medusaAdminApiToken: String,
 
   @param:Value("\${api.prison-api.base-url}") val prisonApiBaseUri: String,
   @param:Value("\${api.prison-api.timeout-ms:20s}") val prisonApiTimeout: Duration,
@@ -94,8 +95,12 @@ class WebClientConfiguration(
   )
 
   @Bean
-  @Suppress("MaxLineLength")
-  fun medusaAdminWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(medusaBaseUri).build()
+  fun medusaAdminWebClient(builder: WebClient.Builder): WebClient = builder
+    .baseUrl(medusaBaseUri)
+    .defaultHeaders {
+      it.setBasicAuth(medusaAdminApiToken)
+    }
+    .build()
 
   @Bean
   fun openFoodFactsWebClient(builder: WebClient.Builder): WebClient = builder.baseUrl(openFoodFactsBaseUri).build()
