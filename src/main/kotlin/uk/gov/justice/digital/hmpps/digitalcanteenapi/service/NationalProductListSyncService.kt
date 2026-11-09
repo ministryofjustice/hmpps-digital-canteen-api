@@ -75,7 +75,7 @@ class NationalProductListSyncService(
   fun getAllProducts(): List<MedusaProduct> {
     var products = mutableListOf<MedusaProduct>()
     var offset = 0
-    val limit = 100
+    val limit = 250
     while (true) {
       val response = medusaProductService.getProducts(limit, offset)
       products += response.products
