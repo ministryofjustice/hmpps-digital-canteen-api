@@ -26,19 +26,20 @@ class NationalProductListSyncService(
 
     val existingByHandle = existingProducts
       .filter { !it.handle.isNullOrBlank() }
-      .associateBy { requireNotNull(it.handle) }
+      .associateBy { requireNotNull(it.handle).trim()}
 
     val uploadedHandles = uploadedProducts
-      .map { it.icCode }
+      .map { it.icCode.trim() }
       .toSet()
 
     val createProducts = uploadedProducts
-      .filter { it.icCode !in existingByHandle }
+      .filter { it.icCode.trim() !in existingByHandle }
       .map(productMapper::toCreateProduct)
 
     val updateProducts = uploadedProducts
       .mapNotNull { product ->
-        val existing = existingByHandle[product.icCode]
+        val handle = product.icCode.trim()
+        val existing = existingByHandle[handle]
           ?: return@mapNotNull null
 
         if (!hasChanged(product, existing)) {
@@ -48,7 +49,7 @@ class NationalProductListSyncService(
       }
 
     val deleteProducts = existingProducts
-      .filter { it.handle !in uploadedHandles }
+      .filter { it.handle?.trim() !in uploadedHandles }
       .map { it.id }
 
     logger.info("Modifying medusa DB : createdProducts: {}, updateProducts: {}, deleteProducts: {}", createProducts.size, updateProducts.size, deleteProducts.size)
