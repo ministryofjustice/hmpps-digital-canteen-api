@@ -26,7 +26,7 @@ class NationalProductListSyncService(
 
     val existingByHandle = existingProducts
       .filter { !it.handle.isNullOrBlank() }
-      .associateBy { requireNotNull(it.handle).trim()}
+      .associateBy { requireNotNull(it.handle).trim() }
 
     val uploadedHandles = uploadedProducts
       .map { it.icCode.trim() }
