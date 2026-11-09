@@ -52,7 +52,7 @@ class NationalProductListSyncService(
       .filter { it.handle?.trim() !in uploadedHandles }
       .map { it.id }
 
-    logger.info("Modifying medusa DB : uploadedProducts: {}, existingProducts: {}, createdProducts: {}, updateProducts: {}, deleteProducts: {}", uploadedProducts, existingProducts, createProducts.size, updateProducts.size, deleteProducts.size)
+    logger.info("Modifying medusa DB : uploadedProducts: {}, existingProducts: {}, createdProducts: {}, updateProducts: {}, deleteProducts: {}", uploadedProducts.size, existingProducts.size, createProducts.size, updateProducts.size, deleteProducts.size)
 
     val request = ProductBatchRequest(
       create = createProducts,
