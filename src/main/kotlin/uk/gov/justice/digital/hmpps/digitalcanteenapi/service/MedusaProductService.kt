@@ -9,7 +9,7 @@ class MedusaProductService(
   private val medusaProductClient: MedusaProductClient,
 ) {
 
-  fun getProducts() = medusaProductClient.getProducts()
+  fun getProducts(limit: Int, offset: Int) = medusaProductClient.getProducts(limit, offset)
 
   fun batchProducts(request: ProductBatchRequest) = medusaProductClient.batchProducts(request)
 }

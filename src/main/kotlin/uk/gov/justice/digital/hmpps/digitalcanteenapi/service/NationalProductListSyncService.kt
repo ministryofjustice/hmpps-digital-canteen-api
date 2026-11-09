@@ -22,7 +22,7 @@ class NationalProductListSyncService(
 
   fun syncProducts(file: MultipartFile): ProductBatchResponse {
     val uploadedProducts = parser.parse(file.inputStream)
-    val existingProducts = medusaProductService.getProducts().products
+    val existingProducts = getAllProducts()
 
     val existingByHandle = existingProducts
       .filter { !it.handle.isNullOrBlank() }
@@ -52,7 +52,7 @@ class NationalProductListSyncService(
       .filter { it.handle?.trim() !in uploadedHandles }
       .map { it.id }
 
-    logger.info("Modifying medusa DB : createdProducts: {}, updateProducts: {}, deleteProducts: {}", createProducts.size, updateProducts.size, deleteProducts.size)
+    logger.info("Modifying medusa DB : uploadedProducts: {}, existingProducts: {}, createdProducts: {}, updateProducts: {}, deleteProducts: {}", uploadedProducts, existingProducts, createProducts.size, updateProducts.size, deleteProducts.size)
 
     val request = ProductBatchRequest(
       create = createProducts,
@@ -71,4 +71,19 @@ class NationalProductListSyncService(
     medusa.metadata?.eanBarcode != npl.eanBarcode ||
     medusa.metadata?.lplOrderingCode != npl.lplOrderingCode ||
     medusa.metadata?.selectionCategory != npl.selectionCategories
+
+  fun getAllProducts(): List<MedusaProduct> {
+    var products = mutableListOf<MedusaProduct>()
+    var offset = 0
+    val limit = 100
+    while (true) {
+      val response = medusaProductService.getProducts(limit, offset)
+      products += response.products
+      if (response.products.size < limit) {
+        break
+      }
+      offset += limit
+    }
+    return products
+  }
 }

@@ -13,6 +13,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.gener
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductBatchRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductMetadata
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaProductClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 import java.util.Collections.emptyList
 
@@ -46,7 +47,7 @@ class MedusaProductClientTest {
       """.trimIndent(),
     )
 
-    val response = client.getProducts()
+    val response = client.getProducts(1, 0)
 
     assertEquals(1, response.products.size)
     assertEquals("prod_123", response.products.first().id)
@@ -58,14 +59,14 @@ class MedusaProductClientTest {
     server.stubGetProductsWithStatus(
       status = 401,
       responseBody = """
-            {
-              "message":"Unauthorized"
-            }
+      {
+        "message":"Unauthorized"
+      }
       """.trimIndent(),
     )
 
-    assertThrows<Exception> {
-      client.getProducts()
+    assertThrows<UpstreamException> {
+      client.getProducts(100, 0)
     }
   }
 

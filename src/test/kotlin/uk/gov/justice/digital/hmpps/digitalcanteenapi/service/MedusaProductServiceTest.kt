@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.mockito.InjectMocks
 import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
+import org.mockito.kotlin.any
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.aot.hint.TypeReference.listOf
@@ -49,15 +50,15 @@ class MedusaProductServiceTest {
       ),
     )
 
-    whenever(medusaProductClient.getProducts())
+    whenever(medusaProductClient.getProducts(any(), any()))
       .thenReturn(response)
 
     // When
-    val result = medusaProductService.getProducts()
+    val result = medusaProductService.getProducts(100, 0)
 
     // Then
     assertEquals(response, result)
-    verify(medusaProductClient).getProducts()
+    verify(medusaProductClient).getProducts(100, 0)
   }
 
   @Test

@@ -65,7 +65,7 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts())
+    whenever(medusaProductService.getProducts(any(), any()))
       .thenReturn(
         ProductListResponse(
           products = emptyList(),
@@ -157,7 +157,7 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts())
+    whenever(medusaProductService.getProducts(any(), any()))
       .thenReturn(
         ProductListResponse(
           products = listOf(existingProduct),
@@ -236,7 +236,7 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts())
+    whenever(medusaProductService.getProducts(any(), any()))
       .thenReturn(
         ProductListResponse(
           products = listOf(existingProduct),
@@ -321,7 +321,7 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts())
+    whenever(medusaProductService.getProducts(any(), any()))
       .thenReturn(
         ProductListResponse(
           products = listOf(existingProduct1, existingProduct2),
@@ -396,7 +396,7 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts())
+    whenever(medusaProductService.getProducts(any(), any()))
       .thenReturn(
         ProductListResponse(
           products = listOf(existingProduct),
