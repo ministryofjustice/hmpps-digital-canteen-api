@@ -1,0 +1,103 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Upload Local Product List API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/local-product-list/{prisonId}/import": {
+      "post": {
+        "tags": [
+          "Local Product List"
+        ],
+        "summary": "Import a local product list",
+        "description": "Uploads an XLS file and imports the local product list for the specified prison.",
+        "operationId": "importLocalProductList",
+        "parameters": [
+          {
+            "name": "prisonId",
+            "in": "path",
+            "required": true,
+            "description": "Prison code",
+            "schema": {
+              "type": "string",
+              "example": "CKI"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "file"
+                ],
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary",
+                    "description": "XLS file containing the local product list"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Product list imported successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImportLocalProductListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request"
+          },
+          "404": {
+            "description": "Prison not found"
+          },
+          "500": {
+            "description": "Internal server error"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ImportLocalProductListResponse": {
+        "type": "object",
+        "required": [
+          "success",
+          "matchedProducts",
+          "unmatchedProducts",
+          "message"
+        ],
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "example": true
+          },
+          "matchedProducts": {
+            "type": "integer",
+            "example": 4
+          },
+          "unmatchedProducts": {
+            "type": "integer",
+            "example": 0
+          },
+          "message": {
+            "type": "string",
+            "example": "File uploaded successfully."
+          }
+        }
+      }
+    }
+  }
+}

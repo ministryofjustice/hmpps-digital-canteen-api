@@ -1,15 +1,15 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importNPL
 
 import org.apache.poi.ss.usermodel.DataFormatter
 import org.apache.poi.ss.usermodel.Row
-import org.apache.poi.ss.usermodel.Row.MissingCellPolicy
 import org.apache.poi.ss.usermodel.WorkbookFactory
 import org.springframework.stereotype.Service
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.NplProduct
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.ProductListParser
 import java.io.InputStream
 
 @Service
-class NationalProductListParseService {
+class NationalProductListParseService : ProductListParser<NplProduct> {
 
   object Headers {
     const val IC_CODE = "IC Code"
@@ -21,7 +21,7 @@ class NationalProductListParseService {
     const val SELECTION_CATEGORY = "Selection Categories"
   }
 
-  fun parse(inputStream: InputStream): List<NplProduct> {
+  override fun parse(inputStream: InputStream): List<NplProduct> {
     return WorkbookFactory.create(inputStream).use { workbook ->
       val sheet = workbook.getSheetAt(0)
       if (sheet.physicalNumberOfRows == 0) {
@@ -100,7 +100,7 @@ class NationalProductListParseService {
 
     val cell = getCell(
       index,
-      MissingCellPolicy.RETURN_BLANK_AS_NULL,
+      Row.MissingCellPolicy.RETURN_BLANK_AS_NULL,
     ) ?: return ""
 
     return formatter.formatCellValue(cell).trim()

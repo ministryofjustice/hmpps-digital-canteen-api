@@ -1,4 +1,4 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importNPL
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -7,8 +7,9 @@ import org.springframework.web.multipart.MultipartFile
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductBatchRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductBatchResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.nplProductMapper.ProductMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.MedusaProduct
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.MedusaProduct
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.NplProduct
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaProductService
 
 @Service
 class NationalProductListSyncService(
@@ -22,7 +23,7 @@ class NationalProductListSyncService(
 
   fun syncProducts(file: MultipartFile): ProductBatchResponse {
     val uploadedProducts = parser.parse(file.inputStream)
-    val existingProducts = getAllProducts()
+    val existingProducts = medusaProductService.getAllProducts()
 
     val existingByHandle = existingProducts
       .filter { !it.handle.isNullOrBlank() }
@@ -71,19 +72,4 @@ class NationalProductListSyncService(
     medusa.metadata?.eanBarcode != npl.eanBarcode ||
     medusa.metadata?.lplOrderingCode != npl.lplOrderingCode ||
     medusa.metadata?.selectionCategory != npl.selectionCategories
-
-  fun getAllProducts(): List<MedusaProduct> {
-    var products = mutableListOf<MedusaProduct>()
-    var offset = 0
-    val limit = 250
-    while (true) {
-      val response = medusaProductService.getProducts(limit, offset)
-      products += response.products
-      if (response.products.size < limit) {
-        break
-      }
-      offset += limit
-    }
-    return products
-  }
 }
