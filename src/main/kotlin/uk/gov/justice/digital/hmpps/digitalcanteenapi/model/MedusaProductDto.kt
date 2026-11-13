@@ -1,16 +1,6 @@
-package uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl
+package uk.gov.justice.digital.hmpps.digitalcanteenapi.model
 
-import java.math.BigDecimal
-
-data class NplProduct(
-  val icCode: String,
-  val lplOrderingCode: String?,
-  val description: String?,
-  val shortDescription: String?,
-  val eanBarcode: String?,
-  val pricePence: BigDecimal?,
-  val selectionCategories: String?,
-)
+import java.util.Collections.emptyList
 
 data class ProductListResponse(
   val products: List<MedusaProduct>,
@@ -25,7 +15,12 @@ data class MedusaProduct(
   val title: String,
   val subtitle: String?,
   val description: String?,
+  val variants: List<MedusaVariant> = emptyList(),
   val metadata: ProductMetadata?,
+)
+
+data class MedusaVariant(
+  val id: String,
 )
 
 data class ProductMetadata(
