@@ -13,9 +13,6 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
-  implementation("org.apache.poi:poi:5.4.1")
-  implementation("org.apache.poi:poi-ooxml:5.4.1")
-  implementation("org.springframework.boot:spring-boot-starter-web")
 
   // OpenAPI dependencies
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-api:3.2.0")
@@ -98,25 +95,7 @@ tasks.register("buildPrisonerAdjudicationsApiModel", GenerateTask::class) {
   skipValidateSpec.set(true)
 }
 
-tasks.register("buildNPLUploadApiModel", GenerateTask::class) {
-  generatorName.set("kotlin")
-  inputSpec.set("openapi-specs/national-product-list-import-api.json")
-  outputDir.set("$buildDirectory/generated/npluploadapi")
-  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.natioanlproductupload.generated")
-  configOptions.set(configValues)
-  globalProperties.set(mapOf("models" to ""))
-}
-
-tasks.register("buildMedusaCreateProductModel", GenerateTask::class) {
-  generatorName.set("kotlin")
-  inputSpec.set("openapi-specs/medusa-create-product-api.json")
-  outputDir.set("$buildDirectory/generated/createproductapi")
-  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated")
-  configOptions.set(configValues)
-  globalProperties.set(mapOf("models" to ""))
-}
-
-val generatedProjectDirs = listOf("prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi", "npluploadapi", "createproductapi")
+val generatedProjectDirs = listOf("prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi")
 
 kotlin {
   generatedProjectDirs.forEach { generatedProject ->
@@ -128,13 +107,13 @@ kotlin {
 
 tasks {
   withType<KotlinCompile> {
-    dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel", "buildNPLUploadApiModel", "buildMedusaCreateProductModel")
+    dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
-  dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel", "buildNPLUploadApiModel", "buildMedusaCreateProductModel")
+  dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel")
 }
 
 configure<KtlintExtension> {

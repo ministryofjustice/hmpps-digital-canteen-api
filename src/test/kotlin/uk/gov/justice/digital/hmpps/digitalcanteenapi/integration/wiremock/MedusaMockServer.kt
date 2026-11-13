@@ -2,11 +2,7 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
-import com.github.tomakehurst.wiremock.client.WireMock.equalTo
-import com.github.tomakehurst.wiremock.client.WireMock.get
-import com.github.tomakehurst.wiremock.client.WireMock.matching
 import com.github.tomakehurst.wiremock.client.WireMock.post
-import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
 import org.junit.jupiter.api.extension.BeforeAllCallback
@@ -82,52 +78,6 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
             ),
           )
           .withStatus(200),
-      ),
-  )
-
-  fun stubGetProducts(
-    responseBody: String,
-    limit: Int? = null,
-    offset: Int? = null,
-  ): StubMapping {
-    val mapping = get(urlPathEqualTo("/admin/products"))
-    limit?.let {
-      mapping.withQueryParam("limit", equalTo(it.toString()))
-    }
-    offset?.let {
-      mapping.withQueryParam("offset", equalTo(it.toString()))
-    }
-    return stubFor(
-      mapping.willReturn(
-        aResponse()
-          .withStatus(200)
-          .withHeader("Content-Type", "application/json")
-          .withBody(responseBody),
-      ),
-    )
-  }
-  fun stubBatchProducts(responseBody: String): StubMapping = stubFor(
-    post("/admin/products/batch")
-      .willReturn(
-        aResponse()
-          .withStatus(200)
-          .withHeader("Content-Type", "application/json")
-          .withBody(responseBody),
-      ),
-  )
-
-  fun stubGetProductsWithStatus(
-    status: Int,
-    responseBody: String,
-  ): StubMapping = stubFor(
-    get(urlPathEqualTo("/admin/products"))
-      .withQueryParam("limit", matching(".*"))
-      .withQueryParam("offset", matching(".*"))
-      .willReturn(
-        aResponse()
-          .withStatus(status)
-          .withHeader("Content-Type", "application/json")
-          .withBody(responseBody),
       ),
   )
 }
