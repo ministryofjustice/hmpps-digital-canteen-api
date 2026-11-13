@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.NplProduct
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importNPL.NationalProductListParseService
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.util.Collections.emptyList

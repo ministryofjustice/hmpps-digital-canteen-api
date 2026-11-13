@@ -107,6 +107,15 @@ tasks.register("buildNPLUploadApiModel", GenerateTask::class) {
   globalProperties.set(mapOf("models" to ""))
 }
 
+tasks.register("buildLocalProductListImportApiModel", GenerateTask::class) {
+  generatorName.set("kotlin")
+  inputSpec.set("openapi-specs/local-product-list-import-api.json")
+  outputDir.set("$buildDirectory/generated/localproductlistimportapi")
+  modelPackage.set("uk.gov.justice.digital.hmpps.digitalcanteenapi.client.localproductlistimportapi.generated")
+  configOptions.set(configValues)
+  globalProperties.set(mapOf("models" to ""))
+}
+
 tasks.register("buildMedusaCreateProductModel", GenerateTask::class) {
   generatorName.set("kotlin")
   inputSpec.set("openapi-specs/medusa-create-product-api.json")
@@ -116,7 +125,7 @@ tasks.register("buildMedusaCreateProductModel", GenerateTask::class) {
   globalProperties.set(mapOf("models" to ""))
 }
 
-val generatedProjectDirs = listOf("prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi", "npluploadapi", "createproductapi")
+val generatedProjectDirs = listOf("prisonapi", "prisonersearchapi", "prisoneradjudicationsapi", "medusaapi", "npluploadapi", "createproductapi", "localproductlistimportapi")
 
 kotlin {
   generatedProjectDirs.forEach { generatedProject ->
@@ -128,13 +137,13 @@ kotlin {
 
 tasks {
   withType<KotlinCompile> {
-    dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel", "buildNPLUploadApiModel", "buildMedusaCreateProductModel")
+    dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel", "buildNPLUploadApiModel", "buildMedusaCreateProductModel", "buildLocalProductListImportApiModel")
     compilerOptions.jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_25
   }
 }
 
 tasks.named("runKtlintCheckOverMainSourceSet") {
-  dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel", "buildNPLUploadApiModel", "buildMedusaCreateProductModel")
+  dependsOn("buildPrisonApiModel", "buildPrisonerSearchApiModel", "buildPrisonerAdjudicationsApiModel", "buildMedusaApiModel", "buildNPLUploadApiModel", "buildMedusaCreateProductModel", "buildLocalProductListImportApiModel")
 }
 
 configure<KtlintExtension> {
