@@ -1,5 +1,6 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -9,20 +10,22 @@ import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.eq
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.fixtures.TestMockData.PRISON_ID
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.fixtures.TestMockData.existingPriceList
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.fixtures.TestMockData.matchedProducts
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.fixtures.TestMockData.region
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.CreatePriceListDto
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.MatchedProduct
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceList
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceListPrice
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importLPL.PriceListService
 
 @ExtendWith(MockitoExtension::class)
 class PriceListServiceTest {
 
   @Mock
-  private lateinit var  medusaProductService: MedusaProductService
+  private lateinit var medusaProductService: MedusaProductService
 
   @InjectMocks
   private lateinit var service: PriceListService
@@ -35,53 +38,63 @@ class PriceListServiceTest {
   @Test
   fun `should delete existing price list and create new one`() {
     // Given
-    val prisonId = "MDI"
-    val regionId = "region-1"
-
-    val existingPriceList = PriceList(
-      id = "$prisonId-$regionId",
-      title = "$prisonId-$regionId",
-      type = "override",
-      metadata  = null
-    )
-
-    val matchedProducts = listOf(
-      MatchedProduct(
-        productId = "product-$prisonId-$regionId",
-        productCode = "A1234BC",
-        variantId = "variant-1",
-        priceInPence = 250,
-      ),
-    )
-
-    whenever(medusaProductService.findPriceList(prisonId))
+    whenever(medusaProductService.findPriceList(PRISON_ID))
       .thenReturn(existingPriceList)
 
-    whenever(medusaProductService.deletePriceList(any())).thenReturn(ResponseEntity.noContent().build())
-
     // When
-    service.recreatePriceList(prisonId, matchedProducts, regionId)
+    service.recreatePriceList(
+      prisonId = PRISON_ID,
+      matchedProducts = matchedProducts,
+      regionId = region.id,
+    )
 
     // Then
-    verify(medusaProductService).findPriceList(prisonId)
-    verify(medusaProductService).deletePriceList("pl-123")
+    verify(medusaProductService).findPriceList(PRISON_ID)
+    verify(medusaProductService).deletePriceList("price-list-id")
 
     argumentCaptor<CreatePriceListDto>().apply {
-      verify(medusaProductService).createPriceList(
-        capture(),
-        eq(prisonId),
+      verify(medusaProductService).createPriceList(capture(), eq(PRISON_ID))
+
+      val dto = firstValue
+
+      assertThat(dto.title).isEqualTo("MDI Price List")
+      assertThat(dto.description).isEqualTo("MDI Price List")
+      assertThat(dto.status).isEqualTo("active")
+      assertThat(dto.metadata?.prisonId).isEqualTo(PRISON_ID)
+
+      assertThat(dto.prices).hasSize(2)
+
+      assertThat(dto.prices[0]).isEqualTo(
+        PriceListPrice(
+          variantId = "variant-1",
+          amount = 100,
+          currencyCode = "gbp",
+          rules = mapOf("region_id" to region.id),
+        ),
       )
 
-      /*assertThat(firstValue.title).isEqualTo("MDI Price List")
-      assertThat(firstValue.metadata.prisonId).isEqualTo(prisonId)
-      assertThat(firstValue.prices).hasSize(1)
-
-      assertThat(firstValue.prices[0].variantId)
-        .isEqualTo("variant-1")
-      assertThat(firstValue.prices[0].amount)
-        .isEqualTo(250)
-      assertThat(firstValue.prices[0].rules)
-        .containsEntry("region_id", regionId)*/
+      assertThat(dto.prices[1]).isEqualTo(
+        PriceListPrice(
+          variantId = "variant-2",
+          amount = 200,
+          currencyCode = "gbp",
+          rules = mapOf("region_id" to region.id),
+        ),
+      )
     }
+  }
+
+  @Test
+  fun `should create price list when existing one does not exist`() {
+    // Given
+    whenever(medusaProductService.findPriceList(PRISON_ID))
+      .thenReturn(null)
+
+    // When
+    service.recreatePriceList(PRISON_ID, matchedProducts, region.id)
+
+    // Then
+    verify(medusaProductService, never()).deletePriceList(any())
+    verify(medusaProductService).createPriceList(any(), eq(PRISON_ID))
   }
 }

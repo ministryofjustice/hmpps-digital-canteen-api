@@ -1,0 +1,13 @@
+{
+  "products": [
+    {
+      "id": "product-1",
+      "title": "Coca Cola",
+      "variants": [
+        {
+          "id": "variant-1"
+        }
+      ]
+    }
+  ]
+}

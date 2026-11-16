@@ -50,7 +50,7 @@ class NationalProductListSyncService(
       }
 
     val deleteProducts = existingProducts
-      .filter { it.handle?.trim() !in uploadedHandles }
+      .filter { it.handle.trim() !in uploadedHandles }
       .map { it.id }
 
     logger.info("Modifying medusa DB : uploadedProducts: {}, existingProducts: {}, createdProducts: {}, updateProducts: {}, deleteProducts: {}", uploadedProducts.size, existingProducts.size, createProducts.size, updateProducts.size, deleteProducts.size)

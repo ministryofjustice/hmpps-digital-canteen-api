@@ -1,5 +1,10 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.client
 
+import com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
+import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
+import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -13,6 +18,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.gener
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductBatchRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductMetadata
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaProductClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 import java.util.Collections.emptyList
@@ -126,6 +132,81 @@ class MedusaProductClientTest {
     assertEquals(0, response.updated.size)
     assertEquals(0, response.deleted.ids.size)
   }
+
+  @Test
+  fun `should get region`() {
+    server.stubGetRegion()
+    val region = client.getRegions("MDI")
+
+    // Then
+    assertThat(region.id).isEqualTo("region-1")
+    assertThat(region.name).isEqualTo("UK")
+    assertThat(region.currencyCode).isEqualTo("gbp")
+    assertThat(region.metadata["prison_code"]).isEqualTo("MDI")
+  }
+
+  @Test
+  fun `should throw ResourceNotFoundException when prison region not found`() {
+    // Given
+    server.stubGetRegion()
+    // When-Then
+    assertThrows<ResourceNotFoundException> {
+      client.getRegions("EEI")
+    }
+  }
+
+  @Test
+  fun `should get sales channel`() {
+    // Given
+    server.stubGetSalesChannels()
+
+    // When
+    val response = client.getSalesChannel("MDI")
+
+    // Then
+    assertThat(response.id).isEqualTo("channel-1")
+    assertThat(response.name).isEqualTo("MDI")
+    assertThat(response.description).isEqualTo("MDI Sales Channel")
+  }
+
+  @Test
+  fun `should throw ResourceNotFoundException when prison sales-channel not found`() {
+    // Given
+    server.stubGetSalesChannels()
+    // When-Then
+    assertThrows<ResourceNotFoundException> {
+      client.getSalesChannel("EEI")
+    }
+  }
+
+  @Test
+  fun `should delete price list`() {
+    server.stubDeletePriceList()
+    client.deletePriceList("price-list-1")
+    server.verify(
+      deleteRequestedFor(
+        urlEqualTo("/admin/price-lists/price-list-1"),
+      ),
+    )
+  }
+
+  @Test
+  fun `should find price list for prison`() {
+    server.stubGetPriceLists()
+
+    val priceList = client.findPriceList("MDI")
+
+    assertThat(priceList).isNotNull
+    assertThat(priceList!!.id).isEqualTo("price-list-1")
+    assertThat(priceList.title).isEqualTo("MDI Price List")
+
+    server.verify(
+      getRequestedFor(
+        urlPathEqualTo("/admin/price-lists"),
+      ),
+    )
+  }
+
   companion object {
     @JvmField
     internal val server = MedusaMockServer()
