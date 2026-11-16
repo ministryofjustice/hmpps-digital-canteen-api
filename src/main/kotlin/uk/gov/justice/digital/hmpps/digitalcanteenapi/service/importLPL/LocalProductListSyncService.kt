@@ -22,6 +22,7 @@ class LocalProductListSyncService(
   }
 
   fun syncProducts(file: MultipartFile, prisonId: String): ImportLocalProductListResponse {
+    // Parse the uploaded Local Product List (LPL) file
     val lplProducts = try {
       parser.parse(file.inputStream)
     } catch (e: Exception) {
@@ -44,6 +45,7 @@ class LocalProductListSyncService(
         message = "Import failed: the uploaded file is empty..",
       )
     }
+    // Retrieve all products from Medusa
     val medusaProducts = medusaProductService.getAllProducts()
 
     if (medusaProducts.isEmpty()) {
@@ -60,6 +62,7 @@ class LocalProductListSyncService(
     val salesChannel: MedusaSalesChannel
 
     try {
+      // Retrieve the region and sales channel for the requested prison
       region = medusaProductService.getRegions(prisonId)
       salesChannel = medusaProductService.getSalesChannel(prisonId)
     } catch (e: Exception) {
@@ -73,12 +76,16 @@ class LocalProductListSyncService(
       )
     }
 
+    // Match LPL products with corresponding Medusa products
     val result = productMatchService.match(
       lplProducts,
       medusaProducts,
     )
+
+    // Synchronize matched products with the prison sales channel
     salesChannelService.syncProduct(salesChannel.id, result.matchedProducts)
 
+    // Recreate the prison-specific price list
     priceListService.recreatePriceList(prisonId, result.matchedProducts, region.id)
     return ImportLocalProductListResponse(
       success = true,
