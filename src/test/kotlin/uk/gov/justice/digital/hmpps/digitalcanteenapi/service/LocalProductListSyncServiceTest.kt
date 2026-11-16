@@ -8,6 +8,7 @@ import org.mockito.Mock
 import org.mockito.junit.jupiter.MockitoExtension
 import org.mockito.kotlin.any
 import org.mockito.kotlin.inOrder
+import org.mockito.kotlin.never
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.verifyNoMoreInteractions
@@ -200,6 +201,58 @@ class LocalProductListSyncServiceTest {
 
     assertThat(response.success).isFalse()
     assertThat(response.message).contains("Failed to upload")
+  }
+
+  @Test
+  fun `should not update products when no matching products are found`() {
+    // Given
+    val unmatchedProducts = listOf("PR1")
+
+    whenever(localProductListParseService.parse(any<InputStream>()))
+      .thenReturn(listOf(localProduct1))
+
+    whenever(medusaProductService.getAllProducts())
+      .thenReturn(listOf(medusaProduct1))
+
+    whenever(medusaProductService.getRegions(PRISON_ID))
+      .thenReturn(region)
+
+    whenever(medusaProductService.getSalesChannel(PRISON_ID))
+      .thenReturn(salesChannel)
+
+    whenever(
+      productMatchService.match(
+        any(),
+        any(),
+      ),
+    ).thenReturn(
+      ProductMatchingResult(
+        matchedProducts = emptyList(),
+        unmatchedProducts = unmatchedProducts,
+      ),
+    )
+
+    // When
+    val response = service.syncProducts(
+      mockFile,
+      PRISON_ID,
+    )
+
+    // Then
+    assertThat(response).isEqualTo(
+      ImportLocalProductListResponse(
+        success = false,
+        matchedProducts = 0,
+        unmatchedProducts = 1,
+        message = "No matching products found. The existing product list remains unchanged.",
+      ),
+    )
+
+    verify(salesChannelService, never())
+      .syncProduct(any(), any())
+
+    verify(priceListService, never())
+      .recreatePriceList(any(), any(), any())
   }
 
   @Test

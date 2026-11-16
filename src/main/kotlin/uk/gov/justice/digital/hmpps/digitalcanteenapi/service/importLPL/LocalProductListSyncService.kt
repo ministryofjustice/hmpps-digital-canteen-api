@@ -82,6 +82,16 @@ class LocalProductListSyncService(
       medusaProducts,
     )
 
+    // Leave the existing product configuration unchanged if no products are matched.
+    if (result.matchedProducts.isEmpty()) {
+      return ImportLocalProductListResponse(
+        success = false,
+        matchedProducts = 0,
+        unmatchedProducts = result.unmatchedProducts.size,
+        message = "No matching products found. The existing product list remains unchanged.",
+      )
+    }
+
     // Synchronize matched products with the prison sales channel
     salesChannelService.syncProduct(salesChannel.id, result.matchedProducts)
 
