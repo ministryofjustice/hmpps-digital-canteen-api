@@ -27,16 +27,21 @@ class DigitalCanteenApiExceptionHandler {
       ),
     ).also { log.info("Validation exception: {}", e.message) }
 
-  @ExceptionHandler(NoResourceFoundException::class)
-  fun handleNoResourceFoundException(e: NoResourceFoundException): ResponseEntity<ErrorResponse> = ResponseEntity
+  @ExceptionHandler(
+    NoResourceFoundException::class,
+    ResourceNotFoundException::class,
+  )
+  fun handleNotFoundException(
+    e: Exception,
+  ): ResponseEntity<ErrorResponse> = ResponseEntity
     .status(NOT_FOUND)
     .body(
       ErrorResponse(
         status = NOT_FOUND,
-        userMessage = "No resource found failure: ${e.message}",
+        userMessage = "Resource not found: ${e.message}",
         developerMessage = e.message,
       ),
-    ).also { log.info("No resource found exception: {}", e.message) }
+    )
 
   @ExceptionHandler(AccessDeniedException::class)
   fun handleAccessDeniedException(e: AccessDeniedException): ResponseEntity<ErrorResponse> = ResponseEntity
@@ -88,3 +93,4 @@ class DigitalCanteenApiExceptionHandler {
 
 class UpstreamException(message: String) : RuntimeException(message)
 class CartCreationException(message: String) : RuntimeException(message)
+class ResourceNotFoundException(message: String) : RuntimeException(message)

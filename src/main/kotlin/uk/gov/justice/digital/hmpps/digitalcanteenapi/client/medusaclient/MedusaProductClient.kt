@@ -12,8 +12,23 @@ import tools.jackson.databind.ObjectMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductBatchRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductBatchResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.ResourceNotFoundException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductListResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.ProductListResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.BatchProductsRequest
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.CreatePriceListDto
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.CreatePriceListResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.MedusaRegion
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.MedusaRegionsResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.MedusaSalesChannel
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceList
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceListResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.SalesChannelProductsResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.SalesChannelsResponse
+
+data class ErrorResponse(
+  val message: String?,
+)
 
 @Component
 class MedusaProductClient(
@@ -25,6 +40,10 @@ class MedusaProductClient(
   companion object {
     private const val PRODUCTS_URI = "/admin/products"
     private const val BATCH_PRODUCTS_URI = "/admin/products/batch"
+    private const val GET_REGION_URI = "/admin/regions"
+    private const val GET_SALES_CHANNEL_URI = "/admin/sales-channels"
+    private const val PRICE_LIST_URI = "/admin/price-lists"
+    private const val SALES_CHANNEL_PRODUCTS_URI = "/admin/sales-channels/{salesChannelId}/products"
     val logger: Logger = LoggerFactory.getLogger(MedusaProductClient::class.java)
   }
 
@@ -65,10 +84,15 @@ class MedusaProductClient(
         UpstreamException("Medusa service is currently unavailable")
       } else {
         logger.error("Batch update request failed: ${ex.responseBodyAsString}")
-        val message = objectMapper.readTree(ex.responseBodyAsString)
-          .path("message")
-          .asText(ex.message)
-        UpstreamException(message ?: "National Product List failed")
+        val message = runCatching {
+          objectMapper.readValue(
+            ex.responseBodyAsString,
+            ErrorResponse::class.java,
+          ).message
+        }.getOrNull()
+          ?: ex.message
+
+        throw UpstreamException(message)
       }
     }
     .onErrorMap(WebClientRequestException::class.java) { ex ->
@@ -76,4 +100,107 @@ class MedusaProductClient(
       UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!
+
+  fun getRegions(prisonCode: String): MedusaRegion = webClient
+    .get()
+    .uri(GET_REGION_URI)
+    .retrieve()
+    .bodyToMono(MedusaRegionsResponse::class.java)
+    .block()
+    ?.regions
+    ?.firstOrNull {
+      it.metadata.get("prison_code")?.toString() == prisonCode
+    }
+    ?: throw ResourceNotFoundException("The selected prison is not fully configured in the system. Please contact support team.")
+
+  fun getSalesChannel(prisonCode: String): MedusaSalesChannel = webClient
+    .get()
+    .uri(GET_SALES_CHANNEL_URI)
+    .retrieve()
+    .bodyToMono(SalesChannelsResponse::class.java)
+    .block()
+    ?.salesChannels
+    ?.firstOrNull {
+      it.name.equals(prisonCode, ignoreCase = true)
+    }
+    ?: throw ResourceNotFoundException("The selected prison is not fully configured in the system. Please contact support team.")
+
+  fun getSalesChannelProductIds(salesChannelId: String, limit: Int, offset: Int): SalesChannelProductsResponse = webClient
+    .get()
+    .uri {
+      it.path(PRODUCTS_URI)
+        .queryParam("sales_channel_id", salesChannelId)
+        .queryParam("limit", limit)
+        .queryParam("offset", offset)
+        .build()
+    }
+    .retrieve()
+    .onStatus(HttpStatusCode::isError) { response ->
+      response
+        .bodyToMono(String::class.java)
+        .map { body ->
+          UpstreamException(
+            "Failed to fetch products. Status=${response.statusCode()}, Body=$body",
+          )
+        }
+    }
+    .bodyToMono(SalesChannelProductsResponse::class.java)
+    .block()
+    ?: throw UpstreamException(
+      "Medusa returned an empty response when fetching products",
+    )
+
+  fun findPriceList(prisonCode: String): PriceList? = try {
+    webClient
+      .get()
+      .uri(PRICE_LIST_URI)
+      .retrieve()
+      .bodyToMono(PriceListResponse::class.java)
+      .block()
+      ?.priceLists
+      ?.firstOrNull {
+        it.metadata?.prisonId.equals(
+          prisonCode,
+          ignoreCase = true,
+        )
+      }
+  } catch (e: Exception) {
+    throw IllegalStateException(
+      "Failed to retrieve price lists for prison code: $prisonCode",
+      e,
+    )
+  }
+
+  fun deletePriceList(priceListId: String) = webClient
+    .delete()
+    .uri("$PRICE_LIST_URI/$priceListId")
+    .retrieve()
+    .onStatus(HttpStatusCode::isError) { response ->
+      response.bodyToMono(String::class.java)
+        .map { body ->
+          UpstreamException(
+            "Failed to delete price list. Status=${response.statusCode()}, Body=$body",
+          )
+        }
+    }
+    .toBodilessEntity()
+    .block()
+
+  fun updateSalesChannelProducts(salesChannelId: String, request: BatchProductsRequest) = webClient
+    .post()
+    .uri(SALES_CHANNEL_PRODUCTS_URI, salesChannelId)
+    .bodyValue(request)
+    .retrieve()
+    .toBodilessEntity()
+    .block()
+
+  fun createPriceList(priceList: CreatePriceListDto, prisonId: String): PriceList = webClient
+    .post()
+    .uri(PRICE_LIST_URI)
+    .bodyValue(priceList)
+    .retrieve()
+    .bodyToMono(CreatePriceListResponse::class.java)
+    .block()
+    ?.priceList
+    ?: throw UpstreamException("Failed to create price list for prison: $prisonId")
 }
