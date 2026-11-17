@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.service
 
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
+import org.assertj.core.api.Assertions.assertThatThrownBy
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -96,5 +97,33 @@ class LocalProductListParseServiceTest {
 
     // then
     assertEquals(0, result.size)
+  }
+
+  @Test
+  fun `should throw exception when Cost is empty`() {
+    // Given
+    val workbook = XSSFWorkbook()
+    val sheet = workbook.createSheet()
+
+    val headerRow = sheet.createRow(0)
+    headerRow.createCell(0).setCellValue("CODE")
+    headerRow.createCell(1).setCellValue("DESCRIPTION")
+    headerRow.createCell(2).setCellValue("COST")
+
+    val dataRow = sheet.createRow(1)
+    dataRow.createCell(0).setCellValue("M45678")
+    dataRow.createCell(1).setCellValue("10p Postage Stamp")
+    dataRow.createCell(2).setCellValue("")
+
+    val inputStream = ByteArrayOutputStream().also {
+      workbook.write(it)
+    }.toByteArray().inputStream()
+
+    // When / Then
+    assertThatThrownBy {
+      service.parse(inputStream)
+    }
+      .isInstanceOf(IllegalArgumentException::class.java)
+      .hasMessage("Cost is missing for product 'M45678'")
   }
 }

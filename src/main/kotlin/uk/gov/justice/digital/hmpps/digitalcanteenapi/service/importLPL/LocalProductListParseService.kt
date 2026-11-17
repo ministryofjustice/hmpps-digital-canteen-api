@@ -50,15 +50,20 @@ class LocalProductListParseService : ProductListParser<LplProductDetails> {
           formatter,
         )
 
+        // Skip empty rows
+        if (productCode.isBlank()) {
+          continue
+        }
+
         val priceText = row.value(headerMap, Headers.PRICE, formatter)
           .trim()
           .replace("£", "")
           .replace(",", "")
 
-        // Skip empty rows
-        if (productCode.isBlank()) {
-          continue
+        require(priceText.isNotBlank()) {
+          "Cost is missing for product '$productCode'"
         }
+
         lplProductList.add(
           LplProductDetails(
             productCode = productCode,
