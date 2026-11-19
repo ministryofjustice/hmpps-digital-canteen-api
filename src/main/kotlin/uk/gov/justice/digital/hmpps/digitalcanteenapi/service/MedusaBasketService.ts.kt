@@ -18,7 +18,7 @@ class MedusaBasketService(
 
   // todo: May not require service class, have included based on assumption more cart/basket logic will come to follow
 
-  fun getbasket(getBasketRequest: GetBasketRequest): GetBasketResponse = medusaInternalClient.getBasket(getBasketRequest)
+  fun getBasket(getBasketRequest: GetBasketRequest): GetBasketResponse = medusaInternalClient.getBasket(getBasketRequest)
 
   fun addLineItem(addLineItemsRequest: AddLineItemsRequest): AddLineItemsResponse = medusaInternalClient.addLineItem(addLineItemsRequest)
 

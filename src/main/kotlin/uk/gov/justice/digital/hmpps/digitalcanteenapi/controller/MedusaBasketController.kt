@@ -26,7 +26,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaBasketServic
 @PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
 @RequestMapping("/api")
 @Tag(
-  name = "Canteen",
+  name = "Canteen basket",
   description = "Canteen medusa endpoints for basket/cart operations",
 )
 class MedusaBasketController(
@@ -46,17 +46,17 @@ class MedusaBasketController(
     @RequestBody createMedusaUserRequest: CreateMedusaUserRequest,
   ): ResponseEntity<Map<String, String>> = medusaInternalClient.createMedusaUser(createMedusaUserRequest)
 
-  @Operation(summary = "Get the prisoners current basket")
+  @Operation(summary = "Get the prisoners current basket, and any current draft orders")
   @ApiResponses(
     value = [
-      ApiResponse(responseCode = "200", description = "Medusa user created successfully"),
+      ApiResponse(responseCode = "200", description = "Medusa basket and order returned successfully"),
       ApiResponse(responseCode = "500", description = "Internal server error"),
     ],
   )
   @PostMapping("/get-basket", produces = [MediaType.APPLICATION_JSON_VALUE])
   fun getBasket(
     @RequestBody getBasketRequest: GetBasketRequest,
-  ): GetBasketResponse = medusaBasketService.getbasket(getBasketRequest)
+  ): GetBasketResponse = medusaBasketService.getBasket(getBasketRequest)
 
   @Operation(summary = "Add line item to basket, if no basket exists, create basket then add line item")
   @ApiResponses(
@@ -82,7 +82,7 @@ class MedusaBasketController(
     @RequestBody removeLineItemsRequest: RemoveLineItemsRequest,
   ): RemoveLineItemsResponse = medusaBasketService.removeLineItem(removeLineItemsRequest)
 
-  @Operation(summary = "Remove/cancel the medusa basket")
+  @Operation(summary = "Remove/delete the medusa basket")
   @ApiResponses(
     value = [
       ApiResponse(responseCode = "200", description = "Medusa basket successfully removed"),
