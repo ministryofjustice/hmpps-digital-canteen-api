@@ -13,8 +13,8 @@ dependencies {
   implementation("org.springframework.boot:spring-boot-starter-webflux")
   implementation("org.springframework.boot:spring-boot-starter-webclient")
   implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:3.2.0")
-  implementation("org.apache.poi:poi:5.4.1")
-  implementation("org.apache.poi:poi-ooxml:5.4.1")
+  implementation("org.apache.poi:poi:6.0.0")
+  implementation("org.apache.poi:poi-ooxml:6.0.0")
   implementation("org.springframework.boot:spring-boot-starter-web")
 
   // OpenAPI dependencies
