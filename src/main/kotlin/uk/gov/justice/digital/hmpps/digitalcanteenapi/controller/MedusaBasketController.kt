@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaBasketClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaBasketService
 
 @RestController
@@ -30,7 +30,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaBasketServic
   description = "Canteen medusa endpoints for basket/cart operations",
 )
 class MedusaBasketController(
-  private val medusaInternalClient: MedusaInternalClient,
+  private val medusaInternalClient: MedusaBasketClient,
   private val medusaBasketService: MedusaBasketService,
 ) {
 

@@ -19,7 +19,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequestData
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaBasketClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
@@ -27,8 +27,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISON_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 import java.math.BigDecimal
 
-class MedusaInternalClientTest {
-  private lateinit var client: MedusaInternalClient
+class MedusaBasketClientTest {
+  private lateinit var client: MedusaBasketClient
 
   @BeforeEach
   fun resetMocks() {
@@ -38,7 +38,7 @@ class MedusaInternalClientTest {
       .findAndAddModules()
       .build()
     val webClientErrorHandler = WebClientErrorHandler(mapper)
-    client = MedusaInternalClient(webClient, webClientErrorHandler)
+    client = MedusaBasketClient(webClient, webClientErrorHandler)
   }
 
   @Test

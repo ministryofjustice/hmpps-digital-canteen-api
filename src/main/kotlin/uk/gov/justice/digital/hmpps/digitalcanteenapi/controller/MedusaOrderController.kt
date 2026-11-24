@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,7 +18,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateDraftOrderRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateDraftOrderResponse
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.GetDraftOrderResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.CanteenOrderService
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaOrderService
 
 @Tag(
   name = "Prisoner payment controller",
@@ -32,7 +33,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.CanteenOrderServic
   description = "Canteen medusa endpoints for order operations",
 )
 class MedusaOrderController(
-  private val canteenOrderService: CanteenOrderService,
+  private val canteenOrderService: MedusaOrderService,
 ) {
 
   @Operation(summary = "Get the prisoners current draft order")
@@ -70,7 +71,5 @@ class MedusaOrderController(
   @PostMapping("/cancel-draft-order")
   fun cancelDraftOrder(
     @RequestBody cancelDraftOrderRequest: CancelDraftOrderRequest,
-  ) {
-    canteenOrderService.cancelOrder(cancelDraftOrderRequest)
-  }
+  ): ResponseEntity<Map<String, String>> = canteenOrderService.cancelOrder(cancelDraftOrderRequest)
 }

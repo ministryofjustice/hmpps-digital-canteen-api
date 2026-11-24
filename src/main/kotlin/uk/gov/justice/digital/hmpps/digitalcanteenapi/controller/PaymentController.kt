@@ -11,8 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.prisonfinance.PrisonFinanceClient
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.CanteenOrderService
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.MedusaOrderService
 
 @Tag(
   name = "Prisoner payment controller",
@@ -23,8 +22,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.CanteenOrderServic
 @PreAuthorize("hasRole('ROLE_PIN_PHONE_CREDIT_API')")
 @RequestMapping(value = ["/api"], produces = [MediaType.APPLICATION_JSON_VALUE])
 class PaymentController(
-  private val canteenPaymentService: CanteenOrderService,
-  private val prisonFinanceClient: PrisonFinanceClient,
+  private val canteenPaymentService: MedusaOrderService,
 ) {
 
   @Operation(
