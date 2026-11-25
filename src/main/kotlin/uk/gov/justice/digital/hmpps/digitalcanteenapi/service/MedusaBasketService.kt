@@ -9,16 +9,16 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.gen
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaBasketClient
 
 @Service
 class MedusaBasketService(
-  private val medusaInternalClient: MedusaInternalClient,
+  private val medusaInternalClient: MedusaBasketClient,
 ) {
 
   // todo: May not require service class, have included based on assumption more cart/basket logic will come to follow
 
-  fun getbasket(getBasketRequest: GetBasketRequest): GetBasketResponse = medusaInternalClient.getBasket(getBasketRequest)
+  fun getBasket(getBasketRequest: GetBasketRequest): GetBasketResponse = medusaInternalClient.getBasket(getBasketRequest)
 
   fun addLineItem(addLineItemsRequest: AddLineItemsRequest): AddLineItemsResponse = medusaInternalClient.addLineItem(addLineItemsRequest)
 

@@ -21,13 +21,13 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import kotlin.jvm.java
 
 @Component
-class MedusaInternalClient(
+class MedusaBasketClient(
   @Qualifier("medusaInternalWebClient") private val medusaInternalClient: WebClient,
   private val errorHandler: WebClientErrorHandler,
 ) {
 
   companion object {
-    val logger: Logger = LoggerFactory.getLogger(MedusaInternalClient::class.java)
+    val logger: Logger = LoggerFactory.getLogger(MedusaBasketClient::class.java)
   }
 
   fun createMedusaUser(createMedusaUserRequest: CreateMedusaUserRequest): ResponseEntity<Map<String, String>> = medusaInternalClient
@@ -64,12 +64,12 @@ class MedusaInternalClient(
         UpstreamException("Medusa service is currently unavailable")
       } else {
         val errorResponse = errorHandler.handleError(ex)
-        logger.error("Create cart failed: ${ex.responseBodyAsString}")
-        UpstreamException(errorResponse.userMessage ?: "Create cart failed")
+        logger.error("Get medusa basket failed: ${ex.responseBodyAsString}")
+        UpstreamException(errorResponse.userMessage ?: "Get medusa basket failed")
       }
     }
     .onErrorMap(WebClientRequestException::class.java) { ex ->
-      logger.error("Create cart failed due to connection issue", ex)
+      logger.error("Get medusa basket failed failed due to connection issue", ex)
       UpstreamException("Medusa service is currently unavailable")
     }
     .block()!!

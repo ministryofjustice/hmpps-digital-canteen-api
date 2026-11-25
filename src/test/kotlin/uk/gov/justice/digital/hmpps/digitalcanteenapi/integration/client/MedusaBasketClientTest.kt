@@ -10,16 +10,16 @@ import org.springframework.web.reactive.function.client.WebClient
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.WebClientErrorHandler
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddLineItemsRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddLineItemsRequestMetadata
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateMedusaUserMetaData
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.AddLineItemsRequestData
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateMedusaUserData
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.CreateMedusaUserRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.GetBasketRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.GetBasketRequestMetadata
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketMetadata
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.GetBasketRequestData
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketData
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveBasketRequest
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequest
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequestMetadata
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaInternalClient
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaapiclient.generated.RemoveLineItemsRequestData
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.medusaclient.MedusaBasketClient
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.config.UpstreamException
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISONER_NUMBER
@@ -27,8 +27,8 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.PRISON_ID
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock.MedusaMockServer
 import java.math.BigDecimal
 
-class MedusaInternalClientTest {
-  private lateinit var client: MedusaInternalClient
+class MedusaBasketClientTest {
+  private lateinit var client: MedusaBasketClient
 
   @BeforeEach
   fun resetMocks() {
@@ -38,14 +38,14 @@ class MedusaInternalClientTest {
       .findAndAddModules()
       .build()
     val webClientErrorHandler = WebClientErrorHandler(mapper)
-    client = MedusaInternalClient(webClient, webClientErrorHandler)
+    client = MedusaBasketClient(webClient, webClientErrorHandler)
   }
 
   @Test
   fun `createMedusaUser - successfully creates a user`() {
     server.stubCreateMedusaUser()
     val request = CreateMedusaUserRequest(
-      CreateMedusaUserMetaData(
+      CreateMedusaUserData(
         prisonId = PRISON_ID,
         offenderNo = PRISONER_NUMBER,
       ),
@@ -62,7 +62,7 @@ class MedusaInternalClientTest {
     server.stop()
     try {
       val request = CreateMedusaUserRequest(
-        CreateMedusaUserMetaData(
+        CreateMedusaUserData(
           prisonId = PRISON_ID,
           offenderNo = PRISONER_NUMBER,
         ),
@@ -80,7 +80,7 @@ class MedusaInternalClientTest {
   fun `getBasket - successfully retrieves basket`() {
     server.stubGetBasket()
     val request = GetBasketRequest(
-      GetBasketRequestMetadata(
+      GetBasketRequestData(
         offenderNo = PRISONER_NUMBER,
         cartId = CART_ID,
       ),
@@ -98,7 +98,7 @@ class MedusaInternalClientTest {
   fun `getBasket - returns empty basket`() {
     server.stubGetBasketEmpty()
     val request = GetBasketRequest(
-      GetBasketRequestMetadata(
+      GetBasketRequestData(
         offenderNo = PRISONER_NUMBER,
         cartId = null,
       ),
@@ -115,7 +115,7 @@ class MedusaInternalClientTest {
   fun `addLineItem - successfully adds item to cart`() {
     server.stubAddLineItem()
     val request = AddLineItemsRequest(
-      AddLineItemsRequestMetadata(
+      AddLineItemsRequestData(
         prisonId = PRISON_ID,
         offenderNo = PRISONER_NUMBER,
         cartId = CART_ID,
@@ -131,7 +131,7 @@ class MedusaInternalClientTest {
   fun `removeLineItem - successfully removes item from cart`() {
     server.stubRemoveLineItem()
     val request = RemoveLineItemsRequest(
-      RemoveLineItemsRequestMetadata(
+      RemoveLineItemsRequestData(
         cartId = CART_ID,
         lineItemId = "li_123",
         quantity = "0",
@@ -146,7 +146,7 @@ class MedusaInternalClientTest {
   fun `removeBasket - successfully removes basket`() {
     server.stubRemoveBasket()
     val request = RemoveBasketRequest(
-      RemoveBasketMetadata(
+      RemoveBasketData(
         cartId = CART_ID,
       ),
     )
@@ -161,7 +161,7 @@ class MedusaInternalClientTest {
     server.stop()
     try {
       val request = RemoveBasketRequest(
-        RemoveBasketMetadata(
+        RemoveBasketData(
           cartId = CART_ID,
         ),
       )

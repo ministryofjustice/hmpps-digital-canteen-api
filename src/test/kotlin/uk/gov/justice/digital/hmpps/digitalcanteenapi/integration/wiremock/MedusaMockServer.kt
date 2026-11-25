@@ -14,10 +14,15 @@ import org.junit.jupiter.api.extension.BeforeEachCallback
 import org.junit.jupiter.api.extension.ExtensionContext
 import tools.jackson.databind.json.JsonMapper
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.CART_ID
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.DRAFT_ORDER_ID
 
 class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
   companion object {
     private const val WIREMOCK_PORT = 8087
+
+    // Keep in step with MedusaOrderClient
+    const val CREATE_DRAFT_ORDER_PATH = "/internal/canteen/orders/%s/create-draft-order"
+    const val GET_DRAFT_ORDER_PATH = "/internal/canteen/orders/%s/get-draft-order"
   }
 
   private val mapper: JsonMapper = JsonMapper.builder().build()
@@ -118,6 +123,64 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
   )
 
+  fun stubCreateDraftOrder(
+    cartId: String = CART_ID,
+    draftOrderId: String = DRAFT_ORDER_ID,
+    status: Int = 200,
+  ): StubMapping = stubFor(
+    post(urlPathEqualTo(CREATE_DRAFT_ORDER_PATH.format(cartId)))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            mapper.writeValueAsString(mapOf("draftOrderId" to draftOrderId)),
+          )
+          .withStatus(status),
+      ),
+  )
+
+  fun stubGetDraftOrder(
+    draftOrderId: String = DRAFT_ORDER_ID,
+    items: List<Map<String, Any>> = listOf(
+      mapOf(
+        "title" to "Banana",
+        "quantity" to 3,
+        "unitPrice" to 85,
+        "lineTotal" to 255,
+      ),
+    ),
+    itemCount: Int = 3,
+    subtotal: Int = 255,
+    total: Int = 255,
+  ): StubMapping = stubFor(
+    get(urlPathEqualTo(GET_DRAFT_ORDER_PATH.format(draftOrderId)))
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody(
+            mapper.writeValueAsString(
+              mapOf(
+                "hasDraftOrder" to true,
+                "items" to items,
+                "itemCount" to itemCount,
+                "subtotal" to subtotal,
+                "total" to total,
+              ),
+            ),
+          )
+          .withStatus(200),
+      ),
+  )
+
+  fun stubCancelOrder(): StubMapping = stubFor(
+    post("/internal/canteen/orders/cancel-draft-order")
+      .willReturn(
+        aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withStatus(200),
+      ),
+  )
+
   fun stubGetProducts(
     responseBody: String,
     limit: Int? = null,
@@ -139,6 +202,7 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
     )
   }
+
   fun stubBatchProducts(responseBody: String): StubMapping = stubFor(
     post("/admin/products/batch")
       .willReturn(
@@ -184,6 +248,9 @@ class MedusaApiExtension :
     medusaApi.stubGetBasketEmpty()
     medusaApi.stubRemoveLineItem()
     medusaApi.stubRemoveBasket()
+    medusaApi.stubCreateDraftOrder()
+    medusaApi.stubGetDraftOrder()
+    medusaApi.stubCancelOrder()
   }
 
   override fun afterAll(context: ExtensionContext): Unit = medusaApi.stop()

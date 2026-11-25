@@ -9,6 +9,7 @@ const val HOLD_NUMBER: Long = 468198333
 const val MEDUSA_ADMIN_EMAIL = "test@test.com"
 const val MEDUSA_ADMIN_PASSWORD = "test-password"
 const val CART_ID = "cart_01KXGJ2H6MEWSHDYB2G7B5QW52"
+const val DRAFT_ORDER_ID = "order_01KXGJ2H6MEWSHDYB2G7B5QW52"
 
 // test role config
 const val ROLES = "ROLE_PIN_PHONE_CREDIT_API"
