@@ -173,7 +173,7 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
   )
 
   fun stubCancelOrder(): StubMapping = stubFor(
-    post("/internal/canteen/orders/cancel-order")
+    post("/internal/canteen/orders/cancel-draft-order")
       .willReturn(
         aResponse()
           .withHeader("Content-Type", "application/json")

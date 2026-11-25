@@ -70,7 +70,7 @@ class MedusaOrderClient(
 
   fun cancelOrder(cancelDraftOrderRequest: CancelDraftOrderRequest): ResponseEntity<Map<String, String>> = medusaInternalClient
     .post()
-    .uri("/internal/canteen/orders/cancel-order")
+    .uri("/internal/canteen/orders/cancel-draft-order")
     .bodyValue(cancelDraftOrderRequest)
     .retrieve()
     .toBodilessEntity()
