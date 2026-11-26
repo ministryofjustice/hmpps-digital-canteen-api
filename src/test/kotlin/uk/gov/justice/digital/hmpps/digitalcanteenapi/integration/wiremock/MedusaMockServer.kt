@@ -2,10 +2,13 @@ package uk.gov.justice.digital.hmpps.digitalcanteenapi.integration.wiremock
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
+import com.github.tomakehurst.wiremock.client.WireMock.delete
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.matching
+import com.github.tomakehurst.wiremock.client.WireMock.okJson
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.stubFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.junit.jupiter.api.extension.AfterAllCallback
@@ -139,6 +142,7 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
       ),
     )
   }
+
   fun stubBatchProducts(responseBody: String): StubMapping = stubFor(
     post("/admin/products/batch")
       .willReturn(
@@ -163,6 +167,84 @@ class MedusaMockServer : WireMockServer(WIREMOCK_PORT) {
           .withBody(responseBody),
       ),
   )
+
+  fun stubGetRegion(): StubMapping = stubFor(
+    get(urlPathEqualTo("/admin/regions"))
+      .willReturn(
+        okJson(
+          """
+                    {
+                      "regions": [
+                        {
+                          "id": "region-1",
+                          "name": "UK",
+                          "currency_code": "gbp",
+                          "metadata": {
+                            "prison_code": "MDI"
+                          }
+                        }
+                      ]
+                    }
+          """.trimIndent(),
+        ),
+      ),
+  )
+
+  fun stubGetSalesChannels(): StubMapping = stubFor(
+    get(urlPathEqualTo("/admin/sales-channels"))
+      .willReturn(
+        okJson(
+          """
+                    {
+                      "sales_channels": [
+                        {
+                          "id": "channel-1",
+                          "name": "MDI",
+                           "description": "MDI Sales Channel"
+                        },
+                        {
+                          "id": "channel-2",
+                          "name": "LEI",
+                           "description": "LEI Sales Channel"
+                        }
+                      ]
+                    }
+          """.trimIndent(),
+        ),
+      ),
+  )
+
+  fun stubDeletePriceList(): StubMapping = stubFor(
+    delete(urlPathEqualTo("/admin/price-lists/price-list-1"))
+      .willReturn(
+        aResponse()
+          .withStatus(200),
+      ),
+  )
+
+  fun stubGetPriceLists() {
+    stubFor(
+      get(urlPathEqualTo("/admin/price-lists"))
+        .willReturn(
+          okJson(
+            """
+                    {
+                      "price_lists": [
+                        {
+                          "id": "price-list-1",
+                          "title": "MDI Price List",
+                          "type": "active",
+                          "metadata": {
+                            "prisonId": "MDI"
+                          }
+                        }
+                      ]
+                    }
+            """.trimIndent(),
+          ),
+        ),
+    )
+  }
 }
 
 class MedusaApiExtension :

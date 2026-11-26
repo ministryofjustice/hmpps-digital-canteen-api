@@ -21,9 +21,10 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.gener
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.ProductReference
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.createproduct.generated.UpdateProduct
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.mapping.nplProductMapper.ProductMapper
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.MedusaProduct
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.MedusaProduct
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.NplProduct
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductListResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importNPL.NationalProductListParseService
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importNPL.NationalProductListSyncService
 import java.io.ByteArrayInputStream
 import java.math.BigDecimal
 import java.util.Collections.emptyList
@@ -65,12 +66,9 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts(any(), any()))
-      .thenReturn(
-        ProductListResponse(
-          products = emptyList(),
-        ),
-      )
+    whenever(
+      medusaProductService.getAllProducts(),
+    ).thenReturn(emptyList())
 
     val createRequest = mock<CreateProduct>()
     whenever(productMapper.toCreateProduct(uploadedProduct))
@@ -129,7 +127,7 @@ class NationalProductListSyncServiceTest {
       title = "Product Old",
       description = "Product Old",
       subtitle = "Product Old",
-      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductMetadata(
+      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.ProductMetadata(
         lplOrderingCode = "ABC",
         eanBarcode = "123456",
         selectionCategory = "CAT",
@@ -157,12 +155,8 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts(any(), any()))
-      .thenReturn(
-        ProductListResponse(
-          products = listOf(existingProduct),
-        ),
-      )
+    whenever(medusaProductService.getAllProducts())
+      .thenReturn(listOf(existingProduct))
 
     whenever(
       productMapper.toUpdateProduct(
@@ -223,7 +217,7 @@ class NationalProductListSyncServiceTest {
       title = "Product Old",
       description = "Product Old",
       subtitle = "Product Old",
-      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductMetadata(
+      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.ProductMetadata(
         lplOrderingCode = "ABC",
         eanBarcode = "123456",
         selectionCategory = "CAT",
@@ -236,12 +230,8 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts(any(), any()))
-      .thenReturn(
-        ProductListResponse(
-          products = listOf(existingProduct),
-        ),
-      )
+    whenever(medusaProductService.getAllProducts())
+      .thenReturn(listOf(existingProduct))
 
     val expectedResponse = ProductBatchResponse(
       created = emptyList(),
@@ -295,7 +285,7 @@ class NationalProductListSyncServiceTest {
       title = "Product Old",
       description = "Product Old",
       subtitle = "Product Old",
-      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductMetadata(
+      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.ProductMetadata(
         lplOrderingCode = "ABC",
         eanBarcode = "123456",
         selectionCategory = "CAT",
@@ -308,7 +298,7 @@ class NationalProductListSyncServiceTest {
       title = "Product Old",
       description = "Product Old",
       subtitle = "Product Old",
-      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductMetadata(
+      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.ProductMetadata(
         lplOrderingCode = "ABC",
         eanBarcode = "123456",
         selectionCategory = "CAT",
@@ -321,12 +311,8 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts(any(), any()))
-      .thenReturn(
-        ProductListResponse(
-          products = listOf(existingProduct1, existingProduct2),
-        ),
-      )
+    whenever(medusaProductService.getAllProducts())
+      .thenReturn(listOf(existingProduct1, existingProduct2))
 
     val expectedResponse = ProductBatchResponse(
       created = emptyList(),
@@ -383,7 +369,7 @@ class NationalProductListSyncServiceTest {
       title = "Product 1",
       description = "Product 1",
       subtitle = "Product 1",
-      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importnpl.ProductMetadata(
+      metadata = uk.gov.justice.digital.hmpps.digitalcanteenapi.model.ProductMetadata(
         lplOrderingCode = "ABC",
         eanBarcode = "123456",
         selectionCategory = "CAT",
@@ -396,12 +382,8 @@ class NationalProductListSyncServiceTest {
     whenever(parser.parse(any()))
       .thenReturn(listOf(uploadedProduct))
 
-    whenever(medusaProductService.getProducts(any(), any()))
-      .thenReturn(
-        ProductListResponse(
-          products = listOf(existingProduct),
-        ),
-      )
+    whenever(medusaProductService.getAllProducts())
+      .thenReturn(listOf(existingProduct))
 
     val expectedResponse = ProductBatchResponse(
       created = emptyList(),

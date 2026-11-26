@@ -4,14 +4,15 @@ import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.responses.ApiResponses
 import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.natioanlproductupload.generated.ProductSyncResponse
-import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.NationalProductListSyncService
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.client.natioanlproductupload.generated.ImportNationalProductListResponse
+import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importNPL.NationalProductListSyncService
 
 @RestController
 @PreAuthorize("permitAll()")
@@ -45,13 +46,15 @@ class NationalProductListImportController(
   fun upload(
     @RequestParam("file")
     file: MultipartFile,
-  ): ProductSyncResponse {
+  ): ResponseEntity<ImportNationalProductListResponse> {
     val response = productSyncService.syncProducts(file)
-    return ProductSyncResponse(
-      recordsCreated = response.created.size,
-      recordsUpdated = response.updated.size,
-      recordsDeleted = response.deleted.ids.size,
-      message = "File uploaded successfully",
+    return ResponseEntity.ok(
+      ImportNationalProductListResponse(
+        recordsCreated = response.created.size,
+        recordsUpdated = response.updated.size,
+        recordsDeleted = response.deleted.ids.size,
+        message = "File uploaded successfully",
+      ),
     )
   }
 }
