@@ -68,12 +68,10 @@ class LocalProductListParseService : ProductListParser<LplProductDetails> {
           LplProductDetails(
             productCode = productCode,
             title = row.value(headerMap, Headers.TITLE, formatter).ifBlank { null },
-            price = when {
-              priceText.isBlank() -> null
-              else -> priceText.toDoubleOrNull()?.let { (it * 100).toInt() } ?: throw UpstreamException(
-                "Invalid price value '$priceText'",
-              )
-            },
+            price = priceText.toBigDecimalOrNull()
+              ?: throw UpstreamException(
+                "Invalid or missing price '$priceText' for product '$productCode'",
+              ),
           ),
         )
       }

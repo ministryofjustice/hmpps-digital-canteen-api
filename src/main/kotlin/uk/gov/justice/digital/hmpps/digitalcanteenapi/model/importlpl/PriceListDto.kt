@@ -1,6 +1,7 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import java.math.BigDecimal
 
 data class PriceListMetadata(
   val prisonId: String?,
@@ -31,7 +32,7 @@ data class CreatePriceListDto(
 data class PriceListPrice(
   @JsonProperty("variant_id")
   val variantId: String,
-  val amount: Int,
+  val amount: BigDecimal,
   @JsonProperty("currency_code")
   val currencyCode: String,
   val rules: Map<String, String>,

@@ -20,6 +20,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.fixtures.TestMockData.regi
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.CreatePriceListDto
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceListPrice
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importLPL.PriceListService
+import java.math.BigDecimal
 
 @ExtendWith(MockitoExtension::class)
 class PriceListServiceTest {
@@ -67,7 +68,7 @@ class PriceListServiceTest {
       assertThat(dto.prices[0]).isEqualTo(
         PriceListPrice(
           variantId = "variant-1",
-          amount = 100,
+          amount = BigDecimal.valueOf(100),
           currencyCode = "gbp",
           rules = mapOf("region_id" to region.id),
         ),
@@ -76,7 +77,7 @@ class PriceListServiceTest {
       assertThat(dto.prices[1]).isEqualTo(
         PriceListPrice(
           variantId = "variant-2",
-          amount = 200,
+          amount = BigDecimal.valueOf(200),
           currencyCode = "gbp",
           rules = mapOf("region_id" to region.id),
         ),

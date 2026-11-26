@@ -9,6 +9,7 @@ import org.junit.jupiter.api.assertThrows
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.service.importLPL.LocalProductListParseService
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.math.BigDecimal
 
 class LocalProductListParseServiceTest {
   private lateinit var service: LocalProductListParseService
@@ -49,7 +50,7 @@ class LocalProductListParseServiceTest {
     val product = result.first()
 
     assertEquals("2345678", product.productCode)
-    assertEquals(109, product.price)
+    assertEquals(BigDecimal("1.09"), product.price)
   }
 
   @Test

@@ -39,7 +39,7 @@ class ProductMatchService {
         productId = medusaProduct.id,
         productCode = lplProduct.productCode,
         variantId = variantId,
-        priceInPence = lplProduct.price,
+        price = lplProduct.price,
       )
     }
 

@@ -1,9 +1,11 @@
 package uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl
 
+import java.math.BigDecimal
+
 data class LplProductDetails(
   val title: String?,
   val productCode: String,
-  val price: Int?,
+  val price: BigDecimal?,
 )
 
 data class ProductMatchingResult(
@@ -15,7 +17,7 @@ data class MatchedProduct(
   val productId: String,
   val productCode: String,
   val variantId: String,
-  val priceInPence: Int?,
+  val price: BigDecimal?,
 )
 
 data class BatchProductsRequest(

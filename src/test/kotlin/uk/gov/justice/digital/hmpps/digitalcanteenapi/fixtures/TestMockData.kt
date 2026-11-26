@@ -10,6 +10,7 @@ import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.MedusaRegi
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.MedusaSalesChannel
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceList
 import uk.gov.justice.digital.hmpps.digitalcanteenapi.model.importlpl.PriceListMetadata
+import java.math.BigDecimal
 import java.util.Collections.emptyMap
 
 object TestMockData {
@@ -42,13 +43,13 @@ object TestMockData {
 
   val localProduct1 = LplProductDetails(
     title = "Coffee",
-    price = 120,
+    price = BigDecimal.valueOf(120),
     productCode = "PR1",
   )
 
   val localProduct2 = LplProductDetails(
     title = "Coca cola",
-    price = 200,
+    price = BigDecimal.valueOf(200),
     productCode = "PR2",
   )
 
@@ -93,13 +94,13 @@ object TestMockData {
       productId = "product-1",
       variantId = "variant-1",
       productCode = "1",
-      priceInPence = 100,
+      price = BigDecimal.valueOf(100),
     ),
     MatchedProduct(
       productId = "product-2",
       variantId = "variant-2",
       productCode = "2",
-      priceInPence = 200,
+      price = BigDecimal.valueOf(200),
     ),
   )
 

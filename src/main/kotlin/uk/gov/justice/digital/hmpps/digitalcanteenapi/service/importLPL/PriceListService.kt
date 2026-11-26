@@ -29,7 +29,7 @@ class PriceListService(
       prices = matchedProducts.map { product ->
         PriceListPrice(
           variantId = product.variantId,
-          amount = product.priceInPence!!,
+          amount = product.price!!,
           currencyCode = "gbp",
           rules = mapOf("region_id" to regionId),
         )
